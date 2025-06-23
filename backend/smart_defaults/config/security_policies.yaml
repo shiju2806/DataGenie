@@ -1,0 +1,483 @@
+# smart_defaults/config/security_policies.yaml
+# Comprehensive security and compliance policies
+
+version: "1.0"
+last_updated: "2025-01-01"
+
+# Security classification levels
+security_levels:
+  public:
+    risk_score: 0
+    description: "Public information with no access restrictions"
+    auto_connect: true
+    approval_required: false
+    audit_level: "basic"
+
+  internal:
+    risk_score: 1
+    description: "Internal business information"
+    auto_connect: true
+    approval_required: false
+    audit_level: "standard"
+
+  confidential:
+    risk_score: 2
+    description: "Sensitive business information"
+    auto_connect: false
+    approval_required: true
+    audit_level: "detailed"
+
+  restricted:
+    risk_score: 3
+    description: "Highly sensitive or regulated information"
+    auto_connect: false
+    approval_required: true
+    audit_level: "comprehensive"
+
+  top_secret:
+    risk_score: 4
+    description: "Most sensitive information requiring special handling"
+    auto_connect: false
+    approval_required: true
+    audit_level: "maximum"
+
+# Data classification rules
+data_classification:
+
+  # Financial data classifications
+  financial_data:
+    patterns:
+      - "*_financial"
+      - "*_accounting"
+      - "*_budget"
+      - "*_revenue"
+      - "*_profit"
+    default_level: "confidential"
+    special_cases:
+      - pattern: "*_payroll"
+        level: "restricted"
+      - pattern: "*_executive_compensation"
+        level: "top_secret"
+      - pattern: "public_financials"
+        level: "public"
+
+  # Customer data classifications
+  customer_data:
+    patterns:
+      - "*_customer"
+      - "*_client"
+      - "*_contact"
+      - "crm_*"
+    default_level: "confidential"
+    special_cases:
+      - pattern: "*_pii"
+        level: "restricted"
+      - pattern: "*_payment"
+        level: "restricted"
+      - pattern: "customer_analytics"
+        level: "internal"
+
+  # Employee data classifications
+  employee_data:
+    patterns:
+      - "*_employee"
+      - "*_hr"
+      - "*_personnel"
+      - "*_payroll"
+    default_level: "restricted"
+    special_cases:
+      - pattern: "org_chart"
+        level: "internal"
+      - pattern: "employee_directory"
+        level: "internal"
+      - pattern: "*_performance"
+        level: "top_secret"
+
+  # Operational data classifications
+  operational_data:
+    patterns:
+      - "*_operations"
+      - "*_production"
+      - "*_logistics"
+      - "*_supply_chain"
+    default_level: "internal"
+    special_cases:
+      - pattern: "*_proprietary"
+        level: "restricted"
+      - pattern: "*_trade_secrets"
+        level: "top_secret"
+      - pattern: "public_metrics"
+        level: "public"
+
+  # System and security data classifications
+  system_data:
+    patterns:
+      - "*_security"
+      - "*_audit"
+      - "*_logs"
+      - "*_monitoring"
+    default_level: "restricted"
+    special_cases:
+      - pattern: "*_vulnerability"
+        level: "top_secret"
+      - pattern: "*_incident"
+        level: "restricted"
+      - pattern: "system_metrics"
+        level: "internal"
+
+# Access control policies
+access_control:
+
+  # Role-based access control
+  rbac_rules:
+    executive:
+      allowed_levels: ["public", "internal", "confidential", "restricted"]
+      require_approval_for: ["top_secret"]
+      auto_connect_threshold: 0.85
+
+    management:
+      allowed_levels: ["public", "internal", "confidential"]
+      require_approval_for: ["restricted", "top_secret"]
+      auto_connect_threshold: 0.75
+
+    analyst:
+      allowed_levels: ["public", "internal"]
+      require_approval_for: ["confidential", "restricted", "top_secret"]
+      auto_connect_threshold: 0.65
+
+    user:
+      allowed_levels: ["public"]
+      require_approval_for: ["internal", "confidential", "restricted", "top_secret"]
+      auto_connect_threshold: 0.50
+
+  # Department-based restrictions
+  department_restrictions:
+    hr:
+      exclusive_access: ["employee_data", "payroll_data", "performance_data"]
+      restricted_from: ["financial_proprietary", "trade_secrets"]
+
+    finance:
+      exclusive_access: ["financial_data", "budget_data", "accounting_data"]
+      restricted_from: ["employee_personal_data", "hr_records"]
+
+    it:
+      exclusive_access: ["system_data", "security_logs", "infrastructure_data"]
+      restricted_from: ["business_proprietary", "financial_details"]
+
+    legal:
+      exclusive_access: ["compliance_data", "legal_documents", "audit_trails"]
+      special_privileges: ["cross_department_access"]
+
+# Compliance frameworks and requirements
+compliance_frameworks:
+
+  sox_compliance:
+    name: "Sarbanes-Oxley Act"
+    applies_to:
+      - "financial_reporting"
+      - "internal_controls"
+      - "audit_data"
+    requirements:
+      - "executive_certification"
+      - "independent_audit"
+      - "segregation_of_duties"
+      - "change_management"
+    auto_restrictions:
+      - "no_auto_connect_to_financial_systems"
+      - "require_dual_approval"
+      - "maintain_audit_trail"
+    affected_roles: ["ceo", "cfo", "financial_analyst", "auditor"]
+
+  gdpr_compliance:
+    name: "General Data Protection Regulation"
+    applies_to:
+      - "personal_data"
+      - "customer_information"
+      - "employee_records"
+    requirements:
+      - "explicit_consent"
+      - "data_minimization"
+      - "right_to_erasure"
+      - "data_portability"
+      - "privacy_by_design"
+    auto_restrictions:
+      - "no_auto_connect_to_personal_data"
+      - "require_privacy_impact_assessment"
+      - "implement_data_masking"
+    affected_roles: ["data_protection_officer", "hr_manager", "marketing_manager"]
+
+  hipaa_compliance:
+    name: "Health Insurance Portability and Accountability Act"
+    applies_to:
+      - "protected_health_information"
+      - "patient_records"
+      - "medical_data"
+    requirements:
+      - "minimum_necessary_rule"
+      - "administrative_safeguards"
+      - "physical_safeguards"
+      - "technical_safeguards"
+    auto_restrictions:
+      - "no_auto_connect_to_phi"
+      - "require_healthcare_authorization"
+      - "implement_access_logging"
+    affected_roles: ["healthcare_provider", "medical_analyst", "privacy_officer"]
+
+  pci_dss_compliance:
+    name: "Payment Card Industry Data Security Standard"
+    applies_to:
+      - "cardholder_data"
+      - "payment_information"
+      - "transaction_data"
+    requirements:
+      - "secure_network"
+      - "protect_cardholder_data"
+      - "vulnerability_management"
+      - "access_control"
+      - "monitoring_testing"
+      - "information_security_policy"
+    auto_restrictions:
+      - "no_auto_connect_to_payment_data"
+      - "require_pci_certification"
+      - "implement_encryption"
+    affected_roles: ["payment_processor", "security_officer", "compliance_manager"]
+
+# Security risk assessment rules
+risk_assessment:
+
+  # Automatic risk scoring factors
+  risk_factors:
+    data_sensitivity:
+      personal_identifiable_information: 4
+      financial_data: 3
+      proprietary_information: 3
+      customer_data: 2
+      operational_data: 1
+      public_information: 0
+
+    access_scope:
+      external_facing: 3
+      cross_department: 2
+      department_internal: 1
+      role_specific: 0
+
+    regulatory_impact:
+      multiple_regulations: 3
+      single_regulation: 2
+      industry_standard: 1
+      no_regulation: 0
+
+    business_impact:
+      critical_business_function: 3
+      important_business_function: 2
+      supporting_function: 1
+      non_essential: 0
+
+  # Risk calculation rules
+  risk_calculation:
+    total_risk_formula: |
+      (data_sensitivity * 0.4) + 
+      (access_scope * 0.3) + 
+      (regulatory_impact * 0.2) + 
+      (business_impact * 0.1)
+
+    risk_thresholds:
+      low_risk: 0.0 - 1.5
+      medium_risk: 1.6 - 2.5
+      high_risk: 2.6 - 3.5
+      critical_risk: 3.6 - 4.0
+
+    auto_connect_rules:
+      low_risk: "auto_connect_allowed"
+      medium_risk: "recommend_with_review"
+      high_risk: "require_approval"
+      critical_risk: "require_dual_approval"
+
+# Data masking and privacy protection
+privacy_protection:
+
+  # Automatic data masking rules
+  masking_rules:
+    pii_data:
+      - field_patterns: ["ssn", "social_security", "tax_id"]
+        masking_type: "full_mask"
+        replacement: "XXX-XX-XXXX"
+
+      - field_patterns: ["email", "email_address"]
+        masking_type: "partial_mask"
+        replacement: "***@domain.com"
+
+      - field_patterns: ["phone", "telephone", "mobile"]
+        masking_type: "partial_mask"
+        replacement: "XXX-XXX-1234"
+
+      - field_patterns: ["address", "street", "zip", "postal"]
+        masking_type: "generalize"
+        replacement: "City, State"
+
+    financial_data:
+      - field_patterns: ["account_number", "bank_account"]
+        masking_type: "partial_mask"
+        replacement: "****1234"
+
+      - field_patterns: ["credit_card", "card_number"]
+        masking_type: "partial_mask"
+        replacement: "****-****-****-1234"
+
+      - field_patterns: ["salary", "compensation", "wage"]
+        masking_type: "range"
+        replacement: "salary_band"
+
+  # Anonymization techniques
+  anonymization:
+    techniques:
+      - name: "k_anonymity"
+        description: "Ensure k individuals have same attributes"
+        applicable_to: ["demographic_data", "survey_data"]
+
+      - name: "differential_privacy"
+        description: "Add statistical noise to protect individual privacy"
+        applicable_to: ["aggregate_analytics", "research_data"]
+
+      - name: "data_synthesis"
+        description: "Generate synthetic data maintaining statistical properties"
+        applicable_to: ["ml_training_data", "test_environments"]
+
+# Audit and monitoring requirements
+audit_requirements:
+
+  # Logging requirements by security level
+  logging_levels:
+    public:
+      required_events: ["access", "export"]
+      retention_period: "1_year"
+      log_level: "summary"
+
+    internal:
+      required_events: ["access", "modification", "export", "sharing"]
+      retention_period: "3_years"
+      log_level: "detailed"
+
+    confidential:
+      required_events: ["access", "modification", "export", "sharing", "approval"]
+      retention_period: "7_years"
+      log_level: "comprehensive"
+
+    restricted:
+      required_events: ["all_interactions"]
+      retention_period: "7_years"
+      log_level: "maximum"
+
+    top_secret:
+      required_events: ["all_interactions", "system_events", "environmental_factors"]
+      retention_period: "indefinite"
+      log_level: "forensic"
+
+  # Compliance monitoring
+  monitoring_requirements:
+    real_time_alerts:
+      - "unauthorized_access_attempts"
+      - "privilege_escalation"
+      - "data_exfiltration_patterns"
+      - "compliance_violations"
+
+    periodic_reviews:
+      - name: "access_review"
+        frequency: "quarterly"
+        scope: "all_user_permissions"
+
+      - name: "data_classification_review"
+        frequency: "annually"
+        scope: "data_classification_accuracy"
+
+      - name: "policy_effectiveness_review"
+        frequency: "semi_annually"
+        scope: "security_policy_compliance"
+
+# Emergency and incident response
+incident_response:
+
+  # Security incident classifications
+  incident_types:
+    data_breach:
+      severity: "critical"
+      response_time: "immediate"
+      notification_required: ["privacy_officer", "legal", "executive"]
+
+    unauthorized_access:
+      severity: "high"
+      response_time: "within_1_hour"
+      notification_required: ["security_team", "system_owner"]
+
+    policy_violation:
+      severity: "medium"
+      response_time: "within_4_hours"
+      notification_required: ["compliance_officer", "manager"]
+
+    system_anomaly:
+      severity: "low"
+      response_time: "within_24_hours"
+      notification_required: ["system_administrator"]
+
+  # Automatic response actions
+  auto_response_actions:
+    critical_incidents:
+      - "immediate_access_suspension"
+      - "data_isolation"
+      - "executive_notification"
+      - "external_counsel_engagement"
+
+    high_incidents:
+      - "temporary_access_restriction"
+      - "enhanced_monitoring"
+      - "manager_notification"
+
+    medium_incidents:
+      - "access_review_trigger"
+      - "additional_training_assignment"
+      - "policy_reminder"
+
+# Integration with external security systems
+external_integrations:
+
+  # Identity and access management systems
+  iam_integration:
+    supported_systems:
+      - "active_directory"
+      - "azure_ad"
+      - "okta"
+      - "ping_identity"
+
+    sync_requirements:
+      - "real_time_user_provisioning"
+      - "automatic_deprovisioning"
+      - "role_based_access_sync"
+      - "group_membership_sync"
+
+  # Security information and event management
+  siem_integration:
+    supported_systems:
+      - "splunk"
+      - "qradar"
+      - "sentinel"
+      - "sumo_logic"
+
+    data_sharing:
+      - "access_logs"
+      - "security_events"
+      - "compliance_violations"
+      - "risk_assessments"
+
+  # Data loss prevention systems
+  dlp_integration:
+    supported_systems:
+      - "symantec_dlp"
+      - "forcepoint_dlp"
+      - "microsoft_purview"
+      - "digital_guardian"
+
+    policy_enforcement:
+      - "automatic_classification"
+      - "content_inspection"
+      - "transfer_blocking"
+      - "encryption_enforcement"

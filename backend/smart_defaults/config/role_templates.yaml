@@ -1,0 +1,383 @@
+# smart_defaults/config/role_templates.yaml
+# Comprehensive role-based data access templates
+
+version: "1.0"
+last_updated: "2025-01-01"
+
+# Executive Roles
+roles:
+  ceo:
+    display_name: "Chief Executive Officer"
+    category: "executive"
+    priority_data_types:
+      - "strategic_metrics"
+      - "financial_summary"
+      - "operational_kpis"
+      - "market_intelligence"
+    auto_connect_patterns:
+      - "executive_*"
+      - "*_summary"
+      - "*_dashboard"
+      - "board_*"
+    auto_connect_confidence: 0.90
+    risk_tolerance: "high"
+    data_scope: "enterprise_wide"
+    typical_analyses:
+      - "executive_summary"
+      - "strategic_planning"
+      - "performance_overview"
+      - "market_analysis"
+    compliance_requirements:
+      - "sox_compliance"
+      - "board_reporting"
+    recommended_refresh_frequency: "daily"
+
+  cfo:
+    display_name: "Chief Financial Officer"
+    category: "executive"
+    priority_data_types:
+      - "financial_data"
+      - "budget_planning"
+      - "cost_analysis"
+      - "revenue_tracking"
+      - "compliance_reporting"
+    auto_connect_patterns:
+      - "finance_*"
+      - "budget_*"
+      - "accounting_*"
+      - "*_gl"
+      - "financial_*"
+    auto_connect_confidence: 0.95
+    risk_tolerance: "medium"
+    data_scope: "financial_systems"
+    typical_analyses:
+      - "variance_analysis"
+      - "financial_forecasting"
+      - "budget_vs_actual"
+      - "cash_flow_analysis"
+      - "profitability_analysis"
+    compliance_requirements:
+      - "sox_compliance"
+      - "gaap_reporting"
+      - "audit_trail"
+    recommended_refresh_frequency: "real_time"
+
+# Finance Team Roles
+  financial_analyst:
+    display_name: "Financial Analyst"
+    category: "finance"
+    priority_data_types:
+      - "financial_transactions"
+      - "budget_data"
+      - "cost_centers"
+      - "revenue_streams"
+      - "variance_reports"
+    auto_connect_patterns:
+      - "finance_*"
+      - "budget_*"
+      - "*_transactions"
+      - "cost_*"
+      - "revenue_*"
+    auto_connect_confidence: 0.85
+    risk_tolerance: "medium"
+    data_scope: "financial_operational"
+    typical_analyses:
+      - "trend_analysis"
+      - "variance_analysis"
+      - "budget_planning"
+      - "cost_analysis"
+      - "financial_modeling"
+    compliance_requirements:
+      - "internal_controls"
+      - "audit_support"
+    recommended_refresh_frequency: "daily"
+
+  budget_manager:
+    display_name: "Budget Manager"
+    category: "finance"
+    priority_data_types:
+      - "budget_planning"
+      - "expense_tracking"
+      - "forecast_data"
+      - "cost_allocation"
+    auto_connect_patterns:
+      - "budget_*"
+      - "planning_*"
+      - "forecast_*"
+      - "expense_*"
+    auto_connect_confidence: 0.88
+    risk_tolerance: "low"
+    data_scope: "budget_systems"
+    typical_analyses:
+      - "budget_variance"
+      - "forecast_accuracy"
+      - "expense_trends"
+      - "allocation_analysis"
+    compliance_requirements:
+      - "budget_controls"
+    recommended_refresh_frequency: "weekly"
+
+# Sales & Marketing Roles
+  sales_manager:
+    display_name: "Sales Manager"
+    category: "sales"
+    priority_data_types:
+      - "sales_pipeline"
+      - "customer_data"
+      - "revenue_tracking"
+      - "performance_metrics"
+      - "territory_data"
+    auto_connect_patterns:
+      - "sales_*"
+      - "crm_*"
+      - "pipeline_*"
+      - "customer_*"
+      - "opportunity_*"
+    auto_connect_confidence: 0.90
+    risk_tolerance: "medium"
+    data_scope: "sales_systems"
+    typical_analyses:
+      - "sales_performance"
+      - "pipeline_analysis"
+      - "territory_performance"
+      - "customer_segmentation"
+      - "quota_tracking"
+    compliance_requirements:
+      - "data_privacy"
+    recommended_refresh_frequency: "real_time"
+
+  marketing_manager:
+    display_name: "Marketing Manager"
+    category: "marketing"
+    priority_data_types:
+      - "campaign_data"
+      - "customer_analytics"
+      - "web_analytics"
+      - "social_media_metrics"
+      - "lead_generation"
+    auto_connect_patterns:
+      - "marketing_*"
+      - "campaign_*"
+      - "analytics_*"
+      - "social_*"
+      - "web_*"
+    auto_connect_confidence: 0.85
+    risk_tolerance: "medium"
+    data_scope: "marketing_systems"
+    typical_analyses:
+      - "campaign_effectiveness"
+      - "customer_acquisition"
+      - "conversion_analysis"
+      - "roi_analysis"
+      - "attribution_modeling"
+    compliance_requirements:
+      - "gdpr_compliance"
+      - "data_privacy"
+    recommended_refresh_frequency: "daily"
+
+# Operations Roles
+  operations_manager:
+    display_name: "Operations Manager"
+    category: "operations"
+    priority_data_types:
+      - "operational_metrics"
+      - "process_data"
+      - "efficiency_metrics"
+      - "quality_data"
+      - "supply_chain"
+    auto_connect_patterns:
+      - "operations_*"
+      - "process_*"
+      - "quality_*"
+      - "efficiency_*"
+      - "supply_*"
+    auto_connect_confidence: 0.80
+    risk_tolerance: "low"
+    data_scope: "operational_systems"
+    typical_analyses:
+      - "efficiency_analysis"
+      - "process_optimization"
+      - "quality_metrics"
+      - "capacity_planning"
+      - "performance_tracking"
+    compliance_requirements:
+      - "quality_standards"
+      - "operational_controls"
+    recommended_refresh_frequency: "daily"
+
+# Data & Analytics Roles
+  data_analyst:
+    display_name: "Data Analyst"
+    category: "analytics"
+    priority_data_types:
+      - "all_structured_data"
+      - "analytical_datasets"
+      - "reporting_data"
+      - "metrics_data"
+    auto_connect_patterns:
+      - "*_data"
+      - "*_analytics"
+      - "*_metrics"
+      - "reporting_*"
+      - "warehouse_*"
+    auto_connect_confidence: 0.75
+    risk_tolerance: "high"
+    data_scope: "enterprise_wide"
+    typical_analyses:
+      - "exploratory_analysis"
+      - "statistical_analysis"
+      - "predictive_modeling"
+      - "data_visualization"
+      - "trend_identification"
+    compliance_requirements:
+      - "data_governance"
+      - "privacy_protection"
+    recommended_refresh_frequency: "as_needed"
+
+  business_intelligence:
+    display_name: "Business Intelligence Analyst"
+    category: "analytics"
+    priority_data_types:
+      - "business_metrics"
+      - "performance_data"
+      - "dashboard_data"
+      - "kpi_data"
+    auto_connect_patterns:
+      - "bi_*"
+      - "dashboard_*"
+      - "metrics_*"
+      - "kpi_*"
+      - "*_reporting"
+    auto_connect_confidence: 0.85
+    risk_tolerance: "medium"
+    data_scope: "business_systems"
+    typical_analyses:
+      - "dashboard_creation"
+      - "kpi_tracking"
+      - "business_reporting"
+      - "performance_monitoring"
+    compliance_requirements:
+      - "data_accuracy"
+      - "reporting_standards"
+    recommended_refresh_frequency: "real_time"
+
+# HR Roles
+  hr_manager:
+    display_name: "Human Resources Manager"
+    category: "human_resources"
+    priority_data_types:
+      - "employee_data"
+      - "performance_data"
+      - "compensation_data"
+      - "recruiting_data"
+      - "training_data"
+    auto_connect_patterns:
+      - "hr_*"
+      - "employee_*"
+      - "payroll_*"
+      - "recruiting_*"
+      - "performance_*"
+    auto_connect_confidence: 0.70
+    risk_tolerance: "very_low"
+    data_scope: "hr_systems"
+    typical_analyses:
+      - "workforce_analytics"
+      - "performance_analysis"
+      - "compensation_analysis"
+      - "retention_analysis"
+      - "recruiting_metrics"
+    compliance_requirements:
+      - "privacy_protection"
+      - "employment_law"
+      - "confidentiality"
+    recommended_refresh_frequency: "weekly"
+
+# IT Roles
+  it_manager:
+    display_name: "IT Manager"
+    category: "information_technology"
+    priority_data_types:
+      - "system_performance"
+      - "security_metrics"
+      - "infrastructure_data"
+      - "application_data"
+      - "user_activity"
+    auto_connect_patterns:
+      - "it_*"
+      - "system_*"
+      - "security_*"
+      - "infrastructure_*"
+      - "application_*"
+    auto_connect_confidence: 0.85
+    risk_tolerance: "low"
+    data_scope: "it_systems"
+    typical_analyses:
+      - "system_performance"
+      - "security_analysis"
+      - "capacity_planning"
+      - "user_behavior"
+      - "incident_analysis"
+    compliance_requirements:
+      - "security_standards"
+      - "data_protection"
+      - "audit_requirements"
+    recommended_refresh_frequency: "real_time"
+
+# Default/Generic Roles
+  business_user:
+    display_name: "Business User"
+    category: "general"
+    priority_data_types:
+      - "departmental_data"
+      - "reporting_data"
+      - "basic_metrics"
+    auto_connect_patterns:
+      - "public_*"
+      - "shared_*"
+      - "reporting_*"
+    auto_connect_confidence: 0.50
+    risk_tolerance: "low"
+    data_scope: "departmental"
+    typical_analyses:
+      - "basic_reporting"
+      - "trend_analysis"
+      - "simple_metrics"
+    compliance_requirements:
+      - "basic_data_protection"
+    recommended_refresh_frequency: "weekly"
+
+# Role hierarchy and permissions
+role_hierarchy:
+  executive:
+    - "ceo"
+    - "cfo"
+    - "coo"
+    - "cto"
+  management:
+    - "sales_manager"
+    - "marketing_manager"
+    - "operations_manager"
+    - "hr_manager"
+    - "it_manager"
+  analyst:
+    - "financial_analyst"
+    - "data_analyst"
+    - "business_intelligence"
+    - "budget_manager"
+  user:
+    - "business_user"
+
+# Cross-role data sharing rules
+data_sharing_matrix:
+  financial_data:
+    full_access: ["ceo", "cfo", "financial_analyst"]
+    summary_access: ["sales_manager", "operations_manager"]
+    restricted_access: ["hr_manager"]
+  customer_data:
+    full_access: ["sales_manager", "marketing_manager"]
+    summary_access: ["ceo", "cfo"]
+    analytics_access: ["data_analyst", "business_intelligence"]
+  employee_data:
+    full_access: ["hr_manager"]
+    summary_access: ["ceo", "cfo"]
+    restricted_access: []

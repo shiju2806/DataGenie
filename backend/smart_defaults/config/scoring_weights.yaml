@@ -1,0 +1,378 @@
+# smart_defaults/config/scoring_weights.yaml
+# Comprehensive scoring weights for recommendation algorithms
+
+version: "1.0"
+last_updated: "2025-01-01"
+
+# Main scoring algorithm weights
+primary_scoring_weights:
+
+  # Role-based matching (40% of total score)
+  role_matching:
+    weight: 0.40
+    components:
+      exact_role_match: 1.0
+      role_category_match: 0.8
+      role_hierarchy_match: 0.6
+      department_match: 0.4
+
+  # Data relevance and business value (30% of total score)
+  business_value:
+    weight: 0.30
+    components:
+      data_type_priority_match: 1.0
+      historical_usage_frequency: 0.8
+      business_criticality: 0.9
+      analysis_capability_match: 0.7
+
+  # Security and compliance (20% of total score)
+  security_risk:
+    weight: -0.20  # Negative weight (higher risk = lower score)
+    components:
+      security_classification: 1.0
+      compliance_requirements: 0.9
+      access_control_complexity: 0.6
+      regulatory_restrictions: 0.8
+
+  # User experience and accessibility (10% of total score)
+  user_experience:
+    weight: 0.10
+    components:
+      connection_ease: 0.8
+      data_quality_score: 0.9
+      response_time_performance: 0.6
+      integration_maturity: 0.7
+
+# Role-specific scoring adjustments
+role_scoring_multipliers:
+
+  # Executive roles - prioritize strategic data
+  executive:
+    business_value_multiplier: 1.3
+    security_risk_tolerance: 1.2
+    data_scope_preference: "enterprise_wide"
+    time_sensitivity_weight: 0.9
+
+  # Management roles - balanced approach
+  management:
+    business_value_multiplier: 1.1
+    security_risk_tolerance: 1.0
+    data_scope_preference: "departmental"
+    time_sensitivity_weight: 0.8
+
+  # Analyst roles - prioritize data completeness and accuracy
+  analyst:
+    business_value_multiplier: 1.0
+    security_risk_tolerance: 0.8
+    data_scope_preference: "analytical"
+    time_sensitivity_weight: 1.2
+    data_quality_weight_boost: 1.4
+
+  # User roles - prioritize simplicity and safety
+  user:
+    business_value_multiplier: 0.8
+    security_risk_tolerance: 0.6
+    data_scope_preference: "limited"
+    time_sensitivity_weight: 0.7
+    ease_of_use_weight_boost: 1.5
+
+# Industry-specific scoring adjustments
+industry_scoring_adjustments:
+
+  financial_services:
+    compliance_weight_multiplier: 1.5
+    security_weight_multiplier: 1.4
+    data_quality_weight_multiplier: 1.3
+    regulatory_sensitivity: "high"
+
+  healthcare:
+    privacy_weight_multiplier: 1.6
+    compliance_weight_multiplier: 1.5
+    security_weight_multiplier: 1.4
+    patient_data_sensitivity: "maximum"
+
+  retail_ecommerce:
+    customer_data_weight_multiplier: 1.3
+    performance_weight_multiplier: 1.2
+    scalability_weight_multiplier: 1.2
+    seasonal_adjustment: "enabled"
+
+  manufacturing:
+    operational_efficiency_multiplier: 1.4
+    safety_data_weight_multiplier: 1.3
+    quality_control_weight_multiplier: 1.2
+    production_priority: "high"
+
+  technology:
+    innovation_weight_multiplier: 1.2
+    performance_weight_multiplier: 1.3
+    scalability_weight_multiplier: 1.4
+    technical_complexity_tolerance: "high"
+
+# Data source type scoring modifiers
+data_source_type_modifiers:
+
+  database:
+    reliability_score: 0.9
+    performance_score: 0.8
+    integration_complexity: 0.7
+    data_freshness_potential: 0.9
+
+  api:
+    reliability_score: 0.7
+    performance_score: 0.6
+    integration_complexity: 0.8
+    data_freshness_potential: 1.0
+
+  file_system:
+    reliability_score: 0.6
+    performance_score: 0.9
+    integration_complexity: 0.9
+    data_freshness_potential: 0.5
+
+  cloud_storage:
+    reliability_score: 0.8
+    performance_score: 0.7
+    integration_complexity: 0.8
+    data_freshness_potential: 0.8
+
+  real_time_stream:
+    reliability_score: 0.7
+    performance_score: 0.5
+    integration_complexity: 0.4
+    data_freshness_potential: 1.0
+
+# Context-aware scoring adjustments
+contextual_adjustments:
+
+  # Time-based adjustments
+  temporal_factors:
+    business_hours:
+      weight_multiplier: 1.0
+      priority_boost: 0.0
+
+    after_hours:
+      weight_multiplier: 0.9
+      priority_boost: -0.1
+
+    weekend:
+      weight_multiplier: 0.8
+      priority_boost: -0.2
+
+    holiday:
+      weight_multiplier: 0.7
+      priority_boost: -0.3
+
+  # Query complexity adjustments
+  query_complexity:
+    simple_aggregation:
+      complexity_score: 0.2
+      recommended_source_types: ["database", "file_system"]
+
+    multi_source_analysis:
+      complexity_score: 0.6
+      recommended_source_types: ["database", "api"]
+
+    advanced_analytics:
+      complexity_score: 0.8
+      recommended_source_types: ["database", "cloud_storage"]
+
+    real_time_analysis:
+      complexity_score: 1.0
+      recommended_source_types: ["api", "real_time_stream"]
+
+  # Data volume considerations
+  data_volume_impact:
+    small_dataset: # < 1MB
+      performance_weight: 0.3
+      recommended_sources: ["file_system", "api"]
+
+    medium_dataset: # 1MB - 1GB
+      performance_weight: 0.6
+      recommended_sources: ["database", "cloud_storage"]
+
+    large_dataset: # 1GB - 1TB
+      performance_weight: 0.9
+      recommended_sources: ["database", "cloud_storage"]
+
+    very_large_dataset: # > 1TB
+      performance_weight: 1.0
+      recommended_sources: ["database", "data_warehouse"]
+
+# Machine learning and adaptive scoring
+adaptive_scoring:
+
+  # User behavior learning weights
+  behavior_learning:
+    initial_weight: 0.0
+    learning_rate: 0.1
+    max_weight: 0.3
+    confidence_threshold: 0.7
+
+    # Behavioral signals
+    signals:
+      connection_acceptance_rate:
+        positive_weight: 0.2
+        negative_weight: -0.3
+
+      usage_frequency:
+        high_usage_boost: 0.15
+        low_usage_penalty: -0.1
+
+      user_override_patterns:
+        override_penalty: -0.2
+        consistent_preference_boost: 0.1
+
+      analysis_success_rate:
+        high_success_boost: 0.2
+        failure_penalty: -0.25
+
+  # Collaborative filtering weights
+  collaborative_filtering:
+    similar_user_weight: 0.15
+    similar_role_weight: 0.20
+    similar_department_weight: 0.10
+    similar_industry_weight: 0.08
+
+    # Similarity calculation factors
+    similarity_factors:
+      role_similarity: 0.4
+      department_similarity: 0.3
+      usage_pattern_similarity: 0.2
+      query_pattern_similarity: 0.1
+
+  # Seasonal and trending adjustments
+  temporal_patterns:
+    seasonal_weight: 0.05
+    trending_data_boost: 0.1
+    historical_pattern_weight: 0.08
+
+    # Seasonal patterns by industry
+    seasonal_patterns:
+      retail_ecommerce:
+        q4_boost: 0.2  # Holiday season
+        q1_penalty: -0.1  # Post-holiday slowdown
+
+      financial_services:
+        quarter_end_boost: 0.15
+        year_end_boost: 0.25
+
+      manufacturing:
+        production_season_boost: 0.1
+        maintenance_season_penalty: -0.05
+
+# Confidence scoring and thresholds
+confidence_scoring:
+
+  # Confidence calculation components
+  confidence_factors:
+    data_completeness: 0.25
+    source_reliability: 0.20
+    role_match_certainty: 0.20
+    historical_success_rate: 0.15
+    security_compliance_score: 0.10
+    technical_feasibility: 0.10
+
+  # Confidence thresholds for actions
+  action_thresholds:
+    auto_connect: 0.85
+    strong_recommend: 0.70
+    recommend: 0.55
+    suggest: 0.40
+    hide: 0.25
+
+  # Uncertainty handling
+  uncertainty_adjustments:
+    new_user_penalty: -0.1
+    new_data_source_penalty: -0.15
+    limited_historical_data_penalty: -0.05
+    system_maintenance_penalty: -0.2
+
+# Performance and optimization weights
+performance_optimization:
+
+  # Response time considerations
+  response_time_weights:
+    critical_analysis: # < 5 seconds preferred
+      fast_source_boost: 0.2
+      slow_source_penalty: -0.4
+
+    standard_analysis: # < 30 seconds acceptable
+      fast_source_boost: 0.1
+      slow_source_penalty: -0.2
+
+    batch_analysis: # < 5 minutes acceptable
+      fast_source_boost: 0.05
+      slow_source_penalty: -0.1
+
+  # Resource utilization optimization
+  resource_optimization:
+    cpu_intensive_penalty: -0.1
+    memory_intensive_penalty: -0.1
+    network_intensive_penalty: -0.05
+    storage_efficient_boost: 0.05
+
+  # Caching and reusability benefits
+  caching_benefits:
+    cacheable_data_boost: 0.1
+    frequently_accessed_boost: 0.15
+    shared_analysis_boost: 0.08
+    real_time_only_penalty: -0.05
+
+# Quality and reliability scoring
+quality_scoring:
+
+  # Data quality factors
+  data_quality_weights:
+    completeness: 0.3
+    accuracy: 0.25
+    timeliness: 0.2
+    consistency: 0.15
+    validity: 0.1
+
+  # Source reliability factors
+  reliability_weights:
+    uptime_history: 0.3
+    data_freshness: 0.25
+    error_rate_history: 0.2
+    maintenance_frequency: 0.15
+    vendor_stability: 0.1
+
+  # Integration maturity scoring
+  integration_maturity:
+    well_established: 0.2
+    documented_api: 0.15
+    error_handling: 0.15
+    monitoring_capabilities: 0.1
+    community_support: 0.05
+
+# Special situation handling
+special_situations:
+
+  # Emergency or urgent analysis
+  urgent_analysis_mode:
+    response_time_weight_multiplier: 2.0
+    security_weight_reduction: 0.7
+    approval_bypass_threshold: 0.9
+    simplified_connection_boost: 0.3
+
+  # New user onboarding
+  new_user_mode:
+    safety_weight_multiplier: 1.5
+    simplicity_boost: 0.3
+    educational_value_boost: 0.2
+    hand_holding_mode: true
+
+  # Maintenance and testing
+  maintenance_mode:
+    production_system_penalty: -0.5
+    test_system_boost: 0.3
+    backup_system_boost: 0.2
+    read_only_preference: 0.4
+
+  # Compliance audit period
+  audit_mode:
+    audit_trail_weight_multiplier: 2.0
+    security_weight_multiplier: 1.5
+    approval_requirement_boost: 0.4
+    documentation_requirement_boost: 0.3

@@ -1,0 +1,495 @@
+# smart_defaults/config/industry_profiles.yaml
+# Industry-specific configurations and compliance requirements
+
+version: "1.0"
+last_updated: "2025-01-01"
+
+industries:
+  financial_services:
+    display_name: "Financial Services"
+    category: "regulated"
+
+    # Industry-specific data types
+    priority_data_types:
+      - "portfolio_management"
+      - "risk_analytics"
+      - "trading_data"
+      - "compliance_reporting"
+      - "client_assets"
+      - "market_data"
+      - "regulatory_filings"
+
+    # Common system patterns in this industry
+    system_patterns:
+      portfolio_management:
+        - "portfolio_*"
+        - "*_holdings"
+        - "*_positions"
+        - "asset_*"
+      trading:
+        - "trading_*"
+        - "execution_*"
+        - "orders_*"
+        - "trade_*"
+      risk_management:
+        - "risk_*"
+        - "var_*"
+        - "exposure_*"
+        - "limit_*"
+      compliance:
+        - "compliance_*"
+        - "regulatory_*"
+        - "audit_*"
+        - "filing_*"
+
+    # Regulatory requirements
+    compliance_frameworks:
+      - name: "SOX"
+        description: "Sarbanes-Oxley Act"
+        applies_to: ["financial_reporting", "internal_controls"]
+        auto_restrictions: ["executive_access_only"]
+      - name: "Basel_III"
+        description: "Basel III Capital Requirements"
+        applies_to: ["risk_data", "capital_calculations"]
+        auto_restrictions: ["risk_team_only"]
+      - name: "MiFID_II"
+        description: "Markets in Financial Instruments Directive"
+        applies_to: ["trading_data", "client_reporting"]
+        auto_restrictions: ["compliance_approval"]
+      - name: "GDPR"
+        description: "General Data Protection Regulation"
+        applies_to: ["client_data", "personal_information"]
+        auto_restrictions: ["privacy_controls"]
+
+    # Risk classifications
+    data_risk_levels:
+      high_risk:
+        - "client_personal_data"
+        - "trading_positions"
+        - "proprietary_algorithms"
+      medium_risk:
+        - "portfolio_performance"
+        - "market_research"
+        - "client_communications"
+      low_risk:
+        - "public_market_data"
+        - "general_analytics"
+        - "aggregated_reports"
+
+    # Default analysis types
+    recommended_analyses:
+      - "portfolio_performance"
+      - "risk_attribution"
+      - "compliance_monitoring"
+      - "client_reporting"
+      - "market_analysis"
+
+    # Industry KPIs
+    key_metrics:
+      performance:
+        - "returns"
+        - "sharpe_ratio"
+        - "alpha"
+        - "beta"
+        - "tracking_error"
+      risk:
+        - "var"
+        - "stress_test_results"
+        - "exposure_limits"
+        - "concentration_risk"
+      operational:
+        - "aum"
+        - "fee_income"
+        - "client_satisfaction"
+        - "compliance_score"
+
+  healthcare:
+    display_name: "Healthcare"
+    category: "regulated"
+
+    priority_data_types:
+      - "patient_data"
+      - "clinical_outcomes"
+      - "treatment_protocols"
+      - "medical_devices"
+      - "pharmaceutical_data"
+      - "quality_metrics"
+      - "regulatory_compliance"
+
+    system_patterns:
+      clinical:
+        - "clinical_*"
+        - "patient_*"
+        - "medical_*"
+        - "treatment_*"
+      quality:
+        - "quality_*"
+        - "outcome_*"
+        - "metrics_*"
+        - "performance_*"
+      regulatory:
+        - "fda_*"
+        - "compliance_*"
+        - "audit_*"
+        - "regulatory_*"
+
+    compliance_frameworks:
+      - name: "HIPAA"
+        description: "Health Insurance Portability and Accountability Act"
+        applies_to: ["patient_data", "medical_records"]
+        auto_restrictions: ["phi_protection", "minimum_necessary"]
+      - name: "FDA_21_CFR_Part_11"
+        description: "FDA Electronic Records and Signatures"
+        applies_to: ["clinical_trials", "medical_devices"]
+        auto_restrictions: ["electronic_signature_required"]
+      - name: "GDPR"
+        description: "General Data Protection Regulation"
+        applies_to: ["patient_personal_data"]
+        auto_restrictions: ["explicit_consent_required"]
+
+    data_risk_levels:
+      high_risk:
+        - "patient_identifiable_data"
+        - "clinical_trial_data"
+        - "genetic_information"
+      medium_risk:
+        - "aggregated_patient_data"
+        - "quality_metrics"
+        - "treatment_outcomes"
+      low_risk:
+        - "public_health_statistics"
+        - "anonymized_research"
+        - "general_operational_data"
+
+    recommended_analyses:
+      - "patient_outcomes"
+      - "quality_metrics"
+      - "treatment_effectiveness"
+      - "operational_efficiency"
+      - "compliance_monitoring"
+
+    key_metrics:
+      clinical:
+        - "patient_satisfaction"
+        - "readmission_rates"
+        - "treatment_success_rates"
+        - "adverse_events"
+      operational:
+        - "bed_utilization"
+        - "average_length_of_stay"
+        - "cost_per_procedure"
+        - "staff_productivity"
+      quality:
+        - "infection_rates"
+        - "medication_errors"
+        - "mortality_rates"
+        - "patient_safety_indicators"
+
+  retail_ecommerce:
+    display_name: "Retail & E-commerce"
+    category: "commercial"
+
+    priority_data_types:
+      - "customer_behavior"
+      - "sales_transactions"
+      - "inventory_management"
+      - "marketing_campaigns"
+      - "supply_chain"
+      - "pricing_data"
+      - "competitor_analysis"
+
+    system_patterns:
+      sales:
+        - "sales_*"
+        - "transaction_*"
+        - "order_*"
+        - "revenue_*"
+      customer:
+        - "customer_*"
+        - "crm_*"
+        - "loyalty_*"
+        - "behavior_*"
+      inventory:
+        - "inventory_*"
+        - "stock_*"
+        - "warehouse_*"
+        - "fulfillment_*"
+      marketing:
+        - "marketing_*"
+        - "campaign_*"
+        - "promotion_*"
+        - "advertising_*"
+
+    compliance_frameworks:
+      - name: "PCI_DSS"
+        description: "Payment Card Industry Data Security Standard"
+        applies_to: ["payment_data", "credit_card_transactions"]
+        auto_restrictions: ["encrypted_storage", "limited_access"]
+      - name: "GDPR"
+        description: "General Data Protection Regulation"
+        applies_to: ["customer_personal_data"]
+        auto_restrictions: ["consent_management"]
+      - name: "CCPA"
+        description: "California Consumer Privacy Act"
+        applies_to: ["california_customers"]
+        auto_restrictions: ["data_portability", "deletion_rights"]
+
+    data_risk_levels:
+      high_risk:
+        - "payment_information"
+        - "customer_personal_data"
+        - "proprietary_algorithms"
+      medium_risk:
+        - "customer_behavior_data"
+        - "pricing_strategies"
+        - "supplier_information"
+      low_risk:
+        - "public_sales_data"
+        - "general_market_trends"
+        - "aggregated_analytics"
+
+    recommended_analyses:
+      - "customer_segmentation"
+      - "sales_performance"
+      - "inventory_optimization"
+      - "marketing_roi"
+      - "pricing_analysis"
+
+    key_metrics:
+      sales:
+        - "conversion_rate"
+        - "average_order_value"
+        - "customer_lifetime_value"
+        - "cart_abandonment_rate"
+      marketing:
+        - "customer_acquisition_cost"
+        - "return_on_ad_spend"
+        - "email_open_rates"
+        - "social_media_engagement"
+      operations:
+        - "inventory_turnover"
+        - "fulfillment_speed"
+        - "return_rates"
+        - "customer_satisfaction"
+
+  manufacturing:
+    display_name: "Manufacturing"
+    category: "industrial"
+
+    priority_data_types:
+      - "production_data"
+      - "quality_control"
+      - "supply_chain"
+      - "equipment_maintenance"
+      - "safety_metrics"
+      - "cost_analysis"
+      - "environmental_data"
+
+    system_patterns:
+      production:
+        - "production_*"
+        - "manufacturing_*"
+        - "assembly_*"
+        - "line_*"
+      quality:
+        - "quality_*"
+        - "inspection_*"
+        - "defect_*"
+        - "testing_*"
+      maintenance:
+        - "maintenance_*"
+        - "equipment_*"
+        - "machine_*"
+        - "downtime_*"
+      supply_chain:
+        - "supply_*"
+        - "vendor_*"
+        - "procurement_*"
+        - "logistics_*"
+
+    compliance_frameworks:
+      - name: "ISO_9001"
+        description: "Quality Management Systems"
+        applies_to: ["quality_data", "process_documentation"]
+        auto_restrictions: ["quality_approval_required"]
+      - name: "ISO_14001"
+        description: "Environmental Management Systems"
+        applies_to: ["environmental_data", "emissions_tracking"]
+        auto_restrictions: ["environmental_compliance"]
+      - name: "OSHA"
+        description: "Occupational Safety and Health Administration"
+        applies_to: ["safety_data", "incident_reports"]
+        auto_restrictions: ["safety_team_access"]
+
+    data_risk_levels:
+      high_risk:
+        - "proprietary_processes"
+        - "safety_incidents"
+        - "intellectual_property"
+      medium_risk:
+        - "production_schedules"
+        - "supplier_data"
+        - "quality_metrics"
+      low_risk:
+        - "general_production_statistics"
+        - "public_safety_data"
+        - "industry_benchmarks"
+
+    recommended_analyses:
+      - "production_efficiency"
+      - "quality_analysis"
+      - "predictive_maintenance"
+      - "supply_chain_optimization"
+      - "cost_reduction"
+
+    key_metrics:
+      production:
+        - "overall_equipment_effectiveness"
+        - "cycle_time"
+        - "throughput"
+        - "yield_rates"
+      quality:
+        - "defect_rates"
+        - "first_pass_yield"
+        - "customer_complaints"
+        - "warranty_returns"
+      maintenance:
+        - "mean_time_between_failures"
+        - "planned_vs_unplanned_downtime"
+        - "maintenance_costs"
+        - "equipment_utilization"
+
+  technology:
+    display_name: "Technology"
+    category: "commercial"
+
+    priority_data_types:
+      - "user_analytics"
+      - "system_performance"
+      - "application_metrics"
+      - "security_data"
+      - "development_metrics"
+      - "customer_usage"
+      - "revenue_analytics"
+
+    system_patterns:
+      applications:
+        - "app_*"
+        - "application_*"
+        - "service_*"
+        - "api_*"
+      infrastructure:
+        - "infrastructure_*"
+        - "server_*"
+        - "network_*"
+        - "cloud_*"
+      development:
+        - "dev_*"
+        - "code_*"
+        - "repository_*"
+        - "deployment_*"
+      analytics:
+        - "analytics_*"
+        - "metrics_*"
+        - "logs_*"
+        - "monitoring_*"
+
+    compliance_frameworks:
+      - name: "SOC_2"
+        description: "Service Organization Control 2"
+        applies_to: ["security_controls", "customer_data"]
+        auto_restrictions: ["security_team_review"]
+      - name: "ISO_27001"
+        description: "Information Security Management"
+        applies_to: ["information_security", "data_protection"]
+        auto_restrictions: ["security_classification"]
+      - name: "GDPR"
+        description: "General Data Protection Regulation"
+        applies_to: ["user_personal_data"]
+        auto_restrictions: ["privacy_by_design"]
+
+    data_risk_levels:
+      high_risk:
+        - "user_personal_data"
+        - "security_vulnerabilities"
+        - "proprietary_algorithms"
+      medium_risk:
+        - "application_logs"
+        - "performance_data"
+        - "user_behavior_analytics"
+      low_risk:
+        - "public_metrics"
+        - "general_system_statistics"
+        - "aggregated_usage_data"
+
+    recommended_analyses:
+      - "user_behavior_analysis"
+      - "system_performance_monitoring"
+      - "security_analytics"
+      - "development_productivity"
+      - "customer_usage_patterns"
+
+    key_metrics:
+      performance:
+        - "response_time"
+        - "uptime"
+        - "error_rates"
+        - "throughput"
+      user_experience:
+        - "user_engagement"
+        - "session_duration"
+        - "feature_adoption"
+        - "customer_satisfaction"
+      development:
+        - "deployment_frequency"
+        - "lead_time"
+        - "mean_time_to_recovery"
+        - "change_failure_rate"
+
+# Cross-industry patterns
+common_patterns:
+  high_security_systems:
+    - "*_security"
+    - "*_audit"
+    - "*_compliance"
+    - "sensitive_*"
+
+  financial_systems:
+    - "*_financial"
+    - "*_accounting"
+    - "*_budget"
+    - "finance_*"
+
+  hr_systems:
+    - "*_hr"
+    - "*_payroll"
+    - "*_employee"
+    - "personnel_*"
+
+  operational_systems:
+    - "*_operations"
+    - "*_production"
+    - "*_logistics"
+    - "ops_*"
+
+# Default industry classification rules
+auto_classification_rules:
+  financial_services:
+    keywords: ["portfolio", "trading", "investment", "securities", "fund"]
+    system_indicators: ["bloomberg", "factset", "aladdin", "murex"]
+
+  healthcare:
+    keywords: ["patient", "clinical", "medical", "hospital", "pharmacy"]
+    system_indicators: ["epic", "cerner", "meditech", "allscripts"]
+
+  retail_ecommerce:
+    keywords: ["customer", "product", "inventory", "sales", "order"]
+    system_indicators: ["shopify", "magento", "salesforce_commerce", "sap_retail"]
+
+  manufacturing:
+    keywords: ["production", "assembly", "quality", "manufacturing", "plant"]
+    system_indicators: ["sap_pp", "oracle_wms", "wonderware", "ge_proficy"]
+
+  technology:
+    keywords: ["application", "software", "development", "api", "cloud"]
+    system_indicators: ["aws", "azure", "gcp", "kubernetes", "docker"]
