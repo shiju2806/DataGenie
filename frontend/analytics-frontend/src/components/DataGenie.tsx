@@ -18,16 +18,9 @@ import {
   Zap,
   Search
 } from 'lucide-react';
+import { analyticsAPI, extractErrorMessage, AnalysisResponse, DataSource, DiscoveryResponse } from '../../services/api';
 
 // Types
-interface DataSource {
-  id: string;
-  name: string;
-  type: string;
-  confidence: number;
-  status: string;
-}
-
 interface AnalysisResults {
   summary: string;
   insights: string[];
@@ -49,263 +42,6 @@ interface SavedAnalysis {
 
 type StepType = 'connect' | 'analyze' | 'results' | 'report';
 
-// API Configuration
-const API_BASE_URL = 'http://localhost:8000';
-
-// Fixed API Service Functions
-const apiService = {
-  async discoverSources() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/discover-sources/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer demo-token`
-        }
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Error discovering sources:', error);
-      return { status: 'error', discovered_sources: [], recommendations: [] };
-    }
-  },
-
-  async analyzeData(query: string, file: File | null = null, selectedSources: string[] = []) {
-    try {
-      console.log('📡 Starting analysis request...');
-      console.log('📝 Query:', query);
-      console.log('📄 File:', file ? `${file.name} (${file.size} bytes)` : 'None');
-      console.log('🔗 Sources:', selectedSources);
-
-      // STEP 1: Test basic connectivity
-      console.log('🔍 Testing backend health...');
-      try {
-        const healthResponse = await fetch(`${API_BASE_URL}/health/`);
-        const healthData = await healthResponse.json();
-        console.log('❤️ Backend health:', healthData);
-
-        if (!healthData.status || healthData.status !== 'healthy') {
-          throw new Error('Backend is not healthy');
-        }
-      } catch (healthError) {
-        console.error('💔 Backend health check failed:', healthError);
-        throw new Error('Backend server is not accessible. Please ensure it\'s running on http://localhost:8000');
-      }
-
-      // STEP 2: Test a simple GET request first
-      console.log('🧪 Testing basic API with GET request...');
-      try {
-        const statusResponse = await fetch(`${API_BASE_URL}/`);
-        const statusData = await statusResponse.json();
-        console.log('🏠 Root endpoint response:', statusData);
-      } catch (statusError) {
-        console.error('🚫 Basic API test failed:', statusError);
-      }
-
-      // STEP 3: Test the simpler endpoint first
-      console.log('🧪 Testing simpler upload endpoint...');
-      try {
-        const testFormData = new FormData();
-        testFormData.append('prompt', query);
-        if (file) {
-          testFormData.append('file', file, file.name);
-        }
-        testFormData.append('use_adaptive', 'true');
-        testFormData.append('include_charts', 'true');
-        testFormData.append('auto_discover', file ? 'false' : 'true');
-
-        const testResponse = await fetch(`${API_BASE_URL}/test-upload/`, {
-          method: 'POST',
-          body: testFormData
-        });
-
-        console.log('🧪 Test endpoint response:', testResponse.status);
-
-        if (testResponse.ok) {
-          const testData = await testResponse.json();
-          console.log('🧪 Test endpoint data:', testData);
-
-          if (testData.status === 'success') {
-            console.log('✅ Test upload successful! File is valid.');
-          } else {
-            console.log('❌ Test upload failed:', testData.error);
-          }
-        } else {
-          const testError = await testResponse.text();
-          console.log('❌ Test endpoint failed:', testError);
-        }
-      } catch (testError) {
-        console.error('🧪 Test endpoint error:', testError);
-      }
-
-      // STEP 4: Prepare the actual analysis request
-      console.log('📦 Preparing FormData request...');
-
-      const formData = new FormData();
-
-      // FIXED: Send everything as form data
-      formData.append('prompt', query);
-      formData.append('use_adaptive', 'true');
-      formData.append('include_charts', 'true');
-      formData.append('auto_discover', file ? 'false' : 'true');
-
-      if (file) {
-        console.log('📄 Adding file to FormData...');
-        formData.append('file', file, file.name);
-        console.log(`📄 File details: ${file.name}, ${file.size} bytes, ${file.type}`);
-      }
-
-      if (selectedSources.length > 0) {
-        formData.append('data_source_id', selectedSources[0]);
-      }
-
-      // Debug: Log what we're sending
-      console.log('📋 Request details:');
-      console.log(`  URL: ${API_BASE_URL}/analyze/`);
-      console.log(`  Method: POST`);
-      console.log(`  Has file: ${!!file}`);
-      console.log(`  Prompt length: ${query.length}`);
-
-      // STEP 5: Make the actual request
-      console.log('🚀 Sending analysis request...');
-
-      const response = await fetch(`${API_BASE_URL}/analyze/`, {
-        method: 'POST',
-        body: formData
-        // No headers - let browser handle Content-Type for FormData
-      });
-
-      console.log('📬 Response received:');
-      console.log(`  Status: ${response.status} ${response.statusText}`);
-      console.log(`  OK: ${response.ok}`);
-
-      // Log response headers
-      const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((value, key) => {
-        responseHeaders[key] = value;
-      });
-      console.log('  Headers:', responseHeaders);
-
-      // Handle response
-      if (!response.ok) {
-        console.error('❌ Request failed with status:', response.status);
-
-        let errorDetails;
-        const contentType = response.headers.get('content-type') || '';
-
-        console.log('📄 Response content-type:', contentType);
-
-        if (contentType.includes('application/json')) {
-          try {
-            errorDetails = await response.json();
-            console.error('📄 Error response (JSON):', errorDetails);
-          } catch (jsonError) {
-            console.error('❌ Failed to parse JSON error response:', jsonError);
-            errorDetails = { error: 'Failed to parse error response' };
-          }
-        } else {
-          try {
-            const textError = await response.text();
-            console.error('📄 Error response (Text):', textError);
-            errorDetails = { error: textError };
-          } catch (textError) {
-            console.error('❌ Failed to read error response:', textError);
-            errorDetails = { error: 'Failed to read error response' };
-          }
-        }
-
-        // Create user-friendly error message
-        let userMessage = 'Analysis failed';
-
-        if (response.status === 422) {
-          userMessage = 'The request format is invalid. Please check your file format and try again.';
-
-          // Add specific suggestions based on error details
-          if (errorDetails.detail && typeof errorDetails.detail === 'string') {
-            if (errorDetails.detail.includes('file')) {
-              userMessage += ' Make sure your file is a valid CSV or Excel file.';
-            }
-            if (errorDetails.detail.includes('prompt')) {
-              userMessage += ' Make sure your question is not empty.';
-            }
-          }
-        } else if (response.status === 400) {
-          userMessage = 'Bad request. Please verify your file and query are valid.';
-        } else if (response.status === 500) {
-          userMessage = 'Server error. Please try again in a moment.';
-        } else {
-          userMessage = `Request failed with status ${response.status}. Please try again.`;
-        }
-
-        throw new Error(userMessage);
-      }
-
-      // Parse successful response
-      console.log('✅ Request successful, parsing response...');
-      let result;
-
-      try {
-        result = await response.json();
-        console.log('✅ Response parsed successfully');
-        console.log('📊 Response summary:', {
-          status: result.status,
-          hasAnalysis: !!result.analysis,
-          hasData: !!result.analysis?.data,
-          dataLength: result.analysis?.data?.length || 0
-        });
-      } catch (parseError) {
-        console.error('❌ Failed to parse successful response:', parseError);
-        throw new Error('Received invalid response from server');
-      }
-
-      return result;
-
-    } catch (error) {
-      console.error('💥 Complete error details:', {
-        name: (error as Error).name,
-        message: (error as Error).message,
-        stack: (error as Error).stack
-      });
-
-      // Re-throw with appropriate message
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        throw new Error('Cannot connect to DataGenie backend. Please ensure the server is running on http://localhost:8000');
-      }
-
-      throw error;
-    }
-  }
-};
-
-// Mock data fallback
-const mockDataSources: DataSource[] = [
-  { id: 'postgres_prod', name: 'Production Database', type: 'PostgreSQL', confidence: 0.92, status: 'available' },
-  { id: 'sales_csv', name: 'Sales Data Export', type: 'CSV', confidence: 0.87, status: 'available' },
-  { id: 'tableau_server', name: 'Tableau Server', type: 'Tableau', confidence: 0.78, status: 'available' },
-  { id: 'api_crm', name: 'CRM API', type: 'REST API', confidence: 0.85, status: 'available' }
-];
-
-const mockAnalysisResults: AnalysisResults = {
-  summary: "Sales trend analysis shows 23% growth in Q4 with strong performance in Enterprise segment",
-  insights: [
-    "📈 Enterprise sales increased 31% quarter-over-quarter",
-    "🎯 Customer acquisition cost decreased by 15%",
-    "⚠️ SMB segment showing 8% decline - requires attention",
-    "🔥 Product A driving 45% of total growth"
-  ],
-  chartData: [
-    { month: 'Jan', sales: 45000, target: 40000 },
-    { month: 'Feb', sales: 52000, target: 45000 },
-    { month: 'Mar', sales: 48000, target: 50000 },
-    { month: 'Apr', sales: 61000, target: 55000 },
-    { month: 'May', sales: 68000, target: 60000 },
-    { month: 'Jun', sales: 71000, target: 65000 }
-  ],
-  confidence: 0.94,
-  analysisType: 'trend_analysis'
-};
-
-// Main Component
 const DataGenie: React.FC = () => {
   // State
   const [currentStep, setCurrentStep] = useState<StepType>('connect');
@@ -319,6 +55,8 @@ const DataGenie: React.FC = () => {
   const [isDiscovering, setIsDiscovering] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [systemCapabilities, setSystemCapabilities] = useState<any>(null);
   const [advancedOptions, setAdvancedOptions] = useState({
     includeStatisticalTests: false,
     detectOutliers: false,
@@ -328,43 +66,152 @@ const DataGenie: React.FC = () => {
 
   // Auto-discover data sources on load
   useEffect(() => {
-    const discoverDataSources = async () => {
-      setIsDiscovering(true);
-      try {
-        const response = await apiService.discoverSources();
-        if (response.status === 'success' && response.recommendations) {
-          const sources = response.recommendations.map((rec: any) => ({
-            id: rec.source_id,
-            name: rec.source_id.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-            type: rec.context?.type || 'Unknown',
-            confidence: rec.confidence,
-            status: 'available'
-          }));
-          setDataSources(sources);
-        } else {
-          console.log('Using mock data sources');
-          setDataSources(mockDataSources);
-        }
-      } catch (error) {
-        console.error('Discovery failed, using mock data:', error);
-        setDataSources(mockDataSources);
-      } finally {
-        setIsDiscovering(false);
-      }
-    };
-
-    discoverDataSources();
+    initializeDataGenie();
   }, []);
 
   // Load saved analyses on mount
   useEffect(() => {
+    loadSavedAnalyses();
+  }, []);
+
+  const initializeDataGenie = async () => {
+    try {
+      console.log('🚀 Initializing DataGenie...');
+
+      // Check backend status
+      await checkBackendStatus();
+
+      // Discover data sources
+      await discoverDataSources();
+
+    } catch (error) {
+      console.error('Failed to initialize DataGenie:', error);
+      setError('Failed to initialize DataGenie. Please check your backend connection.');
+    }
+  };
+
+  const checkBackendStatus = async () => {
+    try {
+      console.log('🔍 Checking backend status...');
+      setBackendStatus('checking');
+
+      const [healthCheck, capabilities] = await Promise.allSettled([
+        analyticsAPI.healthCheck(),
+        analyticsAPI.getCapabilities()
+      ]);
+
+      if (healthCheck.status === 'fulfilled' && healthCheck.value.status === 'healthy') {
+        setBackendStatus('connected');
+        console.log('✅ Backend is healthy');
+      } else {
+        setBackendStatus('disconnected');
+        console.log('❌ Backend is not healthy');
+      }
+
+      if (capabilities.status === 'fulfilled') {
+        setSystemCapabilities(capabilities.value);
+        console.log('📋 Capabilities loaded:', capabilities.value);
+      }
+
+    } catch (error) {
+      console.error('❌ Backend status check failed:', error);
+      setBackendStatus('disconnected');
+    }
+  };
+
+  const discoverDataSources = async () => {
+    setIsDiscovering(true);
+    try {
+      console.log('🔍 Discovering data sources...');
+
+      const response: DiscoveryResponse = await analyticsAPI.discoverDataSources({
+        mode: 'balanced',
+        include_environment_scan: true,
+        max_recommendations: 20,
+        confidence_threshold: 0.5
+      });
+
+      if (response.status === 'success' && response.recommendations) {
+        setDataSources(response.recommendations);
+        console.log(`✅ Discovered ${response.recommendations.length} data sources`);
+      } else {
+        console.log('⚠️ Using fallback data sources');
+        setDataSources(getMockDataSources());
+      }
+    } catch (error) {
+      console.error('Discovery failed, using mock data:', error);
+      setDataSources(getMockDataSources());
+    } finally {
+      setIsDiscovering(false);
+    }
+  };
+
+  const getMockDataSources = (): DataSource[] => [
+    {
+      id: 'postgres_prod',
+      source_id: 'postgres_prod',
+      type: 'PostgreSQL',
+      confidence: 0.92,
+      reasoning: 'Production PostgreSQL database detected',
+      context: {
+        type: 'PostgreSQL',
+        host: 'localhost',
+        port: 5432,
+        database: 'analytics_db',
+        table_count: 45
+      },
+      status: 'discovered'
+    },
+    {
+      id: 'sales_csv',
+      source_id: 'sales_csv',
+      type: 'CSV',
+      confidence: 0.87,
+      reasoning: 'CSV files found in data directory',
+      context: {
+        type: 'CSV',
+        location: '/data/sales/',
+        size: '2.4 MB'
+      },
+      status: 'discovered'
+    },
+    {
+      id: 'tableau_server',
+      source_id: 'tableau_server',
+      type: 'Tableau',
+      confidence: 0.78,
+      reasoning: 'Tableau Server connection available',
+      context: {
+        type: 'Tableau',
+        server: 'tableau.company.com'
+      },
+      status: 'discovered'
+    },
+    {
+      id: 'api_crm',
+      source_id: 'api_crm',
+      type: 'REST API',
+      confidence: 0.85,
+      reasoning: 'CRM API endpoint accessible',
+      context: {
+        type: 'REST API',
+        endpoint: 'api.crm.company.com'
+      },
+      status: 'discovered'
+    }
+  ];
+
+  const loadSavedAnalyses = () => {
     try {
       const saved = JSON.parse(localStorage.getItem('dataGenie_analyses') || '[]');
-      setSavedAnalyses(saved);
+      setSavedAnalyses(saved.map((analysis: any) => ({
+        ...analysis,
+        timestamp: new Date(analysis.timestamp)
+      })));
     } catch (error) {
       console.error('Failed to load saved analyses:', error);
     }
-  }, []);
+  };
 
   // Export Functions
   const downloadPDF = () => {
@@ -451,9 +298,23 @@ This report was generated by DataGenie Analytics Platform
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validate file
+      const maxSize = 100 * 1024 * 1024; // 100MB
+      if (file.size > maxSize) {
+        setError(`File too large: ${Math.round(file.size / 1024 / 1024)}MB. Maximum size is 100MB.`);
+        return;
+      }
+
+      const allowedTypes = ['.csv', '.xlsx', '.xls', '.json'];
+      const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+      if (!allowedTypes.includes(fileExtension)) {
+        setError(`Unsupported file type: ${fileExtension}. Please use CSV, Excel, or JSON files.`);
+        return;
+      }
+
       setUploadedFile(file);
       setSelectedSources([]);
-      setError(null); // Clear any previous errors
+      setError(null);
     }
   };
 
@@ -482,7 +343,15 @@ This report was generated by DataGenie Analytics Platform
         selectedSources: selectedSources.length
       });
 
-      const response = await apiService.analyzeData(query, uploadedFile, selectedSources);
+      const response: AnalysisResponse = await analyticsAPI.analyze({
+        prompt: query,
+        file: uploadedFile || undefined,
+        data_source_id: selectedSources[0],
+        use_adaptive: true,
+        include_charts: true,
+        auto_discover: selectedSources.length === 0 && !uploadedFile,
+        domain: 'general'
+      });
 
       console.log('📡 Backend response:', response);
 
@@ -491,7 +360,7 @@ This report was generated by DataGenie Analytics Platform
           summary: response.analysis?.summary || 'Analysis completed successfully',
           insights: response.analysis?.insights || ['Analysis completed with no specific insights'],
           chartData: response.analysis?.data || [],
-          confidence: response.system_info?.confidence || 0.8,
+          confidence: response.query_interpretation?.confidence || 0.8,
           analysisType: response.analysis?.type || 'general_analysis',
           chartSuggestions: response.chart_intelligence?.suggested_charts || [],
           performance: response.performance || {}
@@ -500,41 +369,17 @@ This report was generated by DataGenie Analytics Platform
         console.log('✅ Analysis successful, showing results');
         setAnalysisResults(transformedResults);
         setCurrentStep('results');
-
-        // Clear error on success
         setError(null);
       } else {
-        console.error('❌ Backend returned error:', response.error);
-        throw new Error(response.error || response.message || 'Analysis failed');
+        console.error('❌ Backend returned error:', response);
+        throw new Error(extractErrorMessage(response));
       }
     } catch (error) {
       console.error('💥 Analysis error:', error);
 
-      const errorMessage = (error as Error).message || 'Analysis failed';
-
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-        setError('Cannot connect to DataGenie backend. Please check if the server is running on http://localhost:8000');
-      } else if (errorMessage.includes('HTTP 422')) {
-        setError('Invalid request format. Please check your file format and try again.');
-      } else if (errorMessage.includes('HTTP 400')) {
-        setError('Bad request. Please check your file format or query and try again.');
-      } else if (errorMessage.includes('HTTP 500')) {
-        setError('Server error. Please try again or contact support.');
-      } else {
-        setError(`Analysis failed: ${errorMessage}`);
-      }
-
-      // For development: Show file info if we have a file
-      if (uploadedFile) {
-        console.log('📄 File details:', {
-          name: uploadedFile.name,
-          size: uploadedFile.size,
-          type: uploadedFile.type,
-          lastModified: new Date(uploadedFile.lastModified).toISOString()
-        });
-      }
-
-      setCurrentStep('analyze'); // Stay on analyze step to fix the issue
+      const errorMessage = extractErrorMessage(error);
+      setError(errorMessage);
+      setCurrentStep('analyze');
     } finally {
       setIsAnalyzing(false);
     }
@@ -596,6 +441,47 @@ This report was generated by DataGenie Analytics Platform
     "Analyze seasonal patterns"
   ];
 
+  const getStatusColor = (status: string | undefined) => {
+    switch (status) {
+      case 'connected': return 'text-green-600 bg-green-100';
+      case 'discovered': return 'text-blue-600 bg-blue-100';
+      case 'connecting': return 'text-yellow-600 bg-yellow-100';
+      case 'testing': return 'text-purple-600 bg-purple-100';
+      case 'error': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'postgresql': return '🐘';
+      case 'mysql': return '🐬';
+      case 'mongodb': return '🍃';
+      case 'redis': return '🔴';
+      case 'csv': return '📁';
+      case 'file system': return '📁';
+      case 'api': return '🔗';
+      case 'rest api': return '🔗';
+      case 'sqlite': return '💎';
+      case 'elasticsearch': return '🔍';
+      case 'tableau': return '📊';
+      default: return '🗄️';
+    }
+  };
+
+  const getBackendStatusIndicator = () => {
+    switch (backendStatus) {
+      case 'checking':
+        return { color: 'bg-yellow-500', text: 'Checking Backend...', pulse: true };
+      case 'connected':
+        return { color: 'bg-green-500', text: 'Backend Connected', pulse: false };
+      case 'disconnected':
+        return { color: 'bg-red-500', text: 'Backend Disconnected', pulse: false };
+    }
+  };
+
+  const statusInfo = getBackendStatusIndicator();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
@@ -609,6 +495,22 @@ This report was generated by DataGenie Analytics Platform
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
+              <div className={`w-2 h-2 rounded-full ${statusInfo.color} ${statusInfo.pulse ? 'animate-pulse' : ''}`} />
+              <span className="text-gray-600">{statusInfo.text}</span>
+            </div>
+
+            {systemCapabilities && (
+              <div className="text-xs text-gray-500 flex items-center space-x-2">
+                {systemCapabilities.smart_features?.unified_smart_engine && (
+                  <span className="text-blue-600">🧠 Smart Engine</span>
+                )}
+                {systemCapabilities.smart_features?.auto_data_discovery && (
+                  <span className="text-green-600">🔍 Auto-Discovery</span>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center space-x-2 text-sm">
               <div className={`w-2 h-2 rounded-full ${
                 dataSources.length > 0 ? 'bg-green-500' : 'bg-yellow-500'
               }`} />
@@ -616,6 +518,14 @@ This report was generated by DataGenie Analytics Platform
                 {isDiscovering ? 'Discovering...' : `${dataSources.length} sources`}
               </span>
             </div>
+
+            <button
+              onClick={checkBackendStatus}
+              className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+              title="Refresh Status"
+            >
+              🔄
+            </button>
             <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors" title="Help">
               <HelpCircle className="w-5 h-5" />
             </button>
@@ -700,7 +610,10 @@ This report was generated by DataGenie Analytics Platform
                       onClick={() => handleSourceSelect(source.id)}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900">{source.name}</h4>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-2xl">{getTypeIcon(source.type)}</span>
+                          <h4 className="font-semibold text-gray-900">{source.source_id}</h4>
+                        </div>
                         <div className="flex items-center space-x-2">
                           <div className={`w-2 h-2 rounded-full ${
                             source.confidence > 0.8 ? 'bg-green-500' : 'bg-yellow-500'
@@ -708,7 +621,22 @@ This report was generated by DataGenie Analytics Platform
                           <span className="text-xs text-gray-500">{Math.round(source.confidence * 100)}%</span>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">{source.type}</p>
+                      <p className="text-sm text-gray-600 mb-2">{source.reasoning}</p>
+                      <div className="text-xs text-gray-500">
+                        <span className="font-medium">{source.type}</span>
+                        {source.context.host && (
+                          <span className="ml-2">• {source.context.host}</span>
+                        )}
+                        {source.context.database && (
+                          <span className="ml-2">• {source.context.database}</span>
+                        )}
+                        {source.context.table_count && (
+                          <span className="ml-2">• {source.context.table_count} tables</span>
+                        )}
+                        {source.context.size && (
+                          <span className="ml-2">• {source.context.size}</span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -813,6 +741,25 @@ This report was generated by DataGenie Analytics Platform
                 </div>
               )}
 
+              {/* Selected Sources Status */}
+              {selectedSources.length > 0 && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-green-800">Data Sources Selected</p>
+                      <p className="text-sm text-green-600">
+                        {selectedSources.length} source{selectedSources.length > 1 ? 's' : ''} ready for analysis
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Query Interface */}
               <div className="max-w-4xl mx-auto">
                 <div className="relative">
@@ -826,7 +773,7 @@ This report was generated by DataGenie Analytics Platform
                   />
                   <button
                     onClick={handleAnalyze}
-                    disabled={!query.trim() || isAnalyzing}
+                    disabled={!query.trim() || isAnalyzing || backendStatus !== 'connected'}
                     className="absolute bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition-colors inline-flex items-center disabled:opacity-50"
                   >
                     {isAnalyzing ? (
@@ -976,7 +923,7 @@ This report was generated by DataGenie Analytics Platform
                     <div className="flex flex-wrap gap-2 mb-4">
                       {analysisResults.chartSuggestions.map((chart: any, index: number) => (
                         <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                          {chart.type} chart
+                          {chart.type || chart.chart_type} chart
                         </span>
                       ))}
                     </div>
@@ -985,7 +932,7 @@ This report was generated by DataGenie Analytics Platform
                         <BarChart3 className="w-16 h-16 text-blue-400 mx-auto mb-4" />
                         <p className="text-gray-600">Interactive chart would render here</p>
                         <p className="text-sm text-gray-500 mt-2">
-                          Suggested: {analysisResults.chartSuggestions[0]?.type || 'Chart'} visualization
+                          Suggested: {analysisResults.chartSuggestions[0]?.type || analysisResults.chartSuggestions[0]?.chart_type || 'Chart'} visualization
                         </p>
                       </div>
                     </div>
@@ -1007,7 +954,7 @@ This report was generated by DataGenie Analytics Platform
                     <p className="text-sm text-gray-600">
                       Analysis completed in {analysisResults.performance.total_time_ms || 'N/A'}ms
                       {analysisResults.performance.data_stats && (
-                        <span> • Processed {analysisResults.performance.data_stats.rows} rows</span>
+                        <span> • Processed {analysisResults.performance.data_stats.rows || analysisResults.performance.data_stats.rows_processed || 0} rows</span>
                       )}
                     </p>
                   </div>
@@ -1088,7 +1035,7 @@ This report was generated by DataGenie Analytics Platform
                   >
                     <p className="text-sm font-medium text-gray-900 truncate">{analysis.query}</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(analysis.timestamp).toLocaleDateString()} •
+                      {analysis.timestamp.toLocaleDateString()} •
                       {analysis.file ? ` File: ${analysis.file}` : ` ${analysis.sources.length} source(s)`}
                     </p>
                   </div>
@@ -1099,6 +1046,72 @@ This report was generated by DataGenie Analytics Platform
                   View all analyses ({savedAnalyses.length})
                 </button>
               )}
+            </div>
+          )}
+
+          {/* Backend Status Warning */}
+          {backendStatus === 'disconnected' && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+              <div className="flex items-center space-x-3">
+                <div className="text-yellow-600">⚠️</div>
+                <div>
+                  <h3 className="font-semibold text-yellow-900">Backend Connection Issue</h3>
+                  <p className="text-yellow-700 text-sm mt-1">
+                    DataGenie backend is not responding. Please ensure the server is running at http://localhost:8000
+                  </p>
+                  <button
+                    onClick={checkBackendStatus}
+                    className="mt-2 text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition-colors"
+                  >
+                    Retry Connection
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* System Capabilities Info */}
+          {systemCapabilities && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h3 className="font-semibold text-blue-900 mb-3">🚀 Available Features</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                {systemCapabilities.smart_features?.unified_smart_engine && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>Smart Query Engine</span>
+                  </div>
+                )}
+                {systemCapabilities.smart_features?.auto_data_discovery && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>Auto Data Discovery</span>
+                  </div>
+                )}
+                {systemCapabilities.smart_features?.llm_powered_query_understanding && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>AI Query Understanding</span>
+                  </div>
+                )}
+                {systemCapabilities.features?.adaptive_query_processing && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>Adaptive Processing</span>
+                  </div>
+                )}
+                {systemCapabilities.features?.chart_intelligence && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>Chart Intelligence</span>
+                  </div>
+                )}
+                {systemCapabilities.features?.comprehensive_reporting && (
+                  <div className="flex items-center space-x-2 text-blue-700">
+                    <span>✅</span>
+                    <span>Comprehensive Reports</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 // Enhanced ConversationalAnalytics.tsx with proper backend integration
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { analyticsAPI, extractErrorMessage, AnalysisResponse } from '../../services/api';
 
 interface Message {
   id: string;
@@ -37,11 +38,11 @@ const ConversationalAnalytics: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [systemInfo, setSystemInfo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,16 +71,33 @@ const ConversationalAnalytics: React.FC = () => {
   const checkBackendStatus = async () => {
     try {
       console.log('🔍 Checking backend status...');
-      const response = await fetch(`${API_BASE_URL}/health/`);
-      const data = await response.json();
+      setBackendStatus('checking');
 
-      if (data.status === 'healthy') {
-        setBackendStatus('connected');
+      const [healthCheck, systemStatus, openaiTest] = await Promise.allSettled([
+        analyticsAPI.healthCheck(),
+        analyticsAPI.getSystemStatus(),
+        analyticsAPI.testOpenAI()
+      ]);
+
+      let status: 'connected' | 'disconnected' = 'disconnected';
+      let info: any = {};
+
+      if (healthCheck.status === 'fulfilled' && healthCheck.value.status === 'healthy') {
+        status = 'connected';
         console.log('✅ Backend is healthy');
-      } else {
-        setBackendStatus('disconnected');
-        console.log('⚠️ Backend is not healthy:', data);
       }
+
+      if (systemStatus.status === 'fulfilled') {
+        info.system = systemStatus.value;
+      }
+
+      if (openaiTest.status === 'fulfilled') {
+        info.openai = openaiTest.value;
+      }
+
+      setBackendStatus(status);
+      setSystemInfo(info);
+
     } catch (error) {
       console.error('❌ Backend health check failed:', error);
       setBackendStatus('disconnected');
@@ -89,6 +107,20 @@ const ConversationalAnalytics: React.FC = () => {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    // Validate file
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.size > maxSize) {
+      setError(`File too large: ${Math.round(file.size / 1024 / 1024)}MB. Maximum size is 100MB.`);
+      return;
+    }
+
+    const allowedTypes = ['.csv', '.xlsx', '.xls', '.json'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    if (!allowedTypes.includes(fileExtension)) {
+      setError(`Unsupported file type: ${fileExtension}. Please use CSV, Excel, or JSON files.`);
+      return;
+    }
 
     setFileName(file.name);
     setUploadedFile(file);
@@ -118,70 +150,61 @@ const ConversationalAnalytics: React.FC = () => {
       fileSize: file.size
     });
 
-    const formData = new FormData();
-    formData.append('prompt', question);
-    formData.append('file', file, file.name);
-    formData.append('use_adaptive', 'true');
-    formData.append('include_charts', 'true');
-    formData.append('auto_discover', 'false'); // We have a file
-    formData.append('domain', 'general'); // You could make this configurable
+    try {
+      // Use the enhanced API method
+      const result: AnalysisResponse = await analyticsAPI.analyze({
+        prompt: question,
+        file: file,
+        use_adaptive: true,
+        include_charts: true,
+        auto_discover: false,
+        domain: 'general'
+      });
 
-    // Log FormData contents for debugging
-    console.log('📦 FormData contents:');
-    formData.forEach((value, key) => {
-      if (value instanceof File) {
-        console.log(`  ${key}: File(${value.name}, ${value.size} bytes)`);
-      } else {
-        console.log(`  ${key}: ${value}`);
+      console.log('✅ Backend analysis successful:', {
+        status: result.status,
+        hasAnalysis: !!result.analysis,
+        insightsCount: result.analysis?.insights?.length || 0,
+        chartsCount: result.chart_intelligence?.chart_count || 0
+      });
+
+      if (result.status !== 'success') {
+        throw new Error(result.analysis?.metadata?.error || 'Analysis failed');
       }
-    });
 
-    const response = await fetch(`${API_BASE_URL}/analyze/`, {
-      method: 'POST',
-      body: formData,
-      // Don't set Content-Type header - let browser handle it for FormData
-    });
+      // Transform backend response to frontend format
+      const transformedResult: AnalysisResult = {
+        summary: result.analysis?.summary || "Analysis completed successfully",
+        insights: result.analysis?.insights || [],
+        charts: (result.chart_intelligence?.suggested_charts || []).map((chart: any, index: number) => ({
+          type: (chart.chart_type || chart.type || 'bar') as 'line' | 'bar' | 'pie',
+          title: chart.title || `Chart ${index + 1}`,
+          data: chart.data || [],
+          xAxis: chart.x_axis,
+          yAxis: chart.y_axis
+        })),
+        data: result.analysis?.data || [],
+        metrics: {
+          'Analysis Type': result.analysis?.type || 'general',
+          'Data Points': result.analysis?.data?.length || 0,
+          'Processing Time': result.performance?.total_time_ms ? `${result.performance.total_time_ms}ms` : 'N/A',
+          'Confidence': result.query_interpretation?.confidence ? `${Math.round(result.query_interpretation.confidence * 100)}%` : 'N/A',
+          'Method': result.system_info?.method || 'enhanced_analytics'
+        }
+      };
 
-    console.log('📡 Response status:', response.status, response.statusText);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Backend error response:', errorText);
-
-      throw new Error(`Backend analysis failed (${response.status}): ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('✅ Backend analysis successful:', {
-      status: result.status,
-      hasAnalysis: !!result.analysis,
-      insightsCount: result.analysis?.insights?.length || 0,
-      dataRows: result.analysis?.data?.length || 0
-    });
-
-    if (result.status !== 'success') {
-      throw new Error(result.error || 'Backend analysis failed');
-    }
-
-    // Transform backend response to our format
-    return {
-      summary: result.analysis?.summary || "Analysis completed successfully",
-      insights: result.analysis?.insights || [],
-      charts: (result.chart_intelligence?.suggested_charts || []).map((chart: any) => ({
-        type: chart.chart_type || chart.type || 'bar',
-        title: chart.title || 'Analysis Chart',
-        data: chart.data || [],
-        xAxis: chart.x_axis,
-        yAxis: chart.y_axis
-      })),
-      data: result.analysis?.data || [],
-      metrics: {
-        'Analysis Type': result.analysis?.type || 'general',
-        'Data Points': result.analysis?.data?.length || 0,
-        'Processing Time': result.performance?.total_time_ms ? `${result.performance.total_time_ms}ms` : 'N/A',
-        'Confidence': result.query_interpretation?.confidence ? `${Math.round(result.query_interpretation.confidence * 100)}%` : 'N/A'
+      // Add additional metrics if available
+      if (result.performance?.data_stats) {
+        transformedResult.metrics!['Rows Processed'] = result.performance.data_stats.rows || result.performance.data_stats.rows_processed || 0;
+        transformedResult.metrics!['Columns'] = result.performance.data_stats.columns || result.performance.data_stats.columns_analyzed || 0;
       }
-    };
+
+      return transformedResult;
+
+    } catch (error) {
+      console.error('💥 Analysis failed:', error);
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,7 +253,7 @@ const ConversationalAnalytics: React.FC = () => {
     } catch (error) {
       console.error('💥 Analysis failed:', error);
 
-      const errorMessage = (error as Error).message;
+      const errorMessage = extractErrorMessage(error);
       setError(errorMessage);
 
       const assistantMessage: Message = {
@@ -384,6 +407,19 @@ const ConversationalAnalytics: React.FC = () => {
                 <div className={`w-2 h-2 ${statusInfo.color} rounded-full ${statusInfo.pulse ? 'animate-pulse' : ''}`}></div>
                 <span className="text-sm text-gray-600">{statusInfo.text}</span>
               </div>
+
+              {/* System Info */}
+              {systemInfo && (
+                <div className="text-xs text-gray-500">
+                  {systemInfo.openai?.status === 'success' && (
+                    <span className="text-green-600">🤖 OpenAI Ready</span>
+                  )}
+                  {systemInfo.system?.smart_engine?.available && (
+                    <span className="ml-2 text-blue-600">⚡ Smart Engine</span>
+                  )}
+                </div>
+              )}
+
               {backendStatus === 'disconnected' && (
                 <button
                   onClick={checkBackendStatus}
@@ -415,7 +451,7 @@ const ConversationalAnalytics: React.FC = () => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".csv,.xlsx,.xls"
+                  accept=".csv,.xlsx,.xls,.json"
                   onChange={handleFileUpload}
                   className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
@@ -628,6 +664,12 @@ const ConversationalAnalytics: React.FC = () => {
             {backendStatus === 'disconnected' && (
               <div className="mt-2 text-xs text-red-600">
                 ⚠️ Backend server is offline. Please start the server at http://localhost:8000
+              </div>
+            )}
+
+            {systemInfo?.openai?.status === 'error' && (
+              <div className="mt-2 text-xs text-yellow-600">
+                ⚠️ OpenAI not configured. Smart features limited.
               </div>
             )}
           </div>
