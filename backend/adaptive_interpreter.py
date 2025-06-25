@@ -1,28 +1,83 @@
-# backend/adaptive_interpreter.py - Industry-Agnostic Query Interpreter
+# backend/adaptive_interpreter.py - Industry-Agnostic Query Interpreter with Robust Error Handling
 import pandas as pd
 import numpy as np
-import spacy
 import re
 import json
 import traceback
 import time
 from typing import Dict, Any, Optional, List, Tuple, Union, Set
 from datetime import datetime, date, timedelta
-from dateutil.relativedelta import relativedelta
-from dataclasses import dataclass, field
-from enum import Enum
-from openai import OpenAI
-from functools import lru_cache
 import logging
 from collections import Counter, defaultdict
-import itertools
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import KMeans
 import hashlib
 import pickle
 import os
+import re
+from datetime import datetime
+import logging
+
+# Optional imports with fallbacks
+try:
+    import spacy
+
+    SPACY_AVAILABLE = True
+except ImportError:
+    SPACY_AVAILABLE = False
+
+try:
+    from dateutil.relativedelta import relativedelta
+
+    DATEUTIL_AVAILABLE = True
+except ImportError:
+    DATEUTIL_AVAILABLE = False
+
+try:
+    from dataclasses import dataclass, field
+    from enum import Enum
+
+    DATACLASSES_AVAILABLE = True
+except ImportError:
+    DATACLASSES_AVAILABLE = False
+
+try:
+    from openai import OpenAI
+
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
+try:
+    from functools import lru_cache
+    import itertools
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.cluster import KMeans
+
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
+
+# Log what's available
+if SPACY_AVAILABLE:
+    logger.info("✅ spaCy available")
+else:
+    logger.warning("⚠️ spaCy not available. Install with: pip install spacy && python -m spacy download en_core_web_sm")
+
+if DATEUTIL_AVAILABLE:
+    logger.info("✅ python-dateutil available")
+else:
+    logger.warning("⚠️ python-dateutil not available. Install with: pip install python-dateutil")
+
+if OPENAI_AVAILABLE:
+    logger.info("✅ OpenAI available")
+else:
+    logger.warning("⚠️ OpenAI not available. Install with: pip install openai")
+
+if SKLEARN_AVAILABLE:
+    logger.info("✅ scikit-learn available")
+else:
+    logger.warning("⚠️ scikit-learn not available. Install with: pip install scikit-learn")
 
 
 class DataProfiler:
@@ -148,7 +203,8 @@ class DataProfiler:
             'amount', 'total', 'sum', 'count', 'rate', 'ratio', 'percent',
             'revenue', 'cost', 'price', 'value', 'income', 'expense',
             'profit', 'loss', 'margin', 'volume', 'quantity', 'score',
-            'balance', 'outstanding', 'due', 'paid', 'received', 'earned'
+            'balance', 'outstanding', 'due', 'paid', 'received', 'earned',
+            'sales'  # Added sales as explicit metric indicator
         ]
 
         # Check if column name contains metric indicators
@@ -181,8 +237,8 @@ class DataProfiler:
 
         # Business domain mappings
         domain_mappings = {
-            'financial': ['amount', 'cost', 'price', 'revenue', 'profit', 'balance', 'payment', 'transaction'],
-            'temporal': ['date', 'time', 'created', 'updated', 'modified', 'start', 'end', 'duration'],
+            'financial': ['amount', 'cost', 'price', 'revenue', 'profit', 'balance', 'payment', 'transaction', 'sales'],
+            'temporal': ['date', 'time', 'created', 'updated', 'modified', 'start', 'end', 'duration', 'month', 'year'],
             'geographic': ['country', 'state', 'city', 'region', 'location', 'address', 'zip', 'postal'],
             'demographic': ['age', 'gender', 'sex', 'birth', 'married', 'education', 'income_level'],
             'product': ['product', 'item', 'sku', 'category', 'type', 'model', 'brand', 'service'],
@@ -231,13 +287,15 @@ class DataProfiler:
         domain_indicators = {
             'insurance': ['policy', 'claim', 'premium', 'coverage', 'deductible', 'beneficiary', 'mortality', 'lapse'],
             'banking': ['account', 'balance', 'transaction', 'deposit', 'withdrawal', 'loan', 'credit', 'interest'],
-            'ecommerce': ['order', 'product', 'customer', 'cart', 'purchase', 'price', 'inventory', 'shipping'],
+            'ecommerce': ['order', 'product', 'customer', 'cart', 'purchase', 'price', 'inventory', 'shipping',
+                          'sales'],
             'healthcare': ['patient', 'diagnosis', 'treatment', 'hospital', 'doctor', 'medication', 'visit'],
             'finance': ['investment', 'portfolio', 'stock', 'bond', 'return', 'risk', 'market', 'trading'],
             'hr': ['employee', 'salary', 'department', 'hire', 'performance', 'review', 'training'],
             'marketing': ['campaign', 'lead', 'conversion', 'impression', 'click', 'engagement', 'audience'],
             'technology': ['user', 'session', 'event', 'feature', 'bug', 'deployment', 'api', 'server'],
-            'sales': ['lead', 'opportunity', 'deal', 'pipeline', 'quota', 'commission', 'territory'],
+            'sales': ['lead', 'opportunity', 'deal', 'pipeline', 'quota', 'commission', 'territory', 'sales',
+                      'revenue'],
             'manufacturing': ['production', 'inventory', 'quality', 'defect', 'batch', 'supplier', 'warehouse']
         }
 
@@ -330,9 +388,9 @@ class AdaptiveOpenAISchema:
     def generate_schema(self) -> Dict[str, Any]:
         """Generate dynamic OpenAI function schema"""
         # Extract available options from data
-        available_metrics = self.data_profile.get('suggested_metrics', ['value', 'amount', 'count'])
-        available_dimensions = self.data_profile.get('suggested_dimensions', ['category', 'type', 'status'])
-        domain = self.data_profile.get('inferred_domain', 'general')
+        available_metrics = self.data_profile.get('unified_metrics', ['value', 'amount', 'count'])
+        available_dimensions = self.data_profile.get('unified_dimensions', ['category', 'type', 'status'])
+        domain = self.data_profile.get('primary_domain', 'general')
 
         # Generate domain-specific intents
         base_intents = [
@@ -345,7 +403,8 @@ class AdaptiveOpenAISchema:
             'banking': ["credit_analysis", "transaction_review", "fraud_detection"],
             'ecommerce': ["sales_analysis", "customer_behavior", "inventory_analysis"],
             'finance': ["portfolio_analysis", "performance_review", "risk_assessment"],
-            'technology': ["usage_analysis", "performance_monitoring", "feature_adoption"]
+            'technology': ["usage_analysis", "performance_monitoring", "feature_adoption"],
+            'sales': ["sales_analysis", "pipeline_review", "performance_tracking"]
         }
 
         intents = base_intents + domain_specific_intents.get(domain, [])
@@ -420,7 +479,19 @@ class AdaptiveQueryInterpreter:
     """Industry-agnostic query interpreter that adapts to any dataset"""
 
     def __init__(self, openai_api_key: Optional[str] = None):
-        self.openai_client = OpenAI(api_key=openai_api_key) if openai_api_key else None
+        # Initialize OpenAI client only if available and key provided
+        if OPENAI_AVAILABLE and openai_api_key:
+            try:
+                self.openai_client = OpenAI(api_key=openai_api_key)
+                logger.info("✅ OpenAI client initialized")
+            except Exception as e:
+                logger.warning(f"⚠️ OpenAI client initialization failed: {e}")
+                self.openai_client = None
+        else:
+            self.openai_client = None
+            if openai_api_key and not OPENAI_AVAILABLE:
+                logger.warning("⚠️ OpenAI API key provided but OpenAI package not available")
+
         self.data_profiler = DataProfiler()
         self.current_profile = None
         self.adaptive_schema = None
@@ -428,11 +499,15 @@ class AdaptiveQueryInterpreter:
         self.learned_patterns = {}
 
         # Load spaCy if available
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except:
+        if SPACY_AVAILABLE:
+            try:
+                self.nlp = spacy.load("en_core_web_sm")
+                logger.info("✅ spaCy model loaded")
+            except OSError:
+                self.nlp = None
+                logger.warning("⚠️ spaCy model not available. Install with: python -m spacy download en_core_web_sm")
+        else:
             self.nlp = None
-            logger.warning("spaCy not available. Install with: python -m spacy download en_core_web_sm")
 
     def learn_from_data(self, datasets: Dict[str, pd.DataFrame], cache_path: Optional[str] = None) -> Dict[str, Any]:
         """Learn patterns and vocabulary from provided datasets"""
@@ -445,10 +520,11 @@ class AdaptiveQueryInterpreter:
                     cached_profile = pickle.load(f)
                     logger.info("📁 Loaded cached data profile")
                     self.current_profile = cached_profile
-                    self.adaptive_schema = AdaptiveOpenAISchema(cached_profile)
+                    if OPENAI_AVAILABLE:
+                        self.adaptive_schema = AdaptiveOpenAISchema(cached_profile)
                     return cached_profile
-            except:
-                logger.warning("Failed to load cached profile, regenerating...")
+            except Exception as e:
+                logger.warning(f"Failed to load cached profile: {e}, regenerating...")
 
         # Combine all datasets for comprehensive learning
         combined_profile = {
@@ -499,7 +575,8 @@ class AdaptiveQueryInterpreter:
                 logger.warning(f"Failed to cache profile: {e}")
 
         self.current_profile = combined_profile
-        self.adaptive_schema = AdaptiveOpenAISchema(combined_profile)
+        if OPENAI_AVAILABLE:
+            self.adaptive_schema = AdaptiveOpenAISchema(combined_profile)
 
         logger.info(f"✅ Learning complete!")
         logger.info(f"   📈 Discovered {len(combined_profile['unified_metrics'])} metrics")
@@ -524,7 +601,8 @@ class AdaptiveQueryInterpreter:
 
         # Intent patterns
         patterns['intent_keywords']['trend_analysis'].extend([
-            'trend', 'over time', 'pattern', 'change', 'evolution', 'progression'
+            'trend', 'over time', 'pattern', 'change', 'evolution', 'progression', 'highest', 'lowest', 'maximum',
+            'minimum', 'peak'
         ])
         patterns['intent_keywords']['summary'].extend([
             'total', 'sum', 'aggregate', 'overall', 'summary', 'grand total'
@@ -549,6 +627,10 @@ class AdaptiveQueryInterpreter:
             'technology': {
                 'performance_monitoring': ['performance', 'latency', 'throughput', 'uptime'],
                 'usage_analysis': ['usage', 'adoption', 'engagement', 'activity']
+            },
+            'sales': {
+                'sales_analysis': ['sales', 'revenue', 'performance', 'growth'],
+                'pipeline_review': ['pipeline', 'funnel', 'conversion', 'leads']
             }
         }
 
@@ -571,6 +653,8 @@ class AdaptiveQueryInterpreter:
                 synonyms.extend(['number', 'quantity', 'volume'])
             if 'rate' in metric.lower():
                 synonyms.extend(['ratio', 'percentage', 'proportion'])
+            if 'sales' in metric.lower():
+                synonyms.extend(['revenue', 'income', 'earnings'])
 
             patterns['metric_synonyms'][metric] = list(set(synonyms))
 
@@ -587,7 +671,7 @@ class AdaptiveQueryInterpreter:
             if 'status' in dimension.lower():
                 synonyms.extend(['state', 'condition', 'stage'])
             if 'date' in dimension.lower():
-                synonyms.extend(['time', 'period', 'when'])
+                synonyms.extend(['time', 'period', 'when', 'month', 'year'])
 
             patterns['dimension_synonyms'][dimension] = list(set(synonyms))
 
@@ -596,17 +680,19 @@ class AdaptiveQueryInterpreter:
     def parse(self, query: str, target_dataset: Optional[str] = None) -> Dict[str, Any]:
         """Parse query using adaptive patterns learned from data"""
         if not self.current_profile:
-            raise ValueError("No data profile available. Call learn_from_data() first.")
+            # If no profile, create a basic one for fallback
+            logger.warning("No data profile available. Using basic parsing.")
+            return self._parse_with_basic_patterns(query)
 
         start_time = time.time()
 
         # Try multiple parsing approaches
         result = None
 
-        # 1. Try OpenAI with adaptive schema
-        if self.openai_client:
+        # 1. Try OpenAI with adaptive schema (if available)
+        if self.openai_client and self.adaptive_schema:
             try:
-                result = self._parse_with_adaptive_openai(query, target_dataset)
+                result = self._parse_with_adaptive_openai(query, target_dataset, start_time)
                 if result and result.get('confidence', 0) > 0.7:
                     logger.info(f"✅ High-confidence OpenAI parsing: {result['confidence']:.3f}")
                     return result
@@ -631,8 +717,8 @@ class AdaptiveQueryInterpreter:
             logger.error(f"All parsing methods failed: {e}")
             return self._create_error_result(query, str(e))
 
-    def _parse_with_adaptive_openai(self, query: str, target_dataset: Optional[str] = None,
-                                    start_time=None) -> Dict[str, Any]:
+    def _parse_with_adaptive_openai(self, query: str, target_dataset: Optional[str] = None, start_time=None) -> Dict[
+        str, Any]:
         """Parse using OpenAI with dynamically generated schema"""
         if not self.adaptive_schema:
             raise ValueError("Adaptive schema not available")
@@ -692,7 +778,8 @@ EXAMPLES for {domain} domain:
             # Post-process the result
             result = self._post_process_adaptive_result(args, query, available_metrics, available_dimensions)
             result['method'] = 'adaptive_openai'
-            result['parsing_time_ms'] = (time.time() - start_time) * 1000
+            if start_time:
+                result['parsing_time_ms'] = (time.time() - start_time) * 1000
 
             return result
 
@@ -700,10 +787,90 @@ EXAMPLES for {domain} domain:
             logger.error(f"Adaptive OpenAI parsing failed: {e}")
             raise e
 
+    def _parse_multiple_grouping_dimensions(self, query: str, available_dimensions: List[str]) -> List[str]:
+        """Enhanced parsing for multiple grouping dimensions"""
+        print(f"=== MULTIPLE GROUPING DIMENSION PARSING ===")
+        print(f"Query: '{query}'")
+        print(f"Available dimensions: {available_dimensions}")
+
+        found_dimensions = []
+
+        # Enhanced patterns for multiple groupings
+        multi_grouping_patterns = [
+            # "by region, by month and product type"
+            r'\bby\s+([^,]+(?:,\s*by\s+[^,]+)*(?:\s+and\s+[^,]+)?)',
+            # "breakdown by region and month"
+            r'\bbreakdown\s+by\s+([^,]+(?:\s+and\s+[^,]+)*)',
+            # "group by region, month, product"
+            r'\bgroup\s+by\s+([^,]+(?:,\s*[^,]+)*)',
+            # "per region and month"
+            r'\bper\s+([^,]+(?:\s+and\s+[^,]+)*)',
+            # "across region, month and product"
+            r'\bacross\s+([^,]+(?:,\s*[^,]+)*)'
+        ]
+
+        for pattern in multi_grouping_patterns:
+            match = re.search(pattern, query.lower())
+            if match:
+                grouping_text = match.group(1)
+                print(f"Found grouping text: '{grouping_text}'")
+
+                # Split on common separators
+                dimensions_text = re.split(r',\s*(?:by\s+)?|and\s+', grouping_text)
+
+                for dim_text in dimensions_text:
+                    dim_text = dim_text.strip()
+                    if not dim_text:
+                        continue
+
+                    print(f"Processing dimension: '{dim_text}'")
+
+                    # Direct match
+                    if dim_text in available_dimensions:
+                        found_dimensions.append(dim_text)
+                        print(f"Direct match: {dim_text}")
+                    else:
+                        # Fuzzy matching for common terms
+                        dimension_mappings = {
+                            'region': ['region', 'area', 'zone', 'territory'],
+                            'product': ['product', 'item', 'sku'],
+                            'category': ['category', 'type', 'class', 'segment'],
+                            'month': ['month', 'monthly', 'mon'],
+                            'year': ['year', 'yearly', 'yr'],
+                            'quarter': ['quarter', 'quarterly', 'q'],
+                            'customer': ['customer', 'client', 'account'],
+                            'channel': ['channel', 'source', 'medium'],
+                            'store': ['store', 'location', 'branch']
+                        }
+
+                        # Check if any mapping matches
+                        for canonical, variants in dimension_mappings.items():
+                            if any(variant in dim_text.lower() for variant in variants):
+                                # Find actual column that matches
+                                matching_cols = [col for col in available_dimensions
+                                                 if any(variant in col.lower() for variant in variants)]
+                                if matching_cols:
+                                    found_dimensions.append(matching_cols[0])
+                                    print(f"Mapped '{dim_text}' -> '{matching_cols[0]}'")
+                                    break
+                break  # Use first pattern that matches
+
+        # Remove duplicates while preserving order
+        unique_dimensions = []
+        for dim in found_dimensions:
+            if dim not in unique_dimensions:
+                unique_dimensions.append(dim)
+
+        print(f"Final dimensions: {unique_dimensions}")
+        return unique_dimensions
+
     def _parse_with_adaptive_patterns(self, query: str, target_dataset: Optional[str] = None) -> Dict[str, Any]:
-        """Parse using learned adaptive patterns"""
+        """Enhanced parsing with multiple grouping support"""
         start_time = time.time()
         query_lower = query.lower().strip()
+
+        print(f"=== ENHANCED MULTI-GROUPING PARSER ===")
+        print(f"Query: '{query}'")
 
         # Get relevant patterns
         patterns = self.current_profile.get('adaptive_patterns', {})
@@ -727,119 +894,91 @@ EXAMPLES for {domain} domain:
 
         confidence_factors = []
 
-        # 1. Intent detection using adaptive patterns
+        # Intent detection
         intent_found = False
-        for intent, keywords in patterns.get('intent_keywords', {}).items():
-            if any(keyword in query_lower for keyword in keywords):
-                result['intent'] = intent
-                confidence_factors.append(('intent_match', 0.15))
+
+        if any(word in query_lower for word in ['breakdown', 'break down', 'group by', 'by ', 'per ', 'across']):
+            if 'breakdown' in query_lower or 'break down' in query_lower:
+                result['intent'] = 'distribution_analysis'
+                confidence_factors.append(('breakdown_intent', 0.25))
                 intent_found = True
+            elif any(word in query_lower for word in ['by ', 'per ', 'group by']):
+                result['intent'] = 'comparison_analysis'
+                confidence_factors.append(('grouping_intent', 0.25))
+                intent_found = True
+
+        # Metric detection
+        metric_found = False
+
+        for available_metric in available_metrics:
+            if available_metric.lower() in query_lower:
+                result['metric'] = available_metric
+                metric_found = True
+                confidence_factors.append(('direct_metric_match', 0.3))
                 break
 
-        if not intent_found:
-            # Fallback intent detection
-            if any(word in query_lower for word in ['trend', 'over time', 'monthly', 'quarterly']):
-                result['intent'] = 'trend_analysis'
-            elif any(word in query_lower for word in ['compare', 'vs', 'versus']):
-                result['intent'] = 'comparison'
+        if not metric_found:
+            metric_mappings = {
+                'sales': 'sales',
+                'revenue': 'sales',
+                'profit': 'profit',
+                'amount': 'sales',
+                'value': 'sales',
+                'total': 'sales',
+                'sum': 'sales'
+            }
 
-        # 2. Metric detection using learned synonyms
-        metric_found = False
-        best_metric_score = 0
+            for term, mapped_metric in metric_mappings.items():
+                if term in query_lower and mapped_metric in available_metrics:
+                    result['metric'] = mapped_metric
+                    metric_found = True
+                    confidence_factors.append(('mapped_metric', 0.25))
+                    break
 
-        for metric in available_metrics:
-            synonyms = patterns.get('metric_synonyms', {}).get(metric, [metric.lower()])
-            score = sum(1 for synonym in synonyms if synonym in query_lower)
-
-            if score > best_metric_score:
-                best_metric_score = score
-                result['metric'] = metric
-                metric_found = True
-
-        if metric_found and best_metric_score > 0:
-            confidence_factors.append(('metric_match', min(0.25, best_metric_score * 0.1)))
-        else:
-            # Try to extract custom metric from query
-            potential_metrics = self._extract_potential_metrics(query_lower, available_metrics)
-            if potential_metrics:
-                result['metric'] = 'custom'
-                result['custom_metric'] = potential_metrics[0]
-                confidence_factors.append(('custom_metric', 0.1))
-
-        # 3. Dimension detection using learned synonyms
-        found_dimensions = []
-
-        for dimension in available_dimensions:
-            synonyms = patterns.get('dimension_synonyms', {}).get(dimension, [dimension.lower()])
-            if any(synonym in query_lower for synonym in synonyms):
-                found_dimensions.append(dimension)
-                confidence_factors.append(('dimension_match', 0.1))
+        # ENHANCED: Multiple dimension detection
+        found_dimensions = self._parse_multiple_grouping_dimensions(query, available_dimensions)
 
         if found_dimensions:
-            result['group_by'] = found_dimensions[:3]  # Limit to 3 dimensions
-        else:
-            # Try to extract custom dimensions
-            potential_dims = self._extract_potential_dimensions(query_lower, available_dimensions)
-            if potential_dims:
-                result['group_by'] = ['custom']
-                result['custom_group_by'] = potential_dims
-                confidence_factors.append(('custom_dimension', 0.05))
+            result['group_by'] = found_dimensions
+            result['granularity'] = 'grouped'
+            confidence_factors.append(('multiple_dimensions', 0.3))
 
-        # 4. Granularity detection
-        granularity_patterns = {
-            'daily': ['daily', 'day', 'per day'],
-            'weekly': ['weekly', 'week', 'per week'],
-            'monthly': ['monthly', 'month', 'per month'],
-            'quarterly': ['quarterly', 'quarter', 'per quarter', 'q1', 'q2', 'q3', 'q4'],
-            'yearly': ['yearly', 'annual', 'per year', 'year']
-        }
+            # Boost confidence for multiple groupings
+            if len(found_dimensions) > 1:
+                confidence_factors.append(('complex_grouping', 0.2))
 
-        for granularity, keywords in granularity_patterns.items():
-            if any(keyword in query_lower for keyword in keywords):
-                result['granularity'] = granularity
-                confidence_factors.append(('granularity_match', 0.1))
-                break
-
-        # Check for "total" indicators
-        if any(word in query_lower for word in ['total', 'sum', 'aggregate', 'overall']):
-            result['granularity'] = 'total'
-            confidence_factors.append(('total_indicator', 0.05))
-
-        # 5. Temporal expression detection
-        temporal_result = self._extract_temporal_expression(query_lower)
+        # Enhanced temporal detection
+        temporal_result = self._extract_temporal_expression(query)
         if temporal_result:
             result['temporal_expression'] = temporal_result
-            confidence_factors.append(('temporal_match', 0.15))
-
-        # 6. Filter detection using available categorical values
-        filters = self._extract_adaptive_filters(query_lower, target_dataset)
-        if filters:
-            result['filters'] = filters
-            confidence_factors.append(('filter_match', len(filters) * 0.05))
+            confidence_factors.append(('temporal_found', 0.15))
 
         # Calculate final confidence
-        base_confidence = 0.3
+        base_confidence = 0.4
         confidence_boost = sum(factor[1] for factor in confidence_factors)
         result['confidence'] = min(base_confidence + confidence_boost, 0.95)
 
         # Generate reasoning
         reasoning_parts = []
-        if metric_found:
-            reasoning_parts.append(f"Found metric '{result['metric']}'")
+        if metric_found or result.get('custom_metric'):
+            metric_name = result.get('metric') or result.get('custom_metric')
+            reasoning_parts.append(f"Found metric '{metric_name}'")
         if found_dimensions:
-            reasoning_parts.append(f"Found dimensions: {', '.join(found_dimensions)}")
-        if result['granularity'] != 'total':
-            reasoning_parts.append(f"Detected {result['granularity']} granularity")
+            reasoning_parts.append(f"Found {len(found_dimensions)} grouping dimensions: {', '.join(found_dimensions)}")
+        if result['intent'] in ['distribution_analysis', 'comparison_analysis']:
+            reasoning_parts.append(f"Detected {result['intent'].replace('_', ' ')}")
 
         result['reasoning'] = '; '.join(reasoning_parts) if reasoning_parts else 'Basic pattern matching'
         result['parsing_time_ms'] = (time.time() - start_time) * 1000
 
+        print(f"Final result: {result}")
         return result
 
     def _extract_potential_metrics(self, query: str, known_metrics: List[str]) -> List[str]:
         """Extract potential metric names from query when no exact match found"""
         # Look for metric-like words
-        metric_indicators = ['amount', 'total', 'sum', 'count', 'rate', 'ratio', 'value', 'score', 'number']
+        metric_indicators = ['amount', 'total', 'sum', 'count', 'rate', 'ratio', 'value', 'score', 'number', 'sales',
+                             'revenue']
 
         words = re.findall(r'\b\w+\b', query)
         potential_metrics = []
@@ -876,8 +1015,28 @@ EXAMPLES for {domain} domain:
         return potential_dims[:3]
 
     def _extract_temporal_expression(self, query: str) -> Optional[Dict[str, Any]]:
-        """Extract temporal expressions adaptively"""
+        """Extract temporal expressions adaptively - FIXED for year queries"""
         current_year = datetime.now().year
+
+        # Enhanced year pattern matching
+        year_patterns = [
+            r'\b(20\d{2})\b',  # 2024, 2023, etc.
+            r'\byear\s+(20\d{2})\b',  # "year 2024"
+            r'\bin\s+(20\d{2})\b',  # "in 2024"
+            r'\bof\s+(20\d{2})\b',  # "of 2024"
+            r'\bfor\s+(20\d{2})\b',  # "for 2024"
+        ]
+
+        for pattern in year_patterns:
+            year_match = re.search(pattern, query, re.IGNORECASE)
+            if year_match:
+                year = int(year_match.group(1))
+                return {
+                    'type': 'specific_period',
+                    'value': str(year),
+                    'start_date': f'{year}-01-01',
+                    'end_date': f'{year}-12-31'
+                }
 
         # Month patterns
         months = {
@@ -888,24 +1047,13 @@ EXAMPLES for {domain} domain:
         }
 
         for month_name, month_num in months.items():
-            if month_name in query:
+            if month_name in query.lower():
                 return {
                     'type': 'specific_period',
                     'value': f'{current_year}-{month_num:02d}',
                     'start_date': f'{current_year}-{month_num:02d}-01',
                     'end_date': f'{current_year}-{month_num:02d}-{self._get_month_end_day(current_year, month_num)}'
                 }
-
-        # Year patterns
-        year_match = re.search(r'\b(20\d{2})\b', query)
-        if year_match:
-            year = int(year_match.group(1))
-            return {
-                'type': 'specific_period',
-                'value': str(year),
-                'start_date': f'{year}-01-01',
-                'end_date': f'{year}-12-31'
-            }
 
         # Relative patterns
         relative_patterns = {
@@ -916,7 +1064,7 @@ EXAMPLES for {domain} domain:
         }
 
         for pattern, handler in relative_patterns.items():
-            match = re.search(pattern, query)
+            match = re.search(pattern, query, re.IGNORECASE)
             if match:
                 return handler(match)
 
@@ -934,12 +1082,15 @@ EXAMPLES for {domain} domain:
     def _create_relative_range(self, unit: str, amount: int) -> Dict[str, Any]:
         """Create relative date range"""
         end_date = datetime.now().date()
-        if unit == 'months':
+
+        if unit == 'months' and DATEUTIL_AVAILABLE:
             start_date = end_date - relativedelta(months=amount)
-        elif unit == 'years':
+        elif unit == 'years' and DATEUTIL_AVAILABLE:
             start_date = end_date - relativedelta(years=amount)
         else:
-            start_date = end_date - timedelta(days=amount)
+            # Fallback without dateutil
+            days_approx = amount * 365 if unit == 'years' else amount * 30
+            start_date = end_date - timedelta(days=days_approx)
 
         return {
             'type': 'date_range',
@@ -982,7 +1133,8 @@ EXAMPLES for {domain} domain:
         return filters
 
     def _parse_with_basic_patterns(self, query: str) -> Dict[str, Any]:
-        """Basic fallback parsing when adaptive methods fail"""
+        """Enhanced basic fallback parsing when adaptive methods fail"""
+        start_time = time.time()
         query_lower = query.lower().strip()
 
         result = {
@@ -999,22 +1151,65 @@ EXAMPLES for {domain} domain:
             'raw_query': query
         }
 
-        # Basic intent detection
-        if any(word in query_lower for word in ['trend', 'over time', 'monthly', 'quarterly']):
+        # Enhanced intent detection
+        if any(word in query_lower for word in ['trend', 'over time', 'monthly', 'quarterly', 'pattern']):
             result['intent'] = 'trend_analysis'
             result['granularity'] = 'monthly'
-        elif any(word in query_lower for word in ['compare', 'vs', 'versus']):
+        elif any(word in query_lower for word in ['compare', 'vs', 'versus', 'difference']):
             result['intent'] = 'comparison'
-        elif any(word in query_lower for word in ['total', 'sum', 'aggregate']):
+        elif any(word in query_lower for word in ['total', 'sum', 'aggregate', 'overall']):
             result['intent'] = 'summary'
             result['granularity'] = 'total'
+        elif any(word in query_lower for word in ['highest', 'lowest', 'maximum', 'minimum', 'peak', 'best', 'worst']):
+            result['intent'] = 'trend_analysis'
 
-        # Extract potential metric from query
+        # Enhanced metric extraction
         words = re.findall(r'\b\w+\b', query_lower)
-        metric_candidates = [w for w in words if len(w) > 3 and w not in ['show', 'give', 'tell', 'what', 'how']]
-        if metric_candidates:
-            result['custom_metric'] = metric_candidates[0]
+        metric_indicators = ['sales', 'revenue', 'amount', 'total', 'sum', 'count', 'volume', 'value', 'profit', 'cost']
 
+        for word in words:
+            if word in metric_indicators:
+                result['custom_metric'] = word
+                break
+
+        # If no obvious metric, use first meaningful word
+        if result['custom_metric'] == 'value':
+            meaningful_words = [w for w in words if
+                                len(w) > 3 and w not in ['show', 'give', 'tell', 'what', 'how', 'with', 'from']]
+            if meaningful_words:
+                result['custom_metric'] = meaningful_words[0]
+
+        # Enhanced temporal detection
+        temporal_result = self._extract_temporal_expression(query_lower)
+        if temporal_result:
+            result['temporal_expression'] = temporal_result
+
+        # Enhanced granularity detection
+        if 'monthly' in query_lower or 'month' in query_lower:
+            result['granularity'] = 'monthly'
+        elif 'quarterly' in query_lower or 'quarter' in query_lower:
+            result['granularity'] = 'quarterly'
+        elif 'yearly' in query_lower or 'annual' in query_lower:
+            result['granularity'] = 'yearly'
+        elif 'daily' in query_lower or 'day' in query_lower:
+            result['granularity'] = 'daily'
+
+        # Basic grouping detection
+        grouping_words = ['by', 'per', 'across', 'category', 'type', 'region', 'department']
+        for word in grouping_words:
+            if word in query_lower:
+                result['group_by'] = ['custom']
+                # Try to find the actual grouping dimension
+                words = query_lower.split()
+                try:
+                    idx = words.index(word)
+                    if idx < len(words) - 1:
+                        result['custom_group_by'] = [words[idx + 1]]
+                except:
+                    result['custom_group_by'] = [word]
+                break
+
+        result['parsing_time_ms'] = (time.time() - start_time) * 1000
         return result
 
     def _post_process_adaptive_result(self, args: Dict[str, Any], query: str,
@@ -1171,6 +1366,11 @@ EXAMPLES for {domain} domain:
                 "What are our usage patterns?",
                 "Show me performance metrics",
                 "Analyze user engagement trends"
+            ],
+            'sales': [
+                "What are our sales performance trends?",
+                "Show me revenue by region",
+                "Analyze pipeline conversion rates"
             ]
         }
 
@@ -1212,7 +1412,7 @@ def create_adaptive_query_processor(openai_api_key: Optional[str] = None,
                         f'Confidence: {result.get("confidence", 0):.1%}',
                         f'Method: {result.get("method", "unknown")}',
                         'Try rephrasing with specific metric and dimension names',
-                        f'Available metrics: {", ".join(interpreter.current_profile.get("unified_metrics", [])[:5])}'
+                        f'Available metrics: {", ".join(interpreter.current_profile.get("unified_metrics", [])[:5]) if interpreter.current_profile else "None"}'
                     ],
                     'interpretation': result,
                     'suggestions': interpreter.suggest_queries(5)
@@ -1229,13 +1429,15 @@ def create_adaptive_query_processor(openai_api_key: Optional[str] = None,
                     f'Adaptive interpretation ({result.get("confidence", 0):.1%} confidence)',
                     f'Method: {result.get("method", "unknown")}',
                     f'Reasoning: {result.get("reasoning", "No reasoning provided")}',
-                    f'Domain: {interpreter.current_profile.get("primary_domain", "general")}'
+                    f'Domain: {interpreter.current_profile.get("primary_domain", "general") if interpreter.current_profile else "general"}'
                 ],
                 'interpretation': result,
                 'processing_metadata': {
                     'total_time_ms': processing_time,
-                    'available_metrics': interpreter.current_profile.get('unified_metrics', [])[:10],
-                    'available_dimensions': interpreter.current_profile.get('unified_dimensions', [])[:10]
+                    'available_metrics': interpreter.current_profile.get('unified_metrics', [])[
+                                         :10] if interpreter.current_profile else [],
+                    'available_dimensions': interpreter.current_profile.get('unified_dimensions', [])[
+                                            :10] if interpreter.current_profile else []
                 }
             }
 
@@ -1252,90 +1454,35 @@ def create_adaptive_query_processor(openai_api_key: Optional[str] = None,
     return process_adaptive_query, interpreter
 
 
-# Example usage
+# Example usage (optional - for testing only)
 if __name__ == "__main__":
-    # Example with multiple industry datasets
+    # Simple test example
     sample_datasets = {
-        'insurance_policies': pd.DataFrame({
-            'policy_id': range(1000),
-            'product_type': np.random.choice(['TERM', 'WHOLE', 'UNIVERSAL'], 1000),
-            'premium_amount': np.random.uniform(1000, 10000, 1000),
-            'claim_amount': np.random.uniform(0, 100000, 1000),
-            'customer_age': np.random.randint(18, 80, 1000),
-            'state_code': np.random.choice(['CA', 'TX', 'NY', 'FL'], 1000),
-            'issue_date': pd.date_range('2020-01-01', periods=1000, freq='D')
-        }),
-        'banking_transactions': pd.DataFrame({
-            'transaction_id': range(1000),
-            'account_type': np.random.choice(['CHECKING', 'SAVINGS', 'CREDIT'], 1000),
-            'transaction_amount': np.random.uniform(-5000, 5000, 1000),
-            'balance_amount': np.random.uniform(0, 50000, 1000),
-            'customer_segment': np.random.choice(['PREMIUM', 'STANDARD', 'BASIC'], 1000),
-            'branch_code': np.random.choice(['BR001', 'BR002', 'BR003'], 1000),
-            'transaction_date': pd.date_range('2023-01-01', periods=1000, freq='h')
-        }),
-        'ecommerce_sales': pd.DataFrame({
-            'order_id': range(1000),
-            'product_category': np.random.choice(['ELECTRONICS', 'CLOTHING', 'HOME'], 1000),
-            'sales_amount': np.random.uniform(10, 1000, 1000),
-            'profit_margin': np.random.uniform(0.1, 0.5, 1000),
-            'customer_region': np.random.choice(['NORTH', 'SOUTH', 'EAST', 'WEST'], 1000),
-            'sales_channel': np.random.choice(['ONLINE', 'RETAIL', 'MOBILE'], 1000),
-            'order_date': pd.date_range('2023-01-01', periods=1000, freq='6h')
+        'sales_data': pd.DataFrame({
+            'sales_amount': np.random.uniform(1000, 10000, 100),
+            'product_category': np.random.choice(['A', 'B', 'C'], 100),
+            'region': np.random.choice(['North', 'South'], 100),
+            'date': pd.date_range('2024-01-01', periods=100, freq='D')
         })
     }
 
-    # Initialize adaptive processor
-    processor, interpreter = create_adaptive_query_processor(
-        datasets=sample_datasets,
-        cache_path="cache/adaptive_profile.pkl"
-    )
+    # Test the adaptive processor
+    processor, interpreter = create_adaptive_query_processor(datasets=sample_datasets)
 
-    # Test industry-agnostic queries
+    # Test queries
     test_queries = [
-        "show me total sales amount for May",
-        "what are the monthly premium trends?",
-        "compare transaction amounts by account type",
-        "show me profit margins by product category",
-        "analyze balance amounts across customer segments",
-        "what are the quarterly sales trends?",
-        "some completely unknown metric analysis"
+        "show me total sales for 2024",
+        "what are the monthly sales trends?",
+        "compare sales by region",
+        "show me sales breakdown by region and month"
     ]
 
-    print("🧪 Testing Adaptive Industry-Agnostic Interpreter")
-    print("=" * 60)
-
-    # Show learning summary
-    summary = interpreter.get_learning_summary()
-    print(f"📊 Learning Summary:")
-    print(f"   Primary Domain: {summary.get('primary_domain')}")
-    print(f"   Datasets: {', '.join(summary.get('datasets_learned', []))}")
-    print(f"   Metrics Discovered: {summary.get('metrics_discovered')}")
-    print(f"   Dimensions Discovered: {summary.get('dimensions_discovered')}")
-    print()
+    print("🧪 Testing Adaptive Interpreter")
+    print("=" * 50)
 
     for query in test_queries:
-        print(f"🔍 Testing: '{query}'")
-        print("-" * 40)
-
+        print(f"Query: '{query}'")
         result = processor(query)
-
-        print(f"✅ Analysis Type: {result['analysis_type']}")
-        print(f"📊 Summary: {result['summary']}")
-
-        if 'interpretation' in result:
-            interp = result['interpretation']
-            print(
-                f"🎯 Metric: {interp.get('metric')} {f'({interp.get('custom_metric')})' if interp.get('custom_metric') else ''}")
-            print(f"📈 Confidence: {interp.get('confidence', 0):.1%}")
-            print(f"🔧 Method: {interp.get('method', 'unknown')}")
-            if interp.get('reasoning'):
-                print(f"💭 Reasoning: {interp['reasoning']}")
-
+        print(
+            f"Result: {result['analysis_type']} (confidence: {result.get('interpretation', {}).get('confidence', 0):.1%})")
         print()
-
-    # Show suggested queries
-    print("💡 Suggested Queries:")
-    suggestions = interpreter.suggest_queries(8)
-    for i, suggestion in enumerate(suggestions, 1):
-        print(f"   {i}. {suggestion}")

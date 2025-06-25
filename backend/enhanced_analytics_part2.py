@@ -9,6 +9,10 @@ import traceback
 import warnings
 from knowledge_framework import HybridKnowledgeFramework
 from mathematical_engine import MathematicalKnowledgeEngine, AnalysisResult
+import logging
+import traceback
+import re
+from datetime import datetime
 
 warnings.filterwarnings('ignore')
 logger = logging.getLogger(__name__)
@@ -143,7 +147,11 @@ class IntelligentAggregator:
 
     def _resolve_analysis_variables(self, interpretation: Dict[str, Any],
                                     query_enhancement: Dict[str, Any]) -> List[str]:
-        """Intelligently resolve which variables to analyze"""
+        """Intelligently resolve which variables to analyze - FIXED for sales data"""
+        print(f"=== VARIABLE RESOLUTION DEBUG ===")
+        print(f"Available columns: {list(self.df.columns)}")
+        print(f"Interpretation: {interpretation}")
+
         variables = []
 
         try:
@@ -153,31 +161,49 @@ class IntelligentAggregator:
             group_by = interpretation.get('group_by', [])
             custom_group_by = interpretation.get('custom_group_by', [])
 
+            print(f"Metric: {metric}, Custom metric: {custom_metric}")
+
             # Resolve metric
             if metric and metric != 'custom' and metric in self.df.columns:
                 variables.append(metric)
+                print(f"Direct metric match: {metric}")
             elif custom_metric:
+                print(f"Looking for custom metric: {custom_metric}")
+
                 # Find best matching column for custom metric
                 matching_cols = [col for col in self.df.columns
                                  if custom_metric.lower() in col.lower()]
                 if matching_cols:
                     variables.append(matching_cols[0])
+                    print(f"Found matching column: {matching_cols[0]}")
                 else:
-                    # Try fuzzy matching
-                    similarity_scores = []
-                    for col in self.df.columns:
-                        # Simple similarity score based on common words
-                        metric_words = set(custom_metric.lower().split())
-                        col_words = set(col.lower().replace('_', ' ').split())
-                        intersection = len(metric_words & col_words)
-                        if intersection > 0:
-                            similarity_scores.append((col, intersection))
+                    # NEW: Enhanced fuzzy matching for common terms
+                    metric_mappings = {
+                        'sales': ['sales', 'revenue', 'amount'],
+                        'revenue': ['sales', 'revenue', 'amount'],
+                        'profit': ['profit', 'margin', 'earnings'],
+                        'total': ['sales', 'profit', 'revenue', 'amount'],
+                        'sum': ['sales', 'profit', 'revenue', 'amount'],
+                        'value': ['sales', 'profit', 'revenue', 'amount', 'value']
+                    }
 
-                    if similarity_scores:
-                        best_match = max(similarity_scores, key=lambda x: x[1])
-                        variables.append(best_match[0])
+                    metric_lower = custom_metric.lower()
+                    print(f"Checking metric mappings for: {metric_lower}")
 
-            # Add grouping variables
+                    for term, possible_cols in metric_mappings.items():
+                        if term in metric_lower:
+                            print(f"Found term '{term}' in metric, checking columns: {possible_cols}")
+                            for col_name in possible_cols:
+                                matching_cols = [col for col in self.df.columns
+                                                 if col_name.lower() == col.lower()]
+                                if matching_cols:
+                                    variables.append(matching_cols[0])
+                                    print(f"Mapped '{custom_metric}' -> '{matching_cols[0]}'")
+                                    break
+                            if variables:
+                                break
+
+            # Add grouping variables (existing logic)
             all_group_vars = group_by + custom_group_by
             for dim in all_group_vars:
                 if dim and dim != 'custom' and dim in self.df.columns:
@@ -189,37 +215,39 @@ class IntelligentAggregator:
                     if matching_cols:
                         variables.append(matching_cols[0])
 
-            # Add concept-suggested variables
-            enhanced_understanding = query_enhancement.get('enhanced_understanding', {})
-            for term, concept_info in enhanced_understanding.items():
-                if concept_info.get('type') == 'domain_concept':
-                    # Look for columns related to this concept
-                    concept_synonyms = concept_info.get('synonyms', [])
-                    for synonym in concept_synonyms[:3]:  # Limit to avoid too many
-                        matching_cols = [col for col in self.df.columns
-                                         if synonym.lower() in col.lower()]
-                        variables.extend(matching_cols[:1])  # Add first match
+            # If no variables found, use sensible defaults for sales data
+            if not variables:
+                print("No variables found, using defaults")
+                # Look for common sales metrics
+                for potential_metric in ['sales', 'profit', 'revenue', 'amount']:
+                    matching_cols = [col for col in self.df.columns
+                                     if potential_metric.lower() == col.lower()]
+                    if matching_cols:
+                        variables.append(matching_cols[0])
+                        print(f"Added default metric: {matching_cols[0]}")
+                        break
+
+                # Add common grouping variables
+                for potential_group in ['region', 'category', 'product', 'year', 'month']:
+                    if potential_group in self.df.columns:
+                        variables.append(potential_group)
+                        print(f"Added default grouping: {potential_group}")
 
             # Remove duplicates and ensure we have valid variables
             variables = list(dict.fromkeys(variables))  # Remove duplicates while preserving order
             variables = [var for var in variables if var in self.df.columns]
 
-            # If no variables found, add some default numeric columns
-            if not variables:
-                numeric_cols = self.df.select_dtypes(include=[np.number]).columns.tolist()
-                categorical_cols = self.df.select_dtypes(include=['object', 'category']).columns.tolist()
-
-                # Add up to 2 numeric and 1 categorical variable
-                variables.extend(numeric_cols[:2])
-                variables.extend(categorical_cols[:1])
+            print(f"Final resolved variables: {variables}")
+            return variables[:5]  # Limit to 5 variables for performance
 
         except Exception as e:
             logger.error(f"Error resolving analysis variables: {e}")
+            print(f"Variable resolution error: {e}")
             # Fallback to first available columns
             if len(self.df.columns) > 0:
                 variables = list(self.df.columns)[:3]
 
-        return variables[:5]  # Limit to 5 variables for performance
+        return variables
 
     def _select_best_method(self, interpretation: Dict[str, Any],
                             method_suggestions: List[Dict[str, Any]],
@@ -373,33 +401,81 @@ class IntelligentAggregator:
 
         return df
 
-    def _apply_temporal_filter(self, df: pd.DataFrame,
-                               temporal_expression: Dict[str, Any]) -> pd.DataFrame:
-        """Apply temporal filtering"""
+    def _apply_temporal_filter(self, df: pd.DataFrame, temporal_expression: Dict[str, Any]) -> pd.DataFrame:
+        """Apply temporal filtering - FIXED for integer year/month columns"""
+        print(f"=== TEMPORAL FILTER DEBUG ===")
+        print(f"Input data shape: {df.shape}")
+        print(f"Temporal expression: {temporal_expression}")
+
         if not temporal_expression or temporal_expression.get('type') == 'all_time':
+            print("No temporal filtering needed")
             return df
 
         try:
-            # Find date columns
+            # First check for datetime columns
             date_columns = [col for col in df.columns if pd.api.types.is_datetime64_any_dtype(df[col])]
 
-            if not date_columns:
+            # NEW: Also check for integer year columns
+            year_columns = [col for col in df.columns if
+                            col.lower() in ['year', 'yr'] and
+                            pd.api.types.is_integer_dtype(df[col])]
+
+            print(f"Found date columns: {date_columns}")
+            print(f"Found year columns: {year_columns}")
+
+            if not date_columns and not year_columns:
+                print("No date or year columns found")
                 return df
 
-            date_col = date_columns[0]
-            start_date = temporal_expression.get('start_date')
-            end_date = temporal_expression.get('end_date')
+            # Handle datetime columns (existing logic)
+            if date_columns:
+                date_col = date_columns[0]
+                start_date = temporal_expression.get('start_date')
+                end_date = temporal_expression.get('end_date')
 
-            if start_date:
-                start_date = pd.to_datetime(start_date)
-                df = df[df[date_col] >= start_date]
-            if end_date:
-                end_date = pd.to_datetime(end_date)
-                df = df[df[date_col] <= end_date]
+                if start_date:
+                    start_date = pd.to_datetime(start_date)
+                    df = df[df[date_col] >= start_date]
+                if end_date:
+                    end_date = pd.to_datetime(end_date)
+                    df = df[df[date_col] <= end_date]
+
+            # NEW: Handle integer year columns
+            elif year_columns:
+                year_col = year_columns[0]
+                print(f"Using year column: {year_col}")
+
+                # Extract year from temporal expression
+                if temporal_expression.get('type') == 'specific_period':
+                    value = temporal_expression.get('value', '')
+
+                    # Try to extract year from value or start_date
+                    target_year = None
+                    if value and value.isdigit() and len(value) == 4:
+                        target_year = int(value)
+                    elif temporal_expression.get('start_date'):
+                        try:
+                            start_date = pd.to_datetime(temporal_expression['start_date'])
+                            target_year = start_date.year
+                        except:
+                            pass
+
+                    if target_year:
+                        print(f"Filtering by year: {target_year}")
+                        original_years = sorted(df[year_col].unique())
+                        print(f"Years in original data: {original_years}")
+
+                        df = df[df[year_col] == target_year]
+
+                        filtered_years = sorted(df[year_col].unique()) if len(df) > 0 else []
+                        print(f"Years in filtered data: {filtered_years}")
+                        print(f"Rows after year filter: {len(df)}")
 
         except Exception as e:
             logger.warning(f"Temporal filtering failed: {e}")
+            print(f"Temporal filtering error: {e}")
 
+        print(f"Output data shape: {df.shape}")
         return df
 
     def _add_time_grouping(self, df: pd.DataFrame, granularity: str) -> pd.DataFrame:
@@ -436,7 +512,7 @@ class IntelligentAggregator:
         return df
 
     def _aggregate_total(self, df: pd.DataFrame, metric: str) -> List[Dict[str, Any]]:
-        """Aggregate without grouping"""
+        """Aggregate without grouping - FIXED to handle year filtering"""
         if df.empty:
             return [{'total_records': 0, 'note': 'No data available'}]
 
@@ -460,6 +536,12 @@ class IntelligentAggregator:
                 if len(clean_data) > 1:
                     result[f'{metric}_std'] = float(clean_data.std())
 
+                # NEW: Add debug info for year filtering
+                if 'year' in df.columns:
+                    years_in_data = df['year'].unique()
+                    result['years_included'] = sorted(years_in_data.tolist())
+                    print(f"Years in filtered data: {result['years_included']}")  # Debug
+
                 return [result]
             else:
                 return [{'total_records': len(df), 'note': f'Metric {metric} not found or not numeric'}]
@@ -470,33 +552,58 @@ class IntelligentAggregator:
 
     def _aggregate_grouped(self, df: pd.DataFrame, metric: str,
                            dimensions: List[str]) -> List[Dict[str, Any]]:
-        """Aggregate with grouping"""
+        """Aggregate with multiple grouping - ENHANCED for complex queries"""
         if df.empty:
             return [{'note': 'No data available for grouping'}]
+
+        print(f"=== ENHANCED MULTIPLE GROUPING AGGREGATION ===")
+        print(f"Metric: {metric}, Dimensions: {dimensions}")
+        print(f"Available columns: {df.columns.tolist()}")
+        print(f"Input data shape: {df.shape}")
 
         try:
             # Filter dimensions to only include existing columns
             valid_dimensions = [dim for dim in dimensions if dim in df.columns]
+            print(f"Valid dimensions: {valid_dimensions}")
 
             if not valid_dimensions:
+                print("No valid dimensions found, falling back to total aggregation")
                 return self._aggregate_total(df, metric)
 
-            # Limit grouping to prevent memory issues
-            if len(valid_dimensions) > 3:
-                valid_dimensions = valid_dimensions[:3]
+            # ENHANCED: Dynamic limit based on data size and dimensions
+            max_dimensions = min(len(valid_dimensions), self._calculate_safe_dimension_limit(df, valid_dimensions))
+            if len(valid_dimensions) > max_dimensions:
+                print(f"Limiting dimensions from {len(valid_dimensions)} to {max_dimensions} for performance")
+                valid_dimensions = valid_dimensions[:max_dimensions]
+
+            # Check estimated result size
+            estimated_groups = self._estimate_group_count(df, valid_dimensions)
+            print(f"Estimated groups: {estimated_groups}")
+
+            if estimated_groups > 10000:
+                print("Too many groups, adding filters or limiting dimensions")
+                # Take top categories by frequency for each dimension
+                valid_dimensions = self._reduce_high_cardinality_dimensions(df, valid_dimensions)
 
             if metric == 'count':
                 result = df.groupby(valid_dimensions, dropna=False).size().reset_index(name='count')
+                print(f"Count aggregation: {len(result)} groups")
             elif metric in df.columns and pd.api.types.is_numeric_dtype(df[metric]):
-                # Create aggregation functions
-                agg_functions = ['sum', 'mean', 'count', 'min', 'max']
+                # Enhanced aggregation functions
+                agg_functions = ['sum', 'mean', 'count']
 
                 if len(df) > 1:
+                    agg_functions.extend(['min', 'max'])
+
+                # Add std only if we have enough data
+                if len(df) > 10:
                     agg_functions.append('std')
 
                 # Perform aggregation
                 grouped = df.groupby(valid_dimensions, dropna=False)[metric]
                 agg_result = grouped.agg(agg_functions).reset_index()
+
+                print(f"Numeric aggregation: {len(agg_result)} groups with functions: {agg_functions}")
 
                 # Rename columns for clarity
                 column_mapping = {}
@@ -513,23 +620,112 @@ class IntelligentAggregator:
             else:
                 # For non-numeric metrics, just count
                 result = df.groupby(valid_dimensions, dropna=False).size().reset_index(name='count')
+                print(f"Count fallback: {len(result)} groups")
 
-            # Limit results to prevent UI issues
-            if len(result) > 1000:
-                result = result.head(1000)
-                logger.warning(f"Truncated results to 1000 rows from {len(result)}")
+            # Enhanced sorting for multiple dimensions
+            if len(result) > 0:
+                sort_columns = []
 
-            # Handle NaN values in the result
+                # Primary sort by main metric
+                if f'{metric}_sum' in result.columns:
+                    sort_columns.append((f'{metric}_sum', False))  # Descending
+                elif 'count' in result.columns:
+                    sort_columns.append(('count', False))  # Descending
+
+                # Secondary sort by first dimension
+                if len(valid_dimensions) > 0 and valid_dimensions[0] in result.columns:
+                    sort_columns.append((valid_dimensions[0], True))  # Ascending
+
+                # Apply sorting
+                if sort_columns:
+                    sort_by = [col[0] for col in sort_columns]
+                    sort_ascending = [col[1] for col in sort_columns]
+                    result = result.sort_values(sort_by, ascending=sort_ascending)
+                    print(f"Sorted by: {sort_by}")
+
+            # Smart result limiting
+            result_limit = self._calculate_result_limit(len(valid_dimensions))
+            if len(result) > result_limit:
+                print(f"Limiting results from {len(result)} to {result_limit}")
+                result = result.head(result_limit)
+
+            # Handle NaN values
             result = result.fillna({'count': 0})
             for col in result.select_dtypes(include=[np.number]).columns:
                 result[col] = result[col].fillna(0)
 
-            return result.to_dict('records')
+            result_list = result.to_dict('records')
+            print(f"Final result: {len(result_list)} records")
+
+            # Debug: Show sample results with all dimensions
+            print("Sample results:")
+            for i, record in enumerate(result_list[:5]):
+                dim_values = {dim: record.get(dim, 'N/A') for dim in valid_dimensions}
+                metric_value = record.get(f'{metric}_sum', record.get('count', 0))
+                print(f"  {i + 1}. {dim_values} -> {metric}: {metric_value}")
+
+            return result_list
 
         except Exception as e:
-            logger.error(f"Grouping aggregation failed: {e}")
+            logger.error(f"Enhanced grouping aggregation failed: {e}")
             logger.error(traceback.format_exc())
-            return [{'error': f'Grouping failed: {str(e)}', 'note': 'Try simplifying your query'}]
+            return [{'error': f'Multiple grouping failed: {str(e)}', 'note': 'Try simplifying your query'}]
+
+    def _calculate_safe_dimension_limit(self, df: pd.DataFrame, dimensions: List[str]) -> int:
+        """Calculate safe number of dimensions based on data size"""
+        data_size = len(df)
+
+        if data_size < 1000:
+            return min(4, len(dimensions))
+        elif data_size < 10000:
+            return min(3, len(dimensions))
+        else:
+            return min(2, len(dimensions))
+
+    def _estimate_group_count(self, df: pd.DataFrame, dimensions: List[str]) -> int:
+        """Estimate number of groups that would be created"""
+        if not dimensions:
+            return 1
+
+        unique_counts = []
+        for dim in dimensions:
+            if dim in df.columns:
+                unique_counts.append(df[dim].nunique())
+
+        if not unique_counts:
+            return 1
+
+        # Estimate as product of unique values (conservative)
+        import math
+        estimated = math.prod(unique_counts)
+
+        # But limit by actual data size
+        return min(estimated, len(df))
+
+    def _reduce_high_cardinality_dimensions(self, df: pd.DataFrame, dimensions: List[str]) -> List[str]:
+        """Reduce high cardinality dimensions to manageable size"""
+        reduced_dims = []
+
+        for dim in dimensions:
+            if dim in df.columns:
+                unique_count = df[dim].nunique()
+                if unique_count > 50:  # High cardinality
+                    print(f"Dimension '{dim}' has {unique_count} unique values, may need filtering")
+                    # Could add top-N filtering here
+                reduced_dims.append(dim)
+
+        return reduced_dims[:3]  # Max 3 dimensions for now
+
+    def _calculate_result_limit(self, dimension_count: int) -> int:
+        """Calculate appropriate result limit based on dimension count"""
+        if dimension_count == 1:
+            return 100
+        elif dimension_count == 2:
+            return 500
+        elif dimension_count == 3:
+            return 1000
+        else:
+            return 2000
 
     # Placeholder methods for Part 3 implementation
     def _generate_intelligent_insights(self, business_data: List[Dict[str, Any]],
