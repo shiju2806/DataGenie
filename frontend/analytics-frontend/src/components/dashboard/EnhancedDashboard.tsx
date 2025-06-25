@@ -55,20 +55,20 @@ const EnhancedDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      // Load dashboard data and system status in parallel
+      // Load dashboard data and system status in parallel with better error handling
       const [dashboardResponse, statusResponse] = await Promise.allSettled([
-        analyticsAPI.getAnalyticsDashboard(),
-        analyticsAPI.getSystemStatus()
+        analyticsAPI.getAnalyticsDashboard().catch(() => null),
+        analyticsAPI.getSystemStatus().catch(() => null)
       ]);
 
-      if (dashboardResponse.status === 'fulfilled') {
+      if (dashboardResponse.status === 'fulfilled' && dashboardResponse.value) {
         setDashboardData(dashboardResponse.value.dashboard_data);
       } else {
         // Use mock data if API fails
         setDashboardData(getMockDashboardData());
       }
 
-      if (statusResponse.status === 'fulfilled') {
+      if (statusResponse.status === 'fulfilled' && statusResponse.value) {
         setSystemStatus(statusResponse.value);
       }
 
@@ -184,20 +184,30 @@ const EnhancedDashboard: React.FC = () => {
   };
 
   const quickDiscovery = async () => {
-    await analyticsAPI.discoverDataSources({ mode: 'fast', max_recommendations: 3 });
-    navigate('/discovery');
+    try {
+      await analyticsAPI.discoverDataSources({ mode: 'fast', max_recommendations: 3 });
+      navigate('/discovery');
+    } catch (error) {
+      console.error('Quick discovery failed:', error);
+      navigate('/discovery');
+    }
   };
 
   const quickAnalysis = () => {
-    navigate('/analysis');
+    navigate('/datagenie'); // Navigate to DataGenie instead of analysis
   };
 
   const generateQuickReport = async () => {
-    await analyticsAPI.generateReport('executive', {
-      include_charts: true,
-      format: 'pdf'
-    });
-    navigate('/reports');
+    try {
+      await analyticsAPI.generateReport('executive', {
+        include_charts: true,
+        format: 'pdf'
+      });
+      navigate('/reports');
+    } catch (error) {
+      console.error('Quick report failed:', error);
+      navigate('/reports');
+    }
   };
 
   const getChangeIcon = (changeType: string) => {
@@ -310,7 +320,7 @@ const EnhancedDashboard: React.FC = () => {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {getQuickStats().map((stat, index) => (
-          <div key={index} className="card hover:shadow-lg transition-shadow">
+          <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
@@ -333,7 +343,7 @@ const EnhancedDashboard: React.FC = () => {
         {/* Main Content Area */}
         <div className="lg:col-span-2 space-y-8">
           {/* Quick Actions */}
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button
@@ -349,9 +359,9 @@ const EnhancedDashboard: React.FC = () => {
                 onClick={quickAnalysis}
                 className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors text-center"
               >
-                <div className="text-3xl mb-2">🧠</div>
-                <h3 className="font-semibold text-gray-900">Start Analysis</h3>
-                <p className="text-sm text-gray-600">Ask questions about data</p>
+                <div className="text-3xl mb-2">🧞‍♂️</div>
+                <h3 className="font-semibold text-gray-900">Launch DataGenie</h3>
+                <p className="text-sm text-gray-600">AI-powered analysis</p>
               </button>
 
               <button
@@ -367,7 +377,7 @@ const EnhancedDashboard: React.FC = () => {
 
           {/* Performance Metrics */}
           {dashboardData?.performance_metrics && (
-            <div className="card">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">This Week's Performance</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
@@ -400,7 +410,7 @@ const EnhancedDashboard: React.FC = () => {
 
           {/* Top Data Sources */}
           {dashboardData?.top_data_sources && (
-            <div className="card">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Most Used Data Sources</h2>
               <div className="space-y-4">
                 {dashboardData.top_data_sources.map((source, index) => (
@@ -438,7 +448,7 @@ const EnhancedDashboard: React.FC = () => {
         <div className="space-y-6">
           {/* System Status */}
           {systemStatus && (
-            <div className="card">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">System Status</h3>
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -475,7 +485,7 @@ const EnhancedDashboard: React.FC = () => {
 
           {/* Recent Activity */}
           {dashboardData?.recent_activities && (
-            <div className="card">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
               <div className="space-y-3">
                 {dashboardData.recent_activities.map((activity) => (
@@ -501,7 +511,7 @@ const EnhancedDashboard: React.FC = () => {
           )}
 
           {/* Quick Links */}
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
             <div className="space-y-2">
               <button
@@ -511,10 +521,10 @@ const EnhancedDashboard: React.FC = () => {
                 🔍 Data Discovery
               </button>
               <button
-                onClick={() => navigate('/analysis')}
+                onClick={() => navigate('/datagenie')}
                 className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
               >
-                🧠 AI Analysis
+                🧞‍♂️ DataGenie AI
               </button>
               <button
                 onClick={() => navigate('/reports')}

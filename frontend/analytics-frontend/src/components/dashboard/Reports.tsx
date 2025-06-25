@@ -16,7 +16,6 @@ const Reports: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newReportType, setNewReportType] = useState<'executive' | 'operational' | 'analytical'>('executive');
 
   const reportTypes = [
     { id: 'all', name: 'All Reports', icon: '📋' },
@@ -188,13 +187,13 @@ const Reports: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-3">
           {/* Report Generation */}
-          <div className="card mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Generate New Report</h2>
               <button
                 onClick={() => setShowCreateModal(true)}
                 disabled={isGenerating}
-                className={`btn-primary flex items-center space-x-2 ${isGenerating ? 'opacity-50' : ''}`}
+                className={`bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isGenerating ? (
                   <>
@@ -250,7 +249,7 @@ const Reports: React.FC = () => {
           </div>
 
           {/* Reports List */}
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Your Reports</h2>
               <div className="flex space-x-2">
@@ -351,7 +350,7 @@ const Reports: React.FC = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Report Statistics</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -383,7 +382,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
 
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-2">
               <button
@@ -407,7 +406,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
 
-          <div className="card">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center space-x-2">
@@ -464,6 +463,17 @@ const Reports: React.FC = () => {
                   </div>
                 </button>
               ))}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

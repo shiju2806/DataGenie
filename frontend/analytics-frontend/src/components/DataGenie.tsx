@@ -52,7 +52,7 @@ type StepType = 'connect' | 'analyze' | 'results' | 'report';
 // API Configuration
 const API_BASE_URL = 'http://localhost:8000';
 
-// API Service Functions
+// Fixed API Service Functions
 const apiService = {
   async discoverSources() {
     try {
@@ -72,59 +72,204 @@ const apiService = {
 
   async analyzeData(query: string, file: File | null = null, selectedSources: string[] = []) {
     try {
-      console.log('📡 Sending request to:', `${API_BASE_URL}/analyze/`);
+      console.log('📡 Starting analysis request...');
+      console.log('📝 Query:', query);
+      console.log('📄 File:', file ? `${file.name} (${file.size} bytes)` : 'None');
+      console.log('🔗 Sources:', selectedSources);
+
+      // STEP 1: Test basic connectivity
+      console.log('🔍 Testing backend health...');
+      try {
+        const healthResponse = await fetch(`${API_BASE_URL}/health/`);
+        const healthData = await healthResponse.json();
+        console.log('❤️ Backend health:', healthData);
+
+        if (!healthData.status || healthData.status !== 'healthy') {
+          throw new Error('Backend is not healthy');
+        }
+      } catch (healthError) {
+        console.error('💔 Backend health check failed:', healthError);
+        throw new Error('Backend server is not accessible. Please ensure it\'s running on http://localhost:8000');
+      }
+
+      // STEP 2: Test a simple GET request first
+      console.log('🧪 Testing basic API with GET request...');
+      try {
+        const statusResponse = await fetch(`${API_BASE_URL}/`);
+        const statusData = await statusResponse.json();
+        console.log('🏠 Root endpoint response:', statusData);
+      } catch (statusError) {
+        console.error('🚫 Basic API test failed:', statusError);
+      }
+
+      // STEP 3: Test the simpler endpoint first
+      console.log('🧪 Testing simpler upload endpoint...');
+      try {
+        const testFormData = new FormData();
+        testFormData.append('prompt', query);
+        if (file) {
+          testFormData.append('file', file, file.name);
+        }
+        testFormData.append('use_adaptive', 'true');
+        testFormData.append('include_charts', 'true');
+        testFormData.append('auto_discover', file ? 'false' : 'true');
+
+        const testResponse = await fetch(`${API_BASE_URL}/test-upload/`, {
+          method: 'POST',
+          body: testFormData
+        });
+
+        console.log('🧪 Test endpoint response:', testResponse.status);
+
+        if (testResponse.ok) {
+          const testData = await testResponse.json();
+          console.log('🧪 Test endpoint data:', testData);
+
+          if (testData.status === 'success') {
+            console.log('✅ Test upload successful! File is valid.');
+          } else {
+            console.log('❌ Test upload failed:', testData.error);
+          }
+        } else {
+          const testError = await testResponse.text();
+          console.log('❌ Test endpoint failed:', testError);
+        }
+      } catch (testError) {
+        console.error('🧪 Test endpoint error:', testError);
+      }
+
+      // STEP 4: Prepare the actual analysis request
+      console.log('📦 Preparing FormData request...');
 
       const formData = new FormData();
+
+      // FIXED: Send everything as form data
       formData.append('prompt', query);
       formData.append('use_adaptive', 'true');
       formData.append('include_charts', 'true');
-      formData.append('auto_discover', selectedSources.length === 0 ? 'true' : 'false');
+      formData.append('auto_discover', file ? 'false' : 'true');
 
       if (file) {
-        console.log('📄 Uploading file:', file.name, file.size, 'bytes');
+        console.log('📄 Adding file to FormData...');
         formData.append('file', file, file.name);
-      } else if (selectedSources.length > 0) {
-        console.log('🔗 Using selected sources:', selectedSources);
+        console.log(`📄 File details: ${file.name}, ${file.size} bytes, ${file.type}`);
+      }
+
+      if (selectedSources.length > 0) {
         formData.append('data_source_id', selectedSources[0]);
       }
 
-      // Log form data contents (for debugging) - Fixed TypeScript iteration
-      console.log('📦 FormData contents:');
-      const entries = Array.from(formData.entries());
-      entries.forEach(([key, value]) => {
-        if (value instanceof File) {
-          console.log(`  ${key}: File(${value.name}, ${value.size} bytes)`);
-        } else {
-          console.log(`  ${key}: ${value}`);
-        }
-      });
+      // Debug: Log what we're sending
+      console.log('📋 Request details:');
+      console.log(`  URL: ${API_BASE_URL}/analyze/`);
+      console.log(`  Method: POST`);
+      console.log(`  Has file: ${!!file}`);
+      console.log(`  Prompt length: ${query.length}`);
+
+      // STEP 5: Make the actual request
+      console.log('🚀 Sending analysis request...');
 
       const response = await fetch(`${API_BASE_URL}/analyze/`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer demo-token`
-          // Note: Don't set Content-Type header for FormData - browser sets it automatically
-        },
         body: formData
+        // No headers - let browser handle Content-Type for FormData
       });
 
-      console.log('📬 Response status:', response.status, response.statusText);
+      console.log('📬 Response received:');
+      console.log(`  Status: ${response.status} ${response.statusText}`);
+      console.log(`  OK: ${response.ok}`);
 
+      // Log response headers
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
+      console.log('  Headers:', responseHeaders);
+
+      // Handle response
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Response error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        console.error('❌ Request failed with status:', response.status);
+
+        let errorDetails;
+        const contentType = response.headers.get('content-type') || '';
+
+        console.log('📄 Response content-type:', contentType);
+
+        if (contentType.includes('application/json')) {
+          try {
+            errorDetails = await response.json();
+            console.error('📄 Error response (JSON):', errorDetails);
+          } catch (jsonError) {
+            console.error('❌ Failed to parse JSON error response:', jsonError);
+            errorDetails = { error: 'Failed to parse error response' };
+          }
+        } else {
+          try {
+            const textError = await response.text();
+            console.error('📄 Error response (Text):', textError);
+            errorDetails = { error: textError };
+          } catch (textError) {
+            console.error('❌ Failed to read error response:', textError);
+            errorDetails = { error: 'Failed to read error response' };
+          }
+        }
+
+        // Create user-friendly error message
+        let userMessage = 'Analysis failed';
+
+        if (response.status === 422) {
+          userMessage = 'The request format is invalid. Please check your file format and try again.';
+
+          // Add specific suggestions based on error details
+          if (errorDetails.detail && typeof errorDetails.detail === 'string') {
+            if (errorDetails.detail.includes('file')) {
+              userMessage += ' Make sure your file is a valid CSV or Excel file.';
+            }
+            if (errorDetails.detail.includes('prompt')) {
+              userMessage += ' Make sure your question is not empty.';
+            }
+          }
+        } else if (response.status === 400) {
+          userMessage = 'Bad request. Please verify your file and query are valid.';
+        } else if (response.status === 500) {
+          userMessage = 'Server error. Please try again in a moment.';
+        } else {
+          userMessage = `Request failed with status ${response.status}. Please try again.`;
+        }
+
+        throw new Error(userMessage);
       }
 
-      const result = await response.json();
-      console.log('✅ Response data:', result);
+      // Parse successful response
+      console.log('✅ Request successful, parsing response...');
+      let result;
+
+      try {
+        result = await response.json();
+        console.log('✅ Response parsed successfully');
+        console.log('📊 Response summary:', {
+          status: result.status,
+          hasAnalysis: !!result.analysis,
+          hasData: !!result.analysis?.data,
+          dataLength: result.analysis?.data?.length || 0
+        });
+      } catch (parseError) {
+        console.error('❌ Failed to parse successful response:', parseError);
+        throw new Error('Received invalid response from server');
+      }
+
       return result;
 
     } catch (error) {
-      console.error('💥 API Error:', error);
+      console.error('💥 Complete error details:', {
+        name: (error as Error).name,
+        message: (error as Error).message,
+        stack: (error as Error).stack
+      });
 
+      // Re-throw with appropriate message
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        throw new Error('Cannot connect to backend server. Is it running on http://localhost:8000?');
+        throw new Error('Cannot connect to DataGenie backend. Please ensure the server is running on http://localhost:8000');
       }
 
       throw error;
@@ -197,6 +342,7 @@ const DataGenie: React.FC = () => {
           }));
           setDataSources(sources);
         } else {
+          console.log('Using mock data sources');
           setDataSources(mockDataSources);
         }
       } catch (error) {
@@ -307,6 +453,7 @@ This report was generated by DataGenie Analytics Platform
     if (file) {
       setUploadedFile(file);
       setSelectedSources([]);
+      setError(null); // Clear any previous errors
     }
   };
 
@@ -330,6 +477,8 @@ This report was generated by DataGenie Analytics Platform
         query,
         hasFile: !!uploadedFile,
         fileName: uploadedFile?.name,
+        fileSize: uploadedFile?.size,
+        fileType: uploadedFile?.type,
         selectedSources: selectedSources.length
       });
 
@@ -340,7 +489,7 @@ This report was generated by DataGenie Analytics Platform
       if (response.status === 'success') {
         const transformedResults: AnalysisResults = {
           summary: response.analysis?.summary || 'Analysis completed successfully',
-          insights: response.analysis?.insights || [],
+          insights: response.analysis?.insights || ['Analysis completed with no specific insights'],
           chartData: response.analysis?.data || [],
           confidence: response.system_info?.confidence || 0.8,
           analysisType: response.analysis?.type || 'general_analysis',
@@ -351,18 +500,26 @@ This report was generated by DataGenie Analytics Platform
         console.log('✅ Analysis successful, showing results');
         setAnalysisResults(transformedResults);
         setCurrentStep('results');
+
+        // Clear error on success
+        setError(null);
       } else {
         console.error('❌ Backend returned error:', response.error);
-        throw new Error(response.error || 'Analysis failed');
+        throw new Error(response.error || response.message || 'Analysis failed');
       }
     } catch (error) {
       console.error('💥 Analysis error:', error);
 
-      // Show detailed error instead of falling back to mock data
       const errorMessage = (error as Error).message || 'Analysis failed';
 
       if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
         setError('Cannot connect to DataGenie backend. Please check if the server is running on http://localhost:8000');
+      } else if (errorMessage.includes('HTTP 422')) {
+        setError('Invalid request format. Please check your file format and try again.');
+      } else if (errorMessage.includes('HTTP 400')) {
+        setError('Bad request. Please check your file format or query and try again.');
+      } else if (errorMessage.includes('HTTP 500')) {
+        setError('Server error. Please try again or contact support.');
       } else {
         setError(`Analysis failed: ${errorMessage}`);
       }
@@ -375,18 +532,6 @@ This report was generated by DataGenie Analytics Platform
           type: uploadedFile.type,
           lastModified: new Date(uploadedFile.lastModified).toISOString()
         });
-
-        // Let's try to analyze the file locally for debugging
-        try {
-          const fileText = await uploadedFile.text();
-          const firstLines = fileText.split('\n').slice(0, 5).join('\n');
-          console.log('📋 File preview (first 5 lines):', firstLines);
-
-          // Show user that we detected their file
-          setError(`File uploaded: ${uploadedFile.name} (${uploadedFile.size} bytes). Backend connection failed. Please start the backend server.`);
-        } catch (fileError) {
-          console.error('Could not read file:', fileError);
-        }
       }
 
       setCurrentStep('analyze'); // Stay on analyze step to fix the issue
@@ -576,7 +721,7 @@ This report was generated by DataGenie Analytics Platform
                 <p className="text-gray-600 mb-4">Drop CSV, Excel, or JSON files here</p>
                 {uploadedFile && (
                   <div className="mb-4 p-2 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-700 text-sm">✓ {uploadedFile.name}</p>
+                    <p className="text-green-700 text-sm">✓ {uploadedFile.name} ({Math.round(uploadedFile.size / 1024)} KB)</p>
                   </div>
                 )}
                 <input

@@ -1,0 +1,1587 @@
+2025-06-23 18:03:19,456 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:03:19,487 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:03:20,221 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:03:20,221 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:03:20,221 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:03:20,221 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:03:20,222 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:03:20,225 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:03:20,225 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:03:20,225 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:03:20,225 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:03:20,225 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:03:20,225 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:03:20,450 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:03:20,476 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:03:20,479 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:03:20,479 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:03:20,479 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:03:20,479 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:03:20,480 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:03:20,480 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:03:20,480 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:03:20,480 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:03:20,511 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:03:20,773 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:03:20,773 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:03:20,773 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:03:20,773 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:03:20,773 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:03:20,773 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:03:20,773 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:03:20,773 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:03:20,773 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:03:20,774 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:03:20,774 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:03:20,774 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:03:48,491 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_56540552
+2025-06-23 18:03:48,491 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_56540552
+2025-06-23 18:03:48,491 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 18:03:48,491 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 18:03:48,492 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 18:03:48,493 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 18:03:48,493 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_56540552
+2025-06-23 18:03:48,494 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_56540552
+2025-06-23 18:03:48,494 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_56540552
+2025-06-23 18:03:48,494 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 18:03:48,494 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 18:03:48,496 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 18:03:48,497 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 18:03:48,497 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_56540552
+2025-06-23 18:04:13,955 - main - INFO - 🧠 Starting enhanced analysis: 'month with the highest sales in 2024'
+2025-06-23 18:04:13,958 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 18:04:13,976 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:04:14,125 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:04:14,125 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 18:04:14,125 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 18:04:14,125 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 18:04:14,125 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 18:04:14,125 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 18:04:15,777 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 18:04:15,779 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.900
+2025-06-23 18:04:15,779 - main - INFO - 🎯 Adaptive interpretation confidence: 0.90
+2025-06-23 18:04:15,779 - main - INFO - ⏱️ Query interpretation: 1820.63ms
+2025-06-23 18:04:15,780 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 18:04:15,781 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 18:04:15,784 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 18:04:15,784 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 18:04:15,784 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 18:04:15,784 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 18:04:15,788 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.00s
+2025-06-23 18:04:15,788 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 18:04:15,788 - main - INFO - ⏱️ Analysis: 8.60ms
+2025-06-23 18:04:15,790 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 18:04:15,790 - main - INFO - ⏱️ Chart suggestions: 1.97ms
+2025-06-23 18:04:15,790 - main - INFO - ⏱️ Total analysis: 1834.23ms
+2025-06-23 18:04:15,790 - main - INFO - 🎉 Enhanced analysis completed in 1834.23ms
+2025-06-23 18:04:15,790 - main - ERROR - ❌ Enhanced analysis failed
+2025-06-23 18:04:15,792 - main - ERROR - Traceback (most recent call last):
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/backend/main.py", line 764, in enhanced_analyze
+    return JSONResponse(content=response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 182, in __init__
+    super().__init__(content, status_code, headers, media_type, background)
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 45, in __init__
+    self.body = self.render(content)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 185, in render
+    return json.dumps(
+           ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+
+2025-06-23 18:04:55,287 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:04:55,288 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:04:56,495 - __main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:04:56,527 - __main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:04:57,166 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:04:57,166 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:04:57,166 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:04:57,166 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:04:57,166 - __main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:04:57,170 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:04:57,170 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:04:57,170 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:04:57,170 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:04:57,170 - __main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:04:57,170 - __main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:04:57,360 - __main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:04:58,104 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:04:58,127 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:04:58,658 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:04:58,658 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:04:58,658 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:04:58,658 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:04:58,658 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:04:58,660 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:04:58,660 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:04:58,660 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:04:58,660 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:04:58,660 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:04:58,660 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:04:58,818 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:04:58,833 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:04:58,835 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:04:58,835 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:04:58,835 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:04:58,835 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:04:58,835 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:04:58,835 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:04:58,835 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:04:58,835 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:04:58,858 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:04:59,036 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:04:59,036 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:04:59,036 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:04:59,036 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:04:59,036 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:04:59,036 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:04:59,036 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:04:59,036 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:04:59,036 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:04:59,036 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:04:59,036 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:08:24,248 - main - INFO - 🧠 Starting enhanced analysis: 'highest sales amount in 2024'
+2025-06-23 18:08:24,252 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 18:08:24,275 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:08:24,440 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:08:24,440 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 18:08:24,440 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 18:08:24,441 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 18:08:24,441 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 18:08:24,441 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 18:08:26,148 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 18:08:26,152 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.950
+2025-06-23 18:08:26,153 - main - INFO - 🎯 Adaptive interpretation confidence: 0.95
+2025-06-23 18:08:26,153 - main - INFO - ⏱️ Query interpretation: 1900.93ms
+2025-06-23 18:08:26,155 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 18:08:26,159 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 18:08:26,165 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 18:08:26,165 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 18:08:26,165 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 18:08:26,165 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 18:08:26,171 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.01s
+2025-06-23 18:08:26,171 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 18:08:26,171 - main - INFO - ⏱️ Analysis: 18.23ms
+2025-06-23 18:08:26,174 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 18:08:26,174 - main - INFO - ⏱️ Chart suggestions: 2.94ms
+2025-06-23 18:08:26,174 - main - INFO - ⏱️ Total analysis: 1925.93ms
+2025-06-23 18:08:26,174 - main - INFO - 🎉 Enhanced analysis completed in 1925.93ms
+2025-06-23 18:08:26,174 - main - ERROR - ❌ Enhanced analysis failed
+2025-06-23 18:08:26,177 - main - ERROR - Traceback (most recent call last):
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/backend/main.py", line 764, in enhanced_analyze
+    return JSONResponse(content=response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 182, in __init__
+    super().__init__(content, status_code, headers, media_type, background)
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 45, in __init__
+    self.body = self.render(content)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shijuprakash/PycharmProjects/PythonProject/.venv/lib/python3.12/site-packages/starlette/responses.py", line 185, in render
+    return json.dumps(
+           ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+
+2025-06-23 18:11:06,323 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:11:06,323 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:11:06,324 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:11:07,268 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:11:07,299 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:11:07,928 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:11:07,928 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:11:07,928 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:11:07,928 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:11:07,928 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:11:07,931 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:11:07,931 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:11:07,932 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:11:07,932 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:11:07,932 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:11:07,932 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:11:08,123 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:11:08,144 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:11:08,147 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:11:08,147 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:11:08,147 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:11:08,147 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:11:08,147 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:11:08,147 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:11:08,147 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:11:08,147 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:11:08,171 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:11:08,345 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:11:08,345 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:11:08,345 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:11:08,345 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:11:08,345 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:11:08,345 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:11:08,345 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:11:08,345 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:11:08,345 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:11:08,346 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:11:08,346 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:11:08,346 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:11:53,713 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:11:53,714 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:11:54,607 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:11:54,637 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:11:55,243 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:11:55,243 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:11:55,243 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:11:55,243 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:11:55,243 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:11:55,246 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:11:55,246 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:11:55,246 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:11:55,246 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:11:55,246 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:11:55,247 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:11:55,434 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:11:55,455 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:11:55,457 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:11:55,457 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:11:55,457 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:11:55,457 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:11:55,457 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:11:55,457 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:11:55,457 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:11:55,457 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:11:55,479 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:11:55,651 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:11:55,651 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:11:55,651 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:11:55,651 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:11:55,651 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:11:55,651 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:11:55,651 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:11:55,651 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:11:55,651 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:11:55,651 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:11:55,651 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:12:29,699 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:12:29,700 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:12:30,653 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:12:30,693 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:12:31,328 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:12:31,328 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:12:31,328 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:12:31,328 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:12:31,328 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:12:31,332 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:12:31,332 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:12:31,332 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:12:31,332 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:12:31,332 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:12:31,333 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:12:31,513 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:12:31,530 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:12:31,532 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:12:31,532 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:12:31,532 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:12:31,532 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:12:31,533 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:12:31,533 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:12:31,533 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:12:31,533 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:12:31,553 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:12:31,714 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:12:31,714 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:12:31,714 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:12:31,714 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:12:31,714 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:12:31,714 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:12:31,714 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:12:31,714 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:12:31,714 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:12:31,714 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:12:31,714 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:15:32,655 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:15:32,655 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:15:32,656 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:15:33,682 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:15:33,711 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:15:34,319 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:15:34,319 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:15:34,319 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:15:34,319 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:15:34,319 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:15:34,322 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:15:34,322 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:15:34,322 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:15:34,323 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:15:34,323 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:15:34,323 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:15:34,509 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:15:34,530 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:15:34,532 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:15:34,532 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:15:34,532 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:15:34,532 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:15:34,533 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:15:34,533 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:15:34,533 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:15:34,533 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:15:34,556 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:15:34,733 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:15:34,733 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:15:34,733 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:15:34,733 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:15:34,734 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:15:34,734 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:15:34,734 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:15:34,734 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:15:34,734 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:15:34,734 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:15:34,734 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:15:53,322 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:15:53,322 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:15:53,323 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:15:53,323 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:15:53,323 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:15:54,063 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:15:54,086 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:15:54,611 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:15:54,611 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:15:54,611 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:15:54,611 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:15:54,611 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:15:54,613 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:15:54,613 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:15:54,613 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:15:54,613 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:15:54,613 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:15:54,614 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:15:54,774 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:15:54,789 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:15:54,791 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:15:54,791 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:15:54,791 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:15:54,791 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:15:54,791 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:15:54,791 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:15:54,791 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:15:54,791 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:15:54,811 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:15:54,967 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:15:54,967 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:15:54,967 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:15:54,967 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:15:54,967 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:15:54,967 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:15:54,967 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:15:54,967 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:15:54,967 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:15:54,968 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:15:54,968 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:15:54,968 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:16:34,274 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 18:16:34,274 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 18:16:35,325 - __main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:16:35,349 - __main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:16:35,890 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:16:35,890 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:16:35,890 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:16:35,890 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:16:35,890 - __main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:16:35,892 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:16:35,893 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:16:35,893 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:16:35,893 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:16:35,893 - __main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:16:35,893 - __main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:16:36,053 - __main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:16:36,781 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:16:36,804 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:16:37,329 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 18:16:37,329 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 18:16:37,329 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 18:16:37,329 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 18:16:37,329 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:16:37,331 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 18:16:37,331 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 18:16:37,331 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 18:16:37,331 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 18:16:37,331 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:16:37,331 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:16:37,489 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:16:37,500 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 18:16:37,500 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 18:16:37,500 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 18:16:37,500 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 18:16:37,501 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 18:16:37,501 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 18:16:37,503 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 18:16:37,503 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 18:16:37,503 - main - INFO - 📊 Available components: 6/6
+2025-06-23 18:16:37,503 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 18:16:37,503 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 18:16:37,503 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 18:16:37,503 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 18:16:37,503 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 18:16:37,523 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:16:37,687 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:16:37,687 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 18:16:37,687 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 18:16:37,687 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:16:37,687 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 18:16:37,687 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 18:16:37,687 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 18:16:37,687 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 18:16:37,687 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 18:16:37,687 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 18:16:37,687 - main - INFO - ✅ All components initialized successfully
+2025-06-23 18:16:48,091 - main - INFO - 🧠 Starting enhanced analysis: 'highest sales amount in 2024'
+2025-06-23 18:16:48,092 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 18:16:48,102 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:16:48,240 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:16:48,240 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 18:16:48,240 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 18:16:48,241 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 18:16:48,241 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 18:16:48,241 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 18:16:50,162 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 18:16:50,164 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.950
+2025-06-23 18:16:50,164 - main - INFO - 🎯 Adaptive interpretation confidence: 0.95
+2025-06-23 18:16:50,164 - main - INFO - ⏱️ Query interpretation: 2071.61ms
+2025-06-23 18:16:50,165 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 18:16:50,166 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 18:16:50,169 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 18:16:50,169 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 18:16:50,169 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 18:16:50,169 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 18:16:50,173 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.00s
+2025-06-23 18:16:50,173 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 18:16:50,173 - main - INFO - ⏱️ Analysis: 8.54ms
+2025-06-23 18:16:50,174 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 18:16:50,174 - main - INFO - ⏱️ Chart suggestions: 1.45ms
+2025-06-23 18:16:50,174 - main - INFO - ⏱️ Total analysis: 2082.97ms
+2025-06-23 18:16:50,175 - main - INFO - 🎉 Enhanced analysis completed in 2082.97ms
+2025-06-23 18:17:08,710 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 18:17:08,710 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 18:17:08,710 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 18:17:08,710 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 18:17:08,712 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 18:17:08,713 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 18:17:08,715 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 18:17:08,716 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 18:17:08,716 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 18:17:18,153 - main - INFO - 🧠 Starting enhanced analysis: 'month with the highest sales in 2024'
+2025-06-23 18:17:18,154 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 18:17:18,165 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:17:18,353 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:17:18,353 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 18:17:18,353 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 18:17:18,353 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 18:17:18,354 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 18:17:18,354 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 18:17:20,575 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 18:17:20,575 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.900
+2025-06-23 18:17:20,575 - main - INFO - 🎯 Adaptive interpretation confidence: 0.90
+2025-06-23 18:17:20,576 - main - INFO - ⏱️ Query interpretation: 2421.93ms
+2025-06-23 18:17:20,576 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 18:17:20,576 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 18:17:20,579 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 18:17:20,579 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 18:17:20,579 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 18:17:20,579 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 18:17:20,582 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.00s
+2025-06-23 18:17:20,582 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 18:17:20,582 - main - INFO - ⏱️ Analysis: 6.50ms
+2025-06-23 18:17:20,582 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 18:17:20,582 - main - INFO - ⏱️ Chart suggestions: 0.23ms
+2025-06-23 18:17:20,582 - main - INFO - ⏱️ Total analysis: 2429.35ms
+2025-06-23 18:17:20,583 - main - INFO - 🎉 Enhanced analysis completed in 2429.35ms
+2025-06-23 18:19:17,522 - main - INFO - 🧠 Starting enhanced analysis: 'highest sales amount in 2024'
+2025-06-23 18:19:17,525 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 18:19:17,549 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 18:19:17,706 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 18:19:17,706 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 18:19:17,706 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 18:19:17,706 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 18:19:17,706 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 18:19:17,707 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 18:19:19,154 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 18:19:19,156 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.950
+2025-06-23 18:19:19,156 - main - INFO - 🎯 Adaptive interpretation confidence: 0.95
+2025-06-23 18:19:19,156 - main - INFO - ⏱️ Query interpretation: 1631.10ms
+2025-06-23 18:19:19,157 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 18:19:19,160 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 18:19:19,166 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 18:19:19,166 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 18:19:19,166 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 18:19:19,166 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 18:19:19,175 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.01s
+2025-06-23 18:19:19,175 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 18:19:19,175 - main - INFO - ⏱️ Analysis: 18.76ms
+2025-06-23 18:19:19,176 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 18:19:19,176 - main - INFO - ⏱️ Chart suggestions: 0.53ms
+2025-06-23 18:19:19,176 - main - INFO - ⏱️ Total analysis: 1653.43ms
+2025-06-23 18:19:19,176 - main - INFO - 🎉 Enhanced analysis completed in 1653.43ms
+2025-06-23 20:13:04,309 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:13:04,310 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:13:04,310 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:13:04,310 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:13:04,315 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:13:04,316 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:13:04,316 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:13:04,317 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:13:04,317 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:13:04,317 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:13:04,317 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:13:04,322 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:13:04,323 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:13:04,323 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:38:18,193 - main - INFO - 🧠 Starting enhanced analysis: 'highest sales amount in 2024'
+2025-06-23 20:38:18,195 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 20:38:18,207 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 20:38:18,361 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 20:38:18,361 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 20:38:18,361 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 20:38:18,361 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 20:38:18,361 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 20:38:18,363 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 20:38:19,687 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 20:38:19,688 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.950
+2025-06-23 20:38:19,688 - main - INFO - 🎯 Adaptive interpretation confidence: 0.95
+2025-06-23 20:38:19,688 - main - INFO - ⏱️ Query interpretation: 1492.54ms
+2025-06-23 20:38:19,688 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 20:38:19,690 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 20:38:19,693 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 20:38:19,693 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 20:38:19,693 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 20:38:19,693 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 20:38:19,697 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.00s
+2025-06-23 20:38:19,697 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 20:38:19,697 - main - INFO - ⏱️ Analysis: 9.17ms
+2025-06-23 20:38:19,697 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 20:38:19,697 - main - INFO - ⏱️ Chart suggestions: 0.33ms
+2025-06-23 20:38:19,697 - main - INFO - ⏱️ Total analysis: 1504.41ms
+2025-06-23 20:38:19,698 - main - INFO - 🎉 Enhanced analysis completed in 1504.41ms
+2025-06-23 20:38:43,950 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:38:43,951 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:38:43,951 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:38:43,951 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:38:43,953 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:38:43,954 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:38:43,954 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:38:43,955 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:38:43,955 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:38:43,955 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:38:43,955 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:38:43,956 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:38:43,957 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:38:43,957 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:39:15,613 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:39:15,614 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:39:15,614 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:39:15,614 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:39:15,619 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:39:15,622 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:39:15,623 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:39:15,625 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-1721654
+2025-06-23 20:39:15,625 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-1721654
+2025-06-23 20:39:15,625 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-23 20:39:15,625 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-23 20:39:15,627 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-23 20:39:15,628 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-23 20:39:15,628 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-1721654
+2025-06-23 20:39:31,728 - main - INFO - 🧠 Starting enhanced analysis: 'highest sales amount in 2024'
+2025-06-23 20:39:31,730 - main - INFO - 📊 Dataset loaded: 96 rows × 5 columns
+2025-06-23 20:39:31,741 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 20:39:31,890 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 20:39:31,890 - adaptive_interpreter - INFO - 🧠 Initializing adaptive learning...
+2025-06-23 20:39:31,890 - adaptive_interpreter - INFO - 🧠 Learning from data...
+2025-06-23 20:39:31,891 - adaptive_interpreter - INFO - 📁 Loaded cached data profile
+2025-06-23 20:39:31,891 - adaptive_interpreter - INFO - ✅ Adaptive learning complete!
+2025-06-23 20:39:31,892 - main - INFO - ✅ Adaptive processor created successfully
+2025-06-23 20:39:34,339 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-23 20:39:34,341 - adaptive_interpreter - INFO - ✅ High-confidence OpenAI parsing: 0.950
+2025-06-23 20:39:34,341 - main - INFO - 🎯 Adaptive interpretation confidence: 0.95
+2025-06-23 20:39:34,341 - main - INFO - ⏱️ Query interpretation: 2611.16ms
+2025-06-23 20:39:34,342 - enhanced_analytics_part1 - INFO - 📊 Starting with primary dataset: main
+2025-06-23 20:39:34,345 - enhanced_analytics_part1 - WARNING - Failed to create statistical fields for year: Bin labels must be one fewer than the number of bin edges
+2025-06-23 20:39:34,352 - enhanced_analytics_part1 - INFO - 📊 Data quality score: 100.0%
+2025-06-23 20:39:34,352 - enhanced_analytics_part1 - INFO - ✅ Enhanced unified dataset: 96 rows × 12 columns
+2025-06-23 20:39:34,352 - enhanced_analytics_part3 - INFO - 🧠 Intelligent Analysis Engine initialized
+2025-06-23 20:39:34,352 - enhanced_analytics_part3 - INFO - 🔍 Query understanding confidence: 1.00
+2025-06-23 20:39:34,361 - enhanced_analytics_part3 - INFO - ✅ Analysis completed in 0.01s
+2025-06-23 20:39:34,362 - main - INFO - ✅ Enhanced analysis completed: exploratory
+2025-06-23 20:39:34,362 - main - INFO - ⏱️ Analysis: 20.67ms
+2025-06-23 20:39:34,362 - main - INFO - 📊 Generated 4 chart suggestions
+2025-06-23 20:39:34,362 - main - INFO - ⏱️ Chart suggestions: 0.61ms
+2025-06-23 20:39:34,362 - main - INFO - ⏱️ Total analysis: 2634.41ms
+2025-06-23 20:39:34,363 - main - INFO - 🎉 Enhanced analysis completed in 2634.41ms
+2025-06-23 21:07:39,044 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 21:07:39,045 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 21:07:39,045 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 21:07:39,046 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 21:07:40,019 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:07:40,055 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:07:40,738 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 21:07:40,738 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 21:07:40,738 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 21:07:40,738 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 21:07:40,738 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:07:40,742 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 21:07:40,742 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 21:07:40,742 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 21:07:40,742 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 21:07:40,742 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:07:40,742 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:07:40,957 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:07:40,975 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:07:40,977 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 21:07:40,977 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 21:07:40,977 - main - INFO - 📊 Available components: 6/6
+2025-06-23 21:07:40,978 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 21:07:40,978 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 21:07:40,978 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 21:07:40,978 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 21:07:40,978 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 21:07:41,002 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 21:07:41,176 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 21:07:41,176 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 21:07:41,176 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 21:07:41,176 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:07:41,177 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 21:07:41,177 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:07:41,177 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 21:07:41,177 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 21:07:41,177 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 21:07:41,177 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 21:07:41,177 - main - INFO - ✅ All components initialized successfully
+2025-06-23 21:10:19,613 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 21:10:19,613 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 21:10:20,523 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:10:20,555 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:10:21,237 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 21:10:21,237 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 21:10:21,237 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 21:10:21,237 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 21:10:21,237 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:10:21,241 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 21:10:21,241 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 21:10:21,241 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 21:10:21,241 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 21:10:21,241 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:10:21,242 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:10:21,450 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:10:21,467 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:10:21,468 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:10:21,468 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:10:21,468 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:10:21,468 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:10:21,468 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:10:21,470 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 21:10:21,470 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 21:10:21,470 - main - INFO - 📊 Available components: 6/6
+2025-06-23 21:10:21,470 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 21:10:21,470 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 21:10:21,470 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 21:10:21,470 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 21:10:21,470 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 21:10:21,494 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 21:10:21,667 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 21:10:21,667 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 21:10:21,667 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 21:10:21,667 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:10:21,668 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 21:10:21,668 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:10:21,668 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 21:10:21,668 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 21:10:21,668 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 21:10:21,668 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 21:10:21,668 - main - INFO - ✅ All components initialized successfully
+2025-06-23 21:15:47,107 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-23 21:15:47,108 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-23 21:15:48,361 - __main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:15:48,394 - __main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:15:49,035 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 21:15:49,035 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 21:15:49,035 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 21:15:49,035 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 21:15:49,036 - __main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:15:49,039 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 21:15:49,039 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 21:15:49,039 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 21:15:49,039 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 21:15:49,039 - __main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:15:49,040 - __main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:15:49,234 - __main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:15:49,234 - __main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-23 21:15:49,984 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:15:50,007 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:15:50,547 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-23 21:15:50,547 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-23 21:15:50,547 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-23 21:15:50,547 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-23 21:15:50,547 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:15:50,550 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-23 21:15:50,550 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-23 21:15:50,550 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-23 21:15:50,550 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-23 21:15:50,550 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:15:50,550 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:15:50,711 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:15:50,711 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-23 21:15:50,730 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-23 21:15:50,732 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-23 21:15:50,732 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-23 21:15:50,732 - main - INFO - 📊 Available components: 7/7
+2025-06-23 21:15:50,732 - main - INFO - ✅ Mathematical engine initialized
+2025-06-23 21:15:50,732 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-23 21:15:50,733 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-23 21:15:50,733 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-23 21:15:50,733 - main - INFO - ✅ Knowledge framework initialized
+2025-06-23 21:15:50,757 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-23 21:15:50,936 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-23 21:15:50,936 - main - INFO - ✅ Query interpreter initialized
+2025-06-23 21:15:50,936 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-23 21:15:50,936 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:15:50,936 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-23 21:15:50,936 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-23 21:15:50,936 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-23 21:15:50,936 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-23 21:15:50,936 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-23 21:15:50,936 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-23 21:15:50,936 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-23 21:15:50,936 - main - INFO - ✅ All components initialized successfully
+2025-06-24 00:37:57,427 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 00:37:57,427 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-24 00:37:58,493 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:37:58,527 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:37:59,258 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:37:59,258 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:37:59,258 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:37:59,259 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:37:59,259 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:37:59,263 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:37:59,263 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:37:59,263 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:37:59,263 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:37:59,263 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:37:59,264 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:37:59,472 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:37:59,472 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:37:59,494 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:37:59,496 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-24 00:37:59,496 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-24 00:37:59,496 - main - INFO - 📊 Available components: 7/7
+2025-06-24 00:37:59,496 - main - INFO - ✅ Mathematical engine initialized
+2025-06-24 00:37:59,496 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-24 00:37:59,496 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-24 00:37:59,496 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-24 00:37:59,496 - main - INFO - ✅ Knowledge framework initialized
+2025-06-24 00:37:59,520 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-24 00:37:59,713 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-24 00:37:59,713 - main - INFO - ✅ Query interpreter initialized
+2025-06-24 00:37:59,713 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-24 00:37:59,713 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:37:59,713 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-24 00:37:59,713 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:37:59,713 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-24 00:37:59,713 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-24 00:37:59,713 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-24 00:37:59,713 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-24 00:37:59,713 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-24 00:37:59,713 - main - INFO - ✅ All components initialized successfully
+2025-06-24 00:39:40,233 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 00:39:40,234 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-24 00:41:04,446 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:41:04,479 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:41:05,213 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:41:05,213 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:41:05,213 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:41:05,213 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:41:05,213 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:41:05,217 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:41:05,217 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:41:05,217 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:41:05,217 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:41:05,217 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:41:05,218 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:41:05,447 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:41:05,447 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:41:05,471 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:41:05,473 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-24 00:41:05,473 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-24 00:41:05,473 - main - INFO - 📊 Available components: 7/7
+2025-06-24 00:41:05,473 - main - INFO - ✅ Mathematical engine initialized
+2025-06-24 00:41:05,473 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-24 00:41:05,473 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-24 00:41:05,473 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-24 00:41:05,473 - main - INFO - ✅ Knowledge framework initialized
+2025-06-24 00:41:05,498 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-24 00:41:05,687 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-24 00:41:05,687 - main - INFO - ✅ Query interpreter initialized
+2025-06-24 00:41:05,687 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-24 00:41:05,687 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:41:05,687 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-24 00:41:05,687 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:41:05,687 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-24 00:41:05,687 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-24 00:41:05,687 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-24 00:41:05,687 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-24 00:41:05,687 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-24 00:41:05,687 - main - INFO - ✅ All components initialized successfully
+2025-06-24 00:47:42,544 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_70288332
+2025-06-24 00:47:42,544 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_70288332
+2025-06-24 00:47:42,544 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 00:47:42,544 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 00:47:42,546 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 00:47:42,547 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 00:47:42,547 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_70288332
+2025-06-24 00:51:47,224 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 00:51:47,224 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 00:51:47,225 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-24 00:51:48,467 - __main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:51:48,501 - __main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:51:49,174 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:51:49,174 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:51:49,174 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:51:49,174 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:51:49,174 - __main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:51:49,178 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:51:49,178 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:51:49,178 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:51:49,178 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:51:49,178 - __main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:51:49,178 - __main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:51:49,375 - __main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:51:49,375 - __main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:51:50,128 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:51:50,151 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:51:50,681 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:51:50,681 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:51:50,681 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:51:50,681 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:51:50,681 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:51:50,684 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:51:50,684 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:51:50,684 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:51:50,684 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:51:50,684 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:51:50,684 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:51:50,845 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:51:50,845 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:51:50,867 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:51:50,871 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-24 00:51:50,871 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-24 00:51:50,871 - main - INFO - 📊 Available components: 7/7
+2025-06-24 00:51:50,871 - main - INFO - ✅ Mathematical engine initialized
+2025-06-24 00:51:50,871 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-24 00:51:50,871 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-24 00:51:50,871 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-24 00:51:50,871 - main - INFO - ✅ Knowledge framework initialized
+2025-06-24 00:51:50,895 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-24 00:51:51,074 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-24 00:51:51,074 - main - INFO - ✅ Query interpreter initialized
+2025-06-24 00:51:51,074 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-24 00:51:51,074 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:51:51,074 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-24 00:51:51,074 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:51:51,074 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-24 00:51:51,074 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-24 00:51:51,074 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-24 00:51:51,074 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-24 00:51:51,075 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-24 00:51:51,075 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-24 00:51:51,075 - main - INFO - ✅ All components initialized successfully
+2025-06-24 00:58:03,859 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 00:58:03,860 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 00:58:03,861 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-24 00:58:05,153 - __main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:58:05,187 - __main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:58:05,849 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:58:05,849 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:58:05,849 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:58:05,849 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:58:05,850 - __main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:58:05,853 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:58:05,853 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:58:05,853 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:58:05,853 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:58:05,853 - __main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:58:05,854 - __main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:58:06,048 - __main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:58:06,048 - __main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:58:06,818 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:58:06,840 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:58:07,371 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 00:58:07,372 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 00:58:07,372 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 00:58:07,372 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 00:58:07,372 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:58:07,374 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 00:58:07,374 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 00:58:07,374 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 00:58:07,374 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 00:58:07,374 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:58:07,374 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:58:07,538 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:58:07,538 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-24 00:58:07,561 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 00:58:07,564 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-24 00:58:07,564 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-24 00:58:07,564 - main - INFO - 📊 Available components: 7/7
+2025-06-24 00:58:07,564 - main - INFO - ✅ Mathematical engine initialized
+2025-06-24 00:58:07,564 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-24 00:58:07,564 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-24 00:58:07,564 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-24 00:58:07,564 - main - INFO - ✅ Knowledge framework initialized
+2025-06-24 00:58:07,588 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-24 00:58:07,768 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-24 00:58:07,768 - main - INFO - ✅ Query interpreter initialized
+2025-06-24 00:58:07,768 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-24 00:58:07,768 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:58:07,768 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-24 00:58:07,768 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 00:58:07,768 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-24 00:58:07,768 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-24 00:58:07,768 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-24 00:58:07,769 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-24 00:58:07,769 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-24 00:58:07,769 - main - INFO - ✅ All components initialized successfully
+2025-06-24 01:01:18,347 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 01:01:18,347 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 01:01:18,347 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 01:01:18,347 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 01:01:18,349 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 01:01:18,351 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 01:01:18,351 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 01:05:07,677 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 01:05:07,678 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 01:05:07,678 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 01:05:07,678 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 01:05:07,679 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 01:05:07,681 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 01:05:07,681 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 01:05:07,682 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 01:05:07,682 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 01:05:07,682 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 01:05:07,682 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 01:05:07,684 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 01:05:07,685 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 01:05:07,685 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 13:05:23,085 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 13:05:23,085 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 13:05:23,085 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 13:05:23,085 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 13:05:23,090 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 13:05:23,091 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 13:05:23,091 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 13:05:23,116 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 13:05:23,116 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 13:05:23,116 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 13:05:23,116 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 13:05:23,118 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 13:05:23,121 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 13:05:23,121 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 13:08:10,425 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 13:08:10,426 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 13:08:10,426 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 13:08:10,426 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 13:08:10,428 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 13:08:10,429 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 13:08:10,429 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 13:08:10,464 - smart_defaults.engine - INFO - 🎯 Generating recommendations for user: demo_user_-8366890
+2025-06-24 13:08:10,464 - smart_defaults.engine - INFO - 📝 Created new user profile for: demo_user_-8366890
+2025-06-24 13:08:10,464 - smart_defaults.engine - INFO - 📋 Generated 9 candidate recommendations
+2025-06-24 13:08:10,464 - smart_defaults.engine - INFO - 🛡️ Policy filtering: 9 → 9 recommendations
+2025-06-24 13:08:10,466 - smart_defaults.engine - INFO - 🧠 ML enhanced 9 recommendations
+2025-06-24 13:08:10,467 - smart_defaults.engine - INFO - 🎯 Final recommendations: 9 (from 9 candidates)
+2025-06-24 13:08:10,467 - smart_defaults.engine - INFO - ✅ Generated 9 recommendations for demo_user_-8366890
+2025-06-24 17:27:16,187 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 17:27:16,187 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
+2025-06-24 17:29:09,642 - __mp_main__ - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 17:29:09,679 - __mp_main__ - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 17:29:10,395 - adaptive_interpreter - INFO - ✅ spaCy available
+2025-06-24 17:29:10,395 - adaptive_interpreter - INFO - ✅ python-dateutil available
+2025-06-24 17:29:10,395 - adaptive_interpreter - INFO - ✅ OpenAI available
+2025-06-24 17:29:10,395 - adaptive_interpreter - INFO - ✅ scikit-learn available
+2025-06-24 17:29:10,395 - __mp_main__ - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 17:29:10,398 - enhanced_analytics_part4b - INFO - ✅ Module integrity validation passed
+2025-06-24 17:29:10,398 - enhanced_analytics_part4b - INFO - 🎉 Enhanced Analytics Part 4B v4.0.0 initialized successfully
+2025-06-24 17:29:10,398 - enhanced_analytics_part4b - INFO - 📊 Status: Production
+2025-06-24 17:29:10,398 - enhanced_analytics_part4b - INFO - 🔧 Available components: Report Builder, Analytics System
+2025-06-24 17:29:10,398 - __mp_main__ - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 17:29:10,399 - __mp_main__ - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 17:29:10,605 - __mp_main__ - INFO - ✅ smart_defaults imported successfully
+2025-06-24 17:29:10,605 - __mp_main__ - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ mathematical_engine imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ knowledge_framework imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ adaptive_interpreter imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ enhanced_analytics components imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ chart_suggestions imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ smart_defaults imported successfully
+2025-06-24 17:29:10,631 - main - INFO - ✅ SmartDataAnalyzer imported successfully
+2025-06-24 17:29:10,634 - main - INFO - 🚀 Starting Enhanced Analytics Backend...
+2025-06-24 17:29:10,634 - main - INFO - 🚀 Initializing Enhanced Analytics System...
+2025-06-24 17:29:10,634 - main - INFO - 📊 Available components: 7/7
+2025-06-24 17:29:10,634 - main - INFO - ✅ Mathematical engine initialized
+2025-06-24 17:29:10,634 - knowledge_framework - INFO - 🧠 Hybrid Knowledge Framework initialized
+2025-06-24 17:29:10,634 - knowledge_framework - INFO -    📚 Local concepts loaded: 15
+2025-06-24 17:29:10,634 - knowledge_framework - INFO -    🌐 API sources available: 4
+2025-06-24 17:29:10,634 - main - INFO - ✅ Knowledge framework initialized
+2025-06-24 17:29:10,658 - adaptive_interpreter - INFO - ✅ OpenAI client initialized
+2025-06-24 17:29:10,835 - adaptive_interpreter - INFO - ✅ spaCy model loaded
+2025-06-24 17:29:10,835 - main - INFO - ✅ Query interpreter initialized
+2025-06-24 17:29:10,835 - enhanced_analytics_part4a - INFO - 🔍 Advanced Insight Generator initialized
+2025-06-24 17:29:10,835 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 17:29:10,835 - enhanced_analytics_part4b - WARNING - Partial system initialization: IntelligentDataProcessor.__init__() missing 2 required positional arguments: 'datasets' and 'knowledge_framework'
+2025-06-24 17:29:10,835 - enhanced_analytics_part4b - INFO - 📄 Comprehensive Report Builder initialized
+2025-06-24 17:29:10,835 - main - INFO - ✅ Enhanced analytics components initialized
+2025-06-24 17:29:10,835 - main - INFO - ✅ SmartDataAnalyzer initialized
+2025-06-24 17:29:10,835 - main - INFO - 🤖 Initializing Smart Defaults Engine...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 🚀 Initializing Smart Defaults Engine...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 📊 Initializing storage components...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Storage components initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ⚙️ Initializing configuration...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Configuration initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 📈 Initializing analytics...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Analytics initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 📢 Initializing notifications...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Notifications initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 🎯 Initializing advanced scoring...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Advanced scoring initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 🧠 Initializing analyzer components...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Environment scanner initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Profile analyzer initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Learning engine initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Policy engine initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ All analyzer components initialized
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - 🔄 Starting background tasks...
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Started 2 background tasks
+2025-06-24 17:29:10,835 - smart_defaults.engine - INFO - ✅ Smart Defaults Engine initialized successfully!
+2025-06-24 17:29:10,835 - main - INFO - ✅ Smart Defaults Engine initialized
+2025-06-24 17:29:10,835 - main - INFO - ✅ All components initialized successfully
+2025-06-24 17:44:04,131 - main - INFO - 🛑 Shutting down Enhanced Analytics Backend...
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - 🔐 Shutting down Smart Defaults Engine...
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Scoring Engine closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Notification Engine closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Policy Engine closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Learning Engine closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Profile Analyzer closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Environment Scanner closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Analytics Engine closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Cache Manager closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - ✅ Database Manager closed
+2025-06-24 17:44:04,132 - smart_defaults.engine - INFO - 🔐 Smart Defaults Engine shutdown complete
