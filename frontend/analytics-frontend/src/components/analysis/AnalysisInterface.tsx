@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { analyticsAPI } from '../../services/api';
+import { analyticsAPI, extractErrorMessage, AnalysisResponse } from '../../services/api';
 
 interface Message {
   id: string;
@@ -9,6 +9,7 @@ interface Message {
   analysis?: any;
   charts?: any[];
   loading?: boolean;
+  error?: boolean;
 }
 
 interface AnalysisSession {
@@ -27,6 +28,8 @@ const AnalysisInterface: React.FC = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [systemCapabilities, setSystemCapabilities] = useState<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -37,7 +40,9 @@ const AnalysisInterface: React.FC = () => {
     "Which products have the highest profit margins?",
     "What's the correlation between marketing spend and revenue?",
     "Identify outliers in the dataset",
-    "Predict next quarter's performance"
+    "Predict next quarter's performance",
+    "Create a comprehensive report with insights",
+    "Analyze seasonal patterns in the data"
   ];
 
   useEffect(() => {
@@ -46,10 +51,33 @@ const AnalysisInterface: React.FC = () => {
 
   useEffect(() => {
     loadSessions();
+    checkBackendStatus();
   }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const checkBackendStatus = async () => {
+    try {
+      setBackendStatus('checking');
+      const [health, capabilities] = await Promise.allSettled([
+        analyticsAPI.healthCheck(),
+        analyticsAPI.getCapabilities()
+      ]);
+
+      if (health.status === 'fulfilled' && health.value.status === 'healthy') {
+        setBackendStatus('connected');
+      } else {
+        setBackendStatus('disconnected');
+      }
+
+      if (capabilities.status === 'fulfilled') {
+        setSystemCapabilities(capabilities.value);
+      }
+    } catch (error) {
+      setBackendStatus('disconnected');
+    }
   };
 
   const loadSessions = () => {
@@ -108,6 +136,18 @@ const AnalysisInterface: React.FC = () => {
     e.preventDefault();
     if (!inputValue.trim() && !selectedFile) return;
 
+    if (backendStatus !== 'connected') {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: '❌ Backend is not connected. Please ensure the server is running at http://localhost:8000',
+        timestamp: new Date(),
+        error: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
@@ -118,7 +158,7 @@ const AnalysisInterface: React.FC = () => {
     const loadingMessage: Message = {
       id: (Date.now() + 1).toString(),
       type: 'assistant',
-      content: 'Analyzing your request...',
+      content: 'Analyzing your request using advanced AI...',
       timestamp: new Date(),
       loading: true
     };
@@ -128,75 +168,97 @@ const AnalysisInterface: React.FC = () => {
     setIsAnalyzing(true);
 
     try {
-      // Simulate analysis with mock response
-      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000));
+      console.log('🔬 Starting enhanced analysis with backend...');
 
-      // Generate mock analysis response
-      const mockAnalysis = {
-        type: 'trend_analysis',
-        summary: `I've analyzed your request: "${userMessage.content}". Here are the key insights I discovered:`,
-        insights: [
-          'Data shows a positive upward trend over the last 6 months',
-          'Peak performance occurs during Q2 and Q4 periods',
-          'Customer retention rate has improved by 15% year-over-year',
-          'Revenue growth is primarily driven by new customer acquisition',
-          'Data quality is excellent with <2% missing values'
-        ],
-        data: Array.from({length: 100}, (_, i) => ({
-          date: new Date(2024, 0, i).toISOString().split('T')[0],
-          value: Math.random() * 1000 + 500,
-          category: ['A', 'B', 'C'][i % 3]
-        }))
-      };
+      const response: AnalysisResponse = await analyticsAPI.analyze({
+        prompt: inputValue.trim() || 'Please analyze this data and provide insights',
+        file: selectedFile || undefined,
+        use_adaptive: true,
+        include_charts: true,
+        auto_discover: !selectedFile,
+        domain: 'general'
+      });
 
-      const mockCharts = [
-        {
-          type: 'line',
-          title: 'Trend Analysis',
-          description: 'Time series showing performance over time'
-        },
-        {
-          type: 'bar',
-          title: 'Category Comparison',
-          description: 'Comparative analysis across different segments'
+      console.log('📡 Analysis response received:', response);
+
+      if (response.status === 'success') {
+        // Create enhanced analysis result
+        const analysisContent = `${response.analysis?.summary || 'Analysis completed successfully'}
+
+${response.comprehensive_report?.executive_summary ? `**Executive Summary:**
+${response.comprehensive_report.executive_summary}
+
+` : ''}**Key Insights:**
+${(response.analysis?.insights || []).map((insight: string, i: number) => `${i + 1}. ${insight}`).join('\n')}
+
+${response.comprehensive_report?.recommendations ? `**Recommendations:**
+${response.comprehensive_report.recommendations.map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
+
+` : ''}**Analysis Details:**
+• Type: ${response.analysis?.type || 'General Analysis'}
+• Confidence: ${Math.round((response.query_interpretation?.confidence || 0.8) * 100)}%
+• Processing Time: ${response.performance?.total_time_ms || 'N/A'}ms
+• Data Points: ${response.performance?.data_stats?.rows || response.performance?.data_stats?.rows_processed || 'N/A'}`;
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          type: 'assistant',
+          content: analysisContent,
+          timestamp: new Date(),
+          analysis: {
+            type: response.analysis?.type || 'general_analysis',
+            summary: response.analysis?.summary || 'Analysis completed',
+            insights: response.analysis?.insights || [],
+            data: response.analysis?.data || [],
+            metadata: response.analysis?.metadata || {},
+            performance: response.performance,
+            comprehensive_report: response.comprehensive_report,
+            query_interpretation: response.query_interpretation
+          },
+          charts: response.chart_intelligence?.suggested_charts || []
+        };
+
+        setMessages(prev => prev.slice(0, -1).concat(assistantMessage));
+
+        // Update or create session
+        if (activeSessionId) {
+          const updatedSessions = sessions.map(session =>
+            session.id === activeSessionId
+              ? {
+                  ...session,
+                  messages: [...session.messages, userMessage, assistantMessage],
+                  lastActivity: new Date(),
+                  title: session.title === 'New Analysis' ? userMessage.content.slice(0, 50) + '...' : session.title
+                }
+              : session
+          );
+          setSessions(updatedSessions);
+          saveSessions(updatedSessions);
         }
-      ];
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 2).toString(),
-        type: 'assistant',
-        content: mockAnalysis.summary,
-        timestamp: new Date(),
-        analysis: mockAnalysis,
-        charts: mockCharts
-      };
-
-      setMessages(prev => prev.slice(0, -1).concat(assistantMessage));
-
-      // Update or create session
-      if (activeSessionId) {
-        const updatedSessions = sessions.map(session =>
-          session.id === activeSessionId
-            ? {
-                ...session,
-                messages: [...session.messages, userMessage, assistantMessage],
-                lastActivity: new Date(),
-                title: session.title === 'New Analysis' ? userMessage.content.slice(0, 50) + '...' : session.title
-              }
-            : session
-        );
-        setSessions(updatedSessions);
-        saveSessions(updatedSessions);
+      } else {
+        throw new Error(extractErrorMessage(response));
       }
 
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error('💥 Analysis failed:', error);
 
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         type: 'assistant',
-        content: 'Sorry, I encountered an error while analyzing your request. Please try again or check your data format.',
-        timestamp: new Date()
+        content: `❌ **Analysis Error**
+
+${extractErrorMessage(error)}
+
+**Troubleshooting Steps:**
+1. Ensure the backend server is running at http://localhost:8000
+2. Check your data file format (CSV, Excel, JSON supported)
+3. Verify your query is clear and specific
+4. Try a simpler question first
+
+You can also try the enhanced DataGenie interface for a more guided experience.`,
+        timestamp: new Date(),
+        error: true
       };
 
       setMessages(prev => prev.slice(0, -1).concat(errorMessage));
@@ -208,6 +270,34 @@ const AnalysisInterface: React.FC = () => {
   };
 
   const handleFileSelect = (file: File) => {
+    // Validate file
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.size > maxSize) {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: `❌ File too large: ${Math.round(file.size / 1024 / 1024)}MB. Maximum size is 100MB.`,
+        timestamp: new Date(),
+        error: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      return;
+    }
+
+    const allowedTypes = ['.csv', '.xlsx', '.xls', '.json'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    if (!allowedTypes.includes(fileExtension)) {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: `❌ Unsupported file type: ${fileExtension}. Please use CSV, Excel, or JSON files.`,
+        timestamp: new Date(),
+        error: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      return;
+    }
+
     setSelectedFile(file);
     setShowFileUpload(false);
   };
@@ -236,6 +326,19 @@ const AnalysisInterface: React.FC = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getStatusIndicator = () => {
+    switch (backendStatus) {
+      case 'checking':
+        return { color: 'bg-yellow-500', text: 'Checking...', pulse: true };
+      case 'connected':
+        return { color: 'bg-green-500', text: 'AI Ready', pulse: false };
+      case 'disconnected':
+        return { color: 'bg-red-500', text: 'Offline', pulse: false };
+    }
+  };
+
+  const statusInfo = getStatusIndicator();
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar - Previous Sessions */}
@@ -256,7 +359,7 @@ const AnalysisInterface: React.FC = () => {
 
           <button
             onClick={createNewSession}
-            className="w-full btn-primary text-left"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-left"
           >
             🧠 Start New Analysis
           </button>
@@ -291,6 +394,31 @@ const AnalysisInterface: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* System Status in Sidebar */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="text-xs text-gray-500 mb-2">System Status</div>
+          <div className="flex items-center space-x-2 text-sm">
+            <div className={`w-2 h-2 rounded-full ${statusInfo.color} ${statusInfo.pulse ? 'animate-pulse' : ''}`} />
+            <span className="text-gray-700">{statusInfo.text}</span>
+          </div>
+          {systemCapabilities && (
+            <div className="mt-2 text-xs space-y-1">
+              {systemCapabilities.smart_features?.unified_smart_engine && (
+                <div className="text-blue-600">🧠 Smart Engine Ready</div>
+              )}
+              {systemCapabilities.smart_features?.llm_powered_query_understanding && (
+                <div className="text-green-600">🤖 AI Processing</div>
+              )}
+            </div>
+          )}
+          <button
+            onClick={checkBackendStatus}
+            className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+          >
+            Refresh Status
+          </button>
+        </div>
       </div>
 
       {/* Main Chat Interface */}
@@ -299,14 +427,14 @@ const AnalysisInterface: React.FC = () => {
         <div className="bg-white border-b border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">AI Analysis Interface</h1>
-              <p className="text-gray-600">Ask questions about your data in natural language</p>
+              <h1 className="text-2xl font-bold text-gray-900">Enhanced AI Analysis Interface</h1>
+              <p className="text-gray-600">Ask questions about your data in natural language with advanced AI processing</p>
             </div>
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 px-3 py-1 bg-green-50 rounded-full">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-700 font-medium">AI Ready</span>
+                <div className={`w-2 h-2 rounded-full ${statusInfo.color} ${statusInfo.pulse ? 'animate-pulse' : ''}`} />
+                <span className="text-sm text-green-700 font-medium">{statusInfo.text}</span>
               </div>
 
               <button
@@ -318,6 +446,13 @@ const AnalysisInterface: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
               </button>
+
+              <a
+                href="/datagenie"
+                className="text-sm bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                DataGenie
+              </a>
             </div>
           </div>
         </div>
@@ -330,11 +465,50 @@ const AnalysisInterface: React.FC = () => {
               <div className="text-center mb-8">
                 <div className="text-6xl mb-4">🧠</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Welcome to AI Analysis
+                  Welcome to Enhanced AI Analysis
                 </h2>
                 <p className="text-gray-600 mb-8">
-                  Ask questions about your data in plain English. I can analyze trends, create visualizations, and provide insights.
+                  Ask questions about your data in plain English. I can analyze trends, create comprehensive reports, detect patterns, and provide advanced insights using cutting-edge AI.
                 </p>
+              </div>
+
+              {/* Enhanced Features */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-blue-600">🧠</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Smart Analysis</h3>
+                      <p className="text-sm text-gray-600">AI-powered insights and recommendations</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <span className="text-green-600">📊</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Auto Charts</h3>
+                      <p className="text-sm text-gray-600">Intelligent visualization suggestions</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <span className="text-purple-600">📋</span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Full Reports</h3>
+                      <p className="text-sm text-gray-600">Comprehensive analysis reports</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Example Questions */}
@@ -368,17 +542,23 @@ const AnalysisInterface: React.FC = () => {
                     <div className="text-sm text-gray-500">CSV, Excel, JSON</div>
                   </button>
 
-                  <button className="p-4 text-center border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors">
+                  <a
+                    href="/discovery"
+                    className="p-4 text-center border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors no-underline"
+                  >
                     <div className="text-2xl mb-2">🔗</div>
                     <div className="font-medium text-gray-900">Connect Source</div>
                     <div className="text-sm text-gray-500">Database, API</div>
-                  </button>
+                  </a>
 
-                  <button className="p-4 text-center border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors">
-                    <div className="text-2xl mb-2">📊</div>
-                    <div className="font-medium text-gray-900">View Sample</div>
-                    <div className="text-sm text-gray-500">Demo data</div>
-                  </button>
+                  <a
+                    href="/datagenie"
+                    className="p-4 text-center border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors no-underline"
+                  >
+                    <div className="text-2xl mb-2">🧞‍♂️</div>
+                    <div className="font-medium text-gray-900">DataGenie</div>
+                    <div className="text-sm text-gray-500">Guided analysis</div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -393,15 +573,17 @@ const AnalysisInterface: React.FC = () => {
                     className={`max-w-3xl p-4 rounded-lg ${
                       message.type === 'user'
                         ? 'bg-blue-600 text-white'
+                        : message.error
+                        ? 'bg-red-50 border border-red-200 text-red-900'
                         : 'bg-white border border-gray-200'
                     }`}
                   >
-                    {message.type === 'assistant' && (
+                    {message.type === 'assistant' && !message.error && (
                       <div className="flex items-center space-x-2 mb-2">
                         <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-blue-600 text-sm">🧠</span>
                         </div>
-                        <span className="text-sm font-medium text-gray-700">AI Assistant</span>
+                        <span className="text-sm font-medium text-gray-700">Enhanced AI Assistant</span>
                         <span className="text-xs text-gray-500">{formatTimestamp(message.timestamp)}</span>
                       </div>
                     )}
@@ -411,18 +593,47 @@ const AnalysisInterface: React.FC = () => {
                         <svg className="animate-spin w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        <span className="text-gray-600">Analyzing...</span>
+                        <span className="text-gray-600">Enhanced AI processing...</span>
                       </div>
                     ) : (
                       <div>
-                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        <div className="whitespace-pre-wrap">{message.content}</div>
 
-                        {/* Analysis Results */}
-                        {message.analysis && (
+                        {/* Enhanced Analysis Results */}
+                        {message.analysis && !message.error && (
                           <div className="mt-4 space-y-4">
+                            {/* Performance Metrics */}
+                            {message.analysis.performance && (
+                              <div className="bg-gray-50 p-3 rounded-lg border">
+                                <h4 className="font-semibold text-gray-900 mb-2">📊 Analysis Metrics</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                                  <div className="text-center">
+                                    <div className="font-bold text-blue-600">
+                                      {message.analysis.performance.total_time_ms || 'N/A'}ms
+                                    </div>
+                                    <div className="text-gray-600">Processing Time</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-bold text-green-600">
+                                      {message.analysis.performance.data_stats?.rows ||
+                                       message.analysis.performance.data_stats?.rows_processed || 'N/A'}
+                                    </div>
+                                    <div className="text-gray-600">Data Points</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-bold text-purple-600">
+                                      {Math.round((message.analysis.query_interpretation?.confidence || 0.8) * 100)}%
+                                    </div>
+                                    <div className="text-gray-600">Confidence</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Key Insights */}
                             {message.analysis.insights && message.analysis.insights.length > 0 && (
-                              <div className="bg-blue-50 p-4 rounded-lg">
-                                <h4 className="font-semibold text-blue-900 mb-2">Key Insights</h4>
+                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <h4 className="font-semibold text-blue-900 mb-2">✨ Key Insights</h4>
                                 <ul className="space-y-1">
                                   {message.analysis.insights.map((insight: string, index: number) => (
                                     <li key={index} className="text-blue-800 text-sm flex items-start space-x-2">
@@ -434,13 +645,42 @@ const AnalysisInterface: React.FC = () => {
                               </div>
                             )}
 
-                            {message.analysis.data && (
-                              <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-semibold text-gray-900 mb-2">Data Summary</h4>
+                            {/* Data Summary */}
+                            {message.analysis.data && message.analysis.data.length > 0 && (
+                              <div className="bg-gray-50 p-4 rounded-lg border">
+                                <h4 className="font-semibold text-gray-900 mb-2">📋 Data Summary</h4>
                                 <div className="text-sm text-gray-700">
                                   <p>Records: {message.analysis.data.length}</p>
-                                  <p>Type: {message.analysis.type}</p>
+                                  <p>Analysis Type: {message.analysis.type}</p>
                                 </div>
+                              </div>
+                            )}
+
+                            {/* Comprehensive Report Section */}
+                            {message.analysis.comprehensive_report && (
+                              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h4 className="font-semibold text-green-900 mb-2">📄 Comprehensive Report</h4>
+
+                                {message.analysis.comprehensive_report.executive_summary && (
+                                  <div className="mb-3">
+                                    <h5 className="font-medium text-green-800 mb-1">Executive Summary:</h5>
+                                    <p className="text-green-700 text-sm">{message.analysis.comprehensive_report.executive_summary}</p>
+                                  </div>
+                                )}
+
+                                {message.analysis.comprehensive_report.recommendations && (
+                                  <div>
+                                    <h5 className="font-medium text-green-800 mb-1">Recommendations:</h5>
+                                    <ul className="space-y-1">
+                                      {message.analysis.comprehensive_report.recommendations.map((rec: string, index: number) => (
+                                        <li key={index} className="text-green-700 text-sm flex items-start space-x-2">
+                                          <span className="text-green-600 mt-1">✓</span>
+                                          <span>{rec}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -449,17 +689,17 @@ const AnalysisInterface: React.FC = () => {
                         {/* Chart Suggestions */}
                         {message.charts && message.charts.length > 0 && (
                           <div className="mt-4">
-                            <h4 className="font-semibold text-gray-900 mb-3">Suggested Visualizations</h4>
+                            <h4 className="font-semibold text-gray-900 mb-3">📈 Suggested Visualizations</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {message.charts.map((chart: any, index: number) => (
                                 <div key={index} className="p-3 bg-gray-50 rounded-lg border">
                                   <div className="flex items-center space-x-2 mb-2">
-                                    <span className="text-lg">📈</span>
-                                    <span className="font-medium text-gray-900">{chart.title || 'Chart'}</span>
+                                    <span className="text-lg">📊</span>
+                                    <span className="font-medium text-gray-900">{chart.title || `${chart.type || chart.chart_type} Chart`}</span>
                                   </div>
-                                  <p className="text-sm text-gray-600">{chart.description || 'Visualization ready'}</p>
+                                  <p className="text-sm text-gray-600">{chart.description || chart.reasoning || 'Enhanced visualization ready'}</p>
                                   <button className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">
-                                    Generate Chart
+                                    Generate {chart.type || chart.chart_type} Chart
                                   </button>
                                 </div>
                               ))}
@@ -519,12 +759,12 @@ const AnalysisInterface: React.FC = () => {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="btn-primary"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Choose File
                 </button>
                 <p className="text-xs text-gray-500 mt-2">
-                  Supports CSV, Excel, and JSON files
+                  Supports CSV, Excel, and JSON files (max 100MB)
                 </p>
               </div>
             </div>
@@ -559,7 +799,7 @@ const AnalysisInterface: React.FC = () => {
                 <textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask me anything about your data..."
+                  placeholder="Ask me anything about your data... (Enhanced AI processing with comprehensive reports)"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   rows={3}
                   onKeyDown={(e) => {
@@ -578,9 +818,9 @@ const AnalysisInterface: React.FC = () => {
             <div className="flex flex-col space-y-2">
               <button
                 type="submit"
-                disabled={isAnalyzing || (!inputValue.trim() && !selectedFile)}
+                disabled={isAnalyzing || (!inputValue.trim() && !selectedFile) || backendStatus !== 'connected'}
                 className={`px-6 py-3 bg-blue-600 text-white rounded-lg font-medium transition-colors ${
-                  isAnalyzing || (!inputValue.trim() && !selectedFile)
+                  isAnalyzing || (!inputValue.trim() && !selectedFile) || backendStatus !== 'connected'
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:bg-blue-700'
                 }`}
@@ -603,6 +843,12 @@ const AnalysisInterface: React.FC = () => {
               </button>
             </div>
           </form>
+
+          {backendStatus !== 'connected' && (
+            <div className="mt-2 text-xs text-red-600">
+              ⚠️ Backend server is offline. Please start the server at http://localhost:8000
+            </div>
+          )}
         </div>
       </div>
     </div>

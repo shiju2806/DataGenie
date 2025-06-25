@@ -1,1105 +1,773 @@
 import React, { useState, useEffect } from 'react';
-import { analyticsAPI } from '../../services/api';
+import { Search, Database, Check, X, Play, Settings, RefreshCw, Plus, AlertCircle, Zap, Brain, Eye } from 'lucide-react';
+import { analyticsAPI, extractErrorMessage, DataSource, DiscoveryResponse } from '../../services/api';
 
-// Import types from the API
-import type {
-  DataSource,
-  DiscoveryResponse,
-  DiscoverySession,
-  APIError
-} from '../../services/api';
-
-// Define missing types locally since they're not exported
-interface DiscoverySettings {
-  auto_discovery: boolean;
-  scan_frequency: 'hourly' | 'daily' | 'weekly';
-  confidence_threshold: number;
-  include_cloud_sources: boolean;
-  scan_locations: string[];
-}
-
-interface DiscoveryInsights {
-  recommendations: Array<{
-    type: string;
-    title: string;
-    description: string;
-    priority: 'high' | 'medium' | 'low';
-    estimated_value: string;
-  }>;
-  patterns: Array<{
-    pattern_type: string;
-    description: string;
-    frequency: number;
-  }>;
-}
-
-interface DataSourceValidation {
-  status: 'valid' | 'invalid' | 'warning';
-  issues: Array<{
-    type: 'connection' | 'schema' | 'data_quality';
-    severity: 'low' | 'medium' | 'high';
-    message: string;
-    suggestion?: string;
-  }>;
-  health_score: number;
+interface DiscoverySession {
+  id: string;
+  timestamp: string;
+  sources_found: number;
+  scan_mode: string;
+  duration_ms: number;
+  success_rate: number;
 }
 
 const DataDiscovery: React.FC = () => {
   const [discoveredSources, setDiscoveredSources] = useState<DataSource[]>([]);
-  const [connectedSources, setConnectedSources] = useState<DataSource[]>([]);
-  const [discoveryHistory, setDiscoveryHistory] = useState<DiscoverySession[]>([]);
-  const [discoverySettings, setDiscoverySettings] = useState<DiscoverySettings | null>(null);
-  const [discoveryInsights, setDiscoveryInsights] = useState<DiscoveryInsights | null>(null);
-
   const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [selectedSources, setSelectedSources] = useState<Set<string>>(new Set());
+  const [testingConnections, setTestingConnections] = useState<Set<string>>(new Set());
+  const [connectedSources, setConnectedSources] = useState<Set<string>>(new Set());
+  const [failedSources, setFailedSources] = useState<Set<string>>(new Set());
   const [scanMode, setScanMode] = useState<'fast' | 'balanced' | 'thorough'>('balanced');
-  const [selectedSource, setSelectedSource] = useState<DataSource | null>(null);
-  const [showConnectionModal, setShowConnectionModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [connectionParams, setConnectionParams] = useState<any>({});
-  const [testingConnection, setTestingConnection] = useState(false);
-  const [sourceValidation, setSourceValidation] = useState<DataSourceValidation | null>(null);
+  const [includeEnvironmentScan, setIncludeEnvironmentScan] = useState(true);
+  const [maxRecommendations, setMaxRecommendations] = useState(10);
+  const [confidenceThreshold, setConfidenceThreshold] = useState(0.6);
   const [error, setError] = useState<string | null>(null);
-
-  const scanModes = [
-    {
-      id: 'fast' as const,
-      name: 'Fast Scan',
-      description: 'Quick discovery of obvious data sources',
-      icon: '⚡',
-      estimatedTime: '30 seconds'
-    },
-    {
-      id: 'balanced' as const,
-      name: 'Balanced Scan',
-      description: 'Comprehensive scan with good performance',
-      icon: '⚖️',
-      estimatedTime: '2 minutes'
-    },
-    {
-      id: 'thorough' as const,
-      name: 'Thorough Scan',
-      description: 'Deep scan for all possible sources',
-      icon: '🔍',
-      estimatedTime: '5 minutes'
-    }
-  ];
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [systemCapabilities, setSystemCapabilities] = useState<any>(null);
+  const [discoveryHistory, setDiscoveryHistory] = useState<DiscoverySession[]>([]);
+  const [lastScanMetadata, setLastScanMetadata] = useState<any>(null);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
   useEffect(() => {
-    initializeComponent();
+    initializeDiscovery();
+    loadDiscoveryHistory();
   }, []);
 
-  const initializeComponent = async () => {
+  const initializeDiscovery = async () => {
     try {
-      await Promise.allSettled([
-        loadConnectedSources(),
-        loadDiscoveryHistory(),
-        loadDiscoverySettings(),
-        loadDiscoveryInsights()
+      setBackendStatus('checking');
+
+      // Check backend status and capabilities
+      const [healthCheck, capabilities] = await Promise.allSettled([
+        analyticsAPI.healthCheck(),
+        analyticsAPI.getCapabilities()
       ]);
+
+      if (healthCheck.status === 'fulfilled' && healthCheck.value.status === 'healthy') {
+        setBackendStatus('connected');
+      } else {
+        setBackendStatus('disconnected');
+      }
+
+      if (capabilities.status === 'fulfilled') {
+        setSystemCapabilities(capabilities.value);
+      }
+
+      // Auto-discover sources on load
+      await performDiscovery();
+
     } catch (error) {
-      console.error('Failed to initialize component:', error);
-      setError('Failed to load initial data');
+      console.error('Failed to initialize discovery:', error);
+      setBackendStatus('disconnected');
+      setError('Failed to initialize data discovery. Please check backend connection.');
     }
   };
 
-  const loadConnectedSources = async () => {
+  const loadDiscoveryHistory = () => {
     try {
-      const sources = await analyticsAPI.getConnectedSources();
-      setConnectedSources(sources);
-    } catch (error) {
-      console.error('Failed to load connected sources:', error);
-      // Use mock data as fallback
-      setConnectedSources([
-        {
-          id: '1',
-          source_id: 'postgres_main',
-          type: 'PostgreSQL',
-          confidence: 0.95,
-          reasoning: 'Active connection found',
-          context: {
-            host: 'localhost',
-            port: 5432,
-            database: 'analytics_db',
-            table_count: 45
-          },
-          status: 'connected'
-        }
-      ]);
-    }
-  };
-
-  const loadDiscoveryHistory = async () => {
-    try {
-      const response = await analyticsAPI.getDiscoveryHistory();
-      setDiscoveryHistory(response.discovery_sessions || []);
+      const history = JSON.parse(localStorage.getItem('discovery_history') || '[]');
+      setDiscoveryHistory(history.slice(0, 5)); // Keep last 5 sessions
     } catch (error) {
       console.error('Failed to load discovery history:', error);
-      // Use mock data as fallback
-      setDiscoveryHistory([
-        {
-          id: '1',
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          sources_found: 12,
-          scan_mode: 'balanced',
-          duration_ms: 120000,
-          success_rate: 0.85
-        }
-      ]);
     }
   };
 
-  const loadDiscoverySettings = async () => {
+  const saveDiscoverySession = (session: DiscoverySession) => {
     try {
-      // Check if the method exists first
-      if (typeof analyticsAPI.getDiscoverySettings === 'function') {
-        const response = await analyticsAPI.getDiscoverySettings();
-        setDiscoverySettings(response.settings);
-      } else {
-        // Use default settings if method doesn't exist
-        setDiscoverySettings({
-          auto_discovery: false,
-          scan_frequency: 'daily',
-          confidence_threshold: 0.5,
-          include_cloud_sources: true,
-          scan_locations: ['/data', '/home/data']
-        });
-      }
+      const history = JSON.parse(localStorage.getItem('discovery_history') || '[]');
+      history.unshift(session);
+      localStorage.setItem('discovery_history', JSON.stringify(history.slice(0, 10)));
+      setDiscoveryHistory(history.slice(0, 5));
     } catch (error) {
-      console.error('Failed to load discovery settings:', error);
-      // Use default settings
-      setDiscoverySettings({
-        auto_discovery: false,
-        scan_frequency: 'daily',
-        confidence_threshold: 0.5,
-        include_cloud_sources: true,
-        scan_locations: ['/data', '/home/data']
-      });
+      console.error('Failed to save discovery session:', error);
     }
   };
 
-  const loadDiscoveryInsights = async () => {
-    try {
-      // Check if the method exists first
-      if (typeof analyticsAPI.getDiscoveryInsights === 'function') {
-        const response = await analyticsAPI.getDiscoveryInsights();
-        setDiscoveryInsights(response.insights);
-      } else {
-        // Use mock insights if method doesn't exist
-        setDiscoveryInsights({
-          recommendations: [
-            {
-              type: 'database',
-              title: 'Consider MySQL Connection',
-              description: 'MySQL service detected but not connected',
-              priority: 'high',
-              estimated_value: 'High data volume available'
-            }
-          ],
-          patterns: [
-            {
-              pattern_type: 'database_clustering',
-              description: 'Multiple databases found on same host',
-              frequency: 3
-            }
-          ]
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load discovery insights:', error);
-      // Use mock insights
-      setDiscoveryInsights({
-        recommendations: [
-          {
-            type: 'database',
-            title: 'Consider MySQL Connection',
-            description: 'MySQL service detected but not connected',
-            priority: 'high',
-            estimated_value: 'High data volume available'
-          }
-        ],
-        patterns: [
-          {
-            pattern_type: 'database_clustering',
-            description: 'Multiple databases found on same host',
-            frequency: 3
-          }
-        ]
-      });
+  const performDiscovery = async () => {
+    if (backendStatus !== 'connected') {
+      setError('Backend is not connected. Please check the server status.');
+      return;
     }
-  };
 
-  const runDiscovery = async () => {
     setIsScanning(true);
+    setScanProgress(0);
     setError(null);
 
+    const startTime = Date.now();
+
     try {
-      const result: DiscoveryResponse = await analyticsAPI.discoverDataSources({
+      console.log('🔍 Starting data source discovery...');
+
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setScanProgress(prev => Math.min(prev + Math.random() * 20, 95));
+      }, 500);
+
+      const response: DiscoveryResponse = await analyticsAPI.discoverDataSources({
         mode: scanMode,
-        include_environment_scan: true,
-        max_recommendations: 20,
-        confidence_threshold: discoverySettings?.confidence_threshold || 0.5
+        include_environment_scan: includeEnvironmentScan,
+        max_recommendations: maxRecommendations,
+        confidence_threshold: confidenceThreshold
       });
 
-      setDiscoveredSources(result.recommendations || []);
+      clearInterval(progressInterval);
+      setScanProgress(100);
 
-      // Refresh history and insights
-      await Promise.allSettled([
-        loadDiscoveryHistory(),
-        loadDiscoveryInsights()
-      ]);
+      if (response.status === 'success') {
+        setDiscoveredSources(response.recommendations);
+        setLastScanMetadata(response.metadata);
+
+        console.log(`✅ Discovery completed: ${response.recommendations.length} sources found`);
+
+        // Save discovery session
+        const session: DiscoverySession = {
+          id: Date.now().toString(),
+          timestamp: new Date().toISOString(),
+          sources_found: response.recommendations.length,
+          scan_mode: scanMode,
+          duration_ms: Date.now() - startTime,
+          success_rate: response.recommendations.length > 0 ? 100 : 0
+        };
+        saveDiscoverySession(session);
+
+        // Auto-select high-confidence sources
+        const highConfidenceSources = response.recommendations.filter(source => source.confidence >= 0.8);
+        const highConfidenceIds = new Set<string>();
+        highConfidenceSources.forEach(source => highConfidenceIds.add(source.id));
+        setSelectedSources(highConfidenceIds);
+
+      } else {
+        setError(`Discovery failed: ${response.message || 'Unknown error'}`);
+      }
 
     } catch (error) {
       console.error('Discovery failed:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Discovery failed';
-      setError(errorMsg);
-
-      // Use mock data as fallback
-      setDiscoveredSources([
-        {
-          id: '2',
-          source_id: 'mysql_prod',
-          type: 'MySQL',
-          confidence: 0.88,
-          reasoning: 'MySQL service detected on port 3306',
-          context: {
-            host: '192.168.1.100',
-            port: 3306,
-            database: 'production',
-            table_count: 28,
-            size: '2.4 GB'
-          },
-          status: 'discovered'
-        },
-        {
-          id: '3',
-          source_id: 'csv_files',
-          type: 'File System',
-          confidence: 0.72,
-          reasoning: 'Multiple CSV files found in data directory',
-          context: {
-            path: '/data/analytics/',
-            file_count: 15,
-            size: '450 MB'
-          },
-          status: 'discovered'
-        }
-      ]);
+      setError(extractErrorMessage(error));
     } finally {
       setIsScanning(false);
+      setScanProgress(0);
+    }
+  };
+
+  const testConnection = async (source: DataSource) => {
+    setTestingConnections(prev => {
+      const newSet = new Set(prev);
+      newSet.add(source.id);
+      return newSet;
+    });
+    setError(null);
+
+    try {
+      console.log(`🔌 Testing connection to ${source.source_id}...`);
+
+      // Use the analyticsAPI to test connection
+      const result = await analyticsAPI.testConnection(source.id, source.context);
+
+      if (result.status === 'success') {
+        setConnectedSources(prev => {
+          const newSet = new Set(prev);
+          newSet.add(source.id);
+          return newSet;
+        });
+        setFailedSources(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(source.id);
+          return newSet;
+        });
+        console.log(`✅ Connection successful: ${source.source_id}`);
+      } else {
+        setFailedSources(prev => {
+          const newSet = new Set(prev);
+          newSet.add(source.id);
+          return newSet;
+        });
+        setConnectedSources(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(source.id);
+          return newSet;
+        });
+        console.log(`❌ Connection failed: ${source.source_id}`);
+      }
+
+    } catch (error) {
+      console.error(`Connection test failed for ${source.source_id}:`, error);
+      setFailedSources(prev => {
+        const newSet = new Set(prev);
+        newSet.add(source.id);
+        return newSet;
+      });
+      setError(`Connection test failed for ${source.source_id}: ${extractErrorMessage(error)}`);
+    } finally {
+      setTestingConnections(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(source.id);
+        return newSet;
+      });
     }
   };
 
   const connectToSource = async (source: DataSource) => {
-    setSelectedSource(source);
-    setConnectionParams({
-      host: source.context.host || '',
-      port: source.context.port || '',
-      database: source.context.database || '',
-      username: '',
-      password: ''
-    });
-    setShowConnectionModal(true);
-    setSourceValidation(null);
-  };
-
-  const testConnection = async () => {
-    if (!selectedSource) return;
-
-    setTestingConnection(true);
     try {
-      const result = await analyticsAPI.testConnection(selectedSource.source_id, connectionParams);
+      console.log(`🔗 Connecting to ${source.source_id}...`);
+
+      const result = await analyticsAPI.connectDataSource(source.id, source.context);
 
       if (result.status === 'success') {
-        alert('Connection successful! ✅');
+        setConnectedSources(prev => {
+          const newSet = new Set(prev);
+          newSet.add(source.id);
+          return newSet;
+        });
+        console.log(`✅ Connected to ${source.source_id}`);
 
-        // Validate the source after successful connection
-        try {
-          if (typeof analyticsAPI.validateDataSource === 'function') {
-            const validation = await analyticsAPI.validateDataSource(selectedSource.source_id);
-            setSourceValidation(validation);
-          }
-        } catch (validationError) {
-          console.warn('Validation failed but connection succeeded:', validationError);
-        }
+        // Record feedback for successful connection
+        await analyticsAPI.recordFeedback(
+          `connect_${source.id}`,
+          'connected',
+          { source_id: source.id, timestamp: new Date().toISOString() }
+        );
       } else {
-        alert(`Connection failed: ${result.message} ❌`);
+        setError(`Failed to connect to ${source.source_id}: ${result.error || 'Unknown error'}`);
       }
+
     } catch (error) {
-      console.error('Connection test failed:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Connection test failed';
-      alert(`Connection test failed: ${errorMsg} ❌`);
-    } finally {
-      setTestingConnection(false);
+      console.error(`Connection failed for ${source.source_id}:`, error);
+      setError(`Connection failed: ${extractErrorMessage(error)}`);
     }
   };
 
-  const finalizeConnection = async () => {
-    if (!selectedSource) return;
+  const connectSelectedSources = async () => {
+    const selectedSourcesList = discoveredSources.filter(source => selectedSources.has(source.id));
 
-    try {
-      await analyticsAPI.connectDataSource(selectedSource.source_id, connectionParams);
-
-      // Update the source status locally
-      setDiscoveredSources(prev =>
-        prev.map(source =>
-          source.id === selectedSource.id
-            ? { ...source, status: 'connected' as const }
-            : source
-        )
-      );
-
-      // Refresh connected sources
-      await loadConnectedSources();
-
-      // Close modal and reset state
-      setShowConnectionModal(false);
-      setConnectionParams({});
-      setSelectedSource(null);
-      setSourceValidation(null);
-
-      alert('Data source connected successfully! 🎉');
-    } catch (error) {
-      console.error('Connection failed:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Connection failed';
-      alert(`Failed to connect data source: ${errorMsg} ❌`);
+    for (const source of selectedSourcesList) {
+      await connectToSource(source);
     }
   };
 
-  const disconnectSource = async (sourceId: string) => {
-    try {
-      if (typeof analyticsAPI.disconnectDataSource === 'function') {
-        await analyticsAPI.disconnectDataSource(sourceId);
-        await loadConnectedSources();
-        alert('Data source disconnected successfully! 🔌');
-      } else {
-        alert('Disconnect functionality not available ❌');
-      }
-    } catch (error) {
-      console.error('Disconnect failed:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Disconnect failed';
-      alert(`Failed to disconnect source: ${errorMsg} ❌`);
-    }
-  };
-
-  const refreshSource = async (sourceId: string) => {
-    try {
-      if (typeof analyticsAPI.refreshDataSource === 'function') {
-        await analyticsAPI.refreshDataSource(sourceId);
-        await loadConnectedSources();
-        alert('Data source refreshed successfully! 🔄');
-      } else {
-        alert('Refresh functionality not available ❌');
-      }
-    } catch (error) {
-      console.error('Refresh failed:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Refresh failed';
-      alert(`Failed to refresh source: ${errorMsg} ❌`);
-    }
-  };
-
-  const saveSettings = async (newSettings: DiscoverySettings) => {
-    try {
-      await analyticsAPI.saveDiscoverySettings(newSettings);
-      setDiscoverySettings(newSettings);
-      setShowSettingsModal(false);
-      alert('Settings saved successfully! ⚙️');
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Failed to save settings';
-      alert(`${errorMsg} ❌`);
-    }
-  };
-
-  const getStatusColor = (status: string | undefined) => {
-    switch (status) {
-      case 'connected': return 'text-green-600 bg-green-100';
-      case 'discovered': return 'text-blue-600 bg-blue-100';
-      case 'connecting': return 'text-yellow-600 bg-yellow-100';
-      case 'testing': return 'text-purple-600 bg-purple-100';
-      case 'error': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
+  const getSourceIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'postgresql': return '🐘';
-      case 'mysql': return '🐬';
-      case 'mongodb': return '🍃';
-      case 'redis': return '🔴';
-      case 'file system': return '📁';
-      case 'api': return '🔗';
-      case 'sqlite': return '💎';
-      case 'elasticsearch': return '🔍';
-      default: return '🗄️';
+      case 'database':
+      case 'postgresql':
+        return '🐘';
+      case 'mysql':
+        return '🐬';
+      case 'mongodb':
+        return '🍃';
+      case 'redis':
+        return '🔴';
+      case 'file':
+      case 'csv':
+        return '📁';
+      case 'excel':
+        return '📊';
+      case 'api':
+      case 'rest_api':
+        return '🔗';
+      case 'bi_tool':
+      case 'tableau':
+        return '📈';
+      case 'power_bi':
+        return '📊';
+      default:
+        return '🗄️';
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'text-red-600 bg-red-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'low': return 'text-green-600 bg-green-100';
-      default: return 'text-gray-600 bg-gray-100';
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 0.8) return 'text-green-600 bg-green-100';
+    if (confidence >= 0.6) return 'text-yellow-600 bg-yellow-100';
+    return 'text-red-600 bg-red-100';
+  };
+
+  const getStatusIndicator = () => {
+    switch (backendStatus) {
+      case 'checking':
+        return { color: 'bg-yellow-500', text: 'Checking...', pulse: true };
+      case 'connected':
+        return { color: 'bg-green-500', text: 'Discovery Ready', pulse: false };
+      case 'disconnected':
+        return { color: 'bg-red-500', text: 'Backend Offline', pulse: false };
     }
   };
 
-  const formatDuration = (ms: number) => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    return minutes > 0 ? `${minutes}m ${seconds % 60}s` : `${seconds}s`;
-  };
-
-  const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString();
-  };
+  const statusInfo = getStatusIndicator();
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Data Discovery</h1>
-        <p className="text-gray-600">
-          Automatically discover and connect to data sources in your environment
-        </p>
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                <Search className="w-6 h-6 text-blue-500" />
+                <span>Smart Data Discovery</span>
+              </h1>
+              <p className="text-gray-600 text-sm mt-1">
+                Automatically discover and connect to data sources in your environment
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm">
+                <div className={`w-2 h-2 rounded-full ${statusInfo.color} ${statusInfo.pulse ? 'animate-pulse' : ''}`} />
+                <span className="text-gray-600">{statusInfo.text}</span>
+              </div>
+
+              {systemCapabilities && (
+                <div className="text-xs text-gray-500 flex items-center space-x-2">
+                  {systemCapabilities.smart_features?.auto_data_discovery && (
+                    <span className="text-green-600">🔍 Auto-Discovery</span>
+                  )}
+                  {systemCapabilities.smart_features?.intelligent_recommendations && (
+                    <span className="text-blue-600">🧠 Smart Recommendations</span>
+                  )}
+                  {systemCapabilities.smart_features?.environment_scanning && (
+                    <span className="text-purple-600">🌍 Environment Scan</span>
+                  )}
+                </div>
+              )}
+
+              <button
+                onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                title="Advanced Settings"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Error Display */}
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-center">
-              <span className="text-red-600 mr-2">⚠️</span>
-              <span className="text-red-800">{error}</span>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-red-800">Discovery Error</h3>
+                <p className="mt-1 text-sm text-red-700">{error}</p>
+              </div>
               <button
                 onClick={() => setError(null)}
-                className="ml-auto text-red-600 hover:text-red-800"
+                className="flex-shrink-0 text-red-400 hover:text-red-600"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-3 space-y-8">
-          {/* Discovery Scanner */}
-          <div className="card">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Start New Discovery</h2>
-              <button
-                onClick={() => setShowSettingsModal(true)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Discovery Settings"
-              >
-                ⚙️
-              </button>
-            </div>
-
-            {/* Scan Mode Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {scanModes.map((mode) => (
-                <button
-                  key={mode.id}
-                  onClick={() => setScanMode(mode.id)}
-                  disabled={isScanning}
-                  className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                    scanMode === mode.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  } ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <div className="text-2xl mb-2">{mode.icon}</div>
-                  <h3 className="font-semibold text-gray-900">{mode.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{mode.description}</p>
-                  <div className="text-xs text-gray-500">Est. {mode.estimatedTime}</div>
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={runDiscovery}
-              disabled={isScanning}
-              className={`btn-primary ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {isScanning ? (
-                <>
-                  <svg className="animate-spin w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Scanning ({scanMode})...
-                </>
-              ) : (
-                `🔍 Start ${scanMode.charAt(0).toUpperCase() + scanMode.slice(1)} Discovery`
-              )}
-            </button>
-          </div>
-
-          {/* Discovery Insights */}
-          {discoveryInsights && discoveryInsights.recommendations.length > 0 && (
-            <div className="card">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Discovery Insights</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Backend Status Warning */}
+        {backendStatus === 'disconnected' && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <AlertCircle className="w-5 h-5 text-yellow-600" />
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Recommendations</h3>
-                  <div className="space-y-3">
-                    {discoveryInsights.recommendations.map((rec, index) => (
-                      <div key={index} className="p-3 border border-gray-200 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900">{rec.title}</h4>
-                          <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(rec.priority)}`}>
-                            {rec.priority}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-1">{rec.description}</p>
-                        <div className="text-xs text-gray-500">{rec.estimated_value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Patterns</h3>
-                  <div className="space-y-3">
-                    {discoveryInsights.patterns.map((pattern, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-1">{pattern.pattern_type}</h4>
-                        <p className="text-sm text-gray-600 mb-1">{pattern.description}</p>
-                        <div className="text-xs text-gray-500">Frequency: {pattern.frequency}</div>
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="font-semibold text-yellow-900">Backend Connection Issue</h3>
+                  <p className="text-yellow-700 text-sm mt-1">
+                    Smart Defaults Engine is offline. Discovery features are limited.
+                  </p>
                 </div>
               </div>
+              <button
+                onClick={initializeDiscovery}
+                className="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition-colors"
+              >
+                Retry Connection
+              </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Discovered Sources */}
-          {discoveredSources.length > 0 && (
-            <div className="card">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Discovered Sources ({discoveredSources.length})
+        {/* Discovery Controls */}
+        <div className="bg-white rounded-xl shadow-lg border border-white/20 p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <Brain className="w-5 h-5 text-blue-500 mr-2" />
+                Smart Discovery Controls
               </h2>
-              <div className="space-y-4">
-                {discoveredSources.map((source) => (
-                  <div key={source.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <span className="text-2xl">{getTypeIcon(source.type)}</span>
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="font-semibold text-gray-900">{source.source_id}</h3>
-                            <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(source.status)}`}>
-                              {source.status || 'discovered'}
-                            </span>
-                            <span className="text-sm text-blue-600 font-medium">
-                              {Math.round(source.confidence * 100)}% confidence
-                            </span>
-                          </div>
-
-                          <p className="text-gray-600 text-sm mb-2">{source.reasoning}</p>
-
-                          <div className="text-sm text-gray-500">
-                            <span className="font-medium">{source.type}</span>
-                            {source.context.host && (
-                              <span className="ml-4">Host: {source.context.host}</span>
-                            )}
-                            {source.context.database && (
-                              <span className="ml-4">DB: {source.context.database}</span>
-                            )}
-                            {source.context.table_count && (
-                              <span className="ml-4">Tables: {source.context.table_count}</span>
-                            )}
-                            {source.context.size && (
-                              <span className="ml-4">Size: {source.context.size}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-2">
-                        {source.status !== 'connected' && (
-                          <button
-                            onClick={() => connectToSource(source)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                          >
-                            Connect
-                          </button>
-                        )}
-                        {source.status === 'connected' && (
-                          <span className="px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm">
-                            Connected ✅
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="text-gray-600 text-sm mt-1">
+                Configure and run intelligent data source discovery
+              </p>
             </div>
-          )}
 
-          {/* Connected Sources */}
-          <div className="card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
-              Connected Sources ({connectedSources.length})
-            </h2>
-            {connectedSources.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">🔗</div>
-                <p className="text-gray-600">No connected sources yet. Start a discovery scan to find data sources.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {connectedSources.map((source) => (
-                  <div key={source.id} className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xl">{getTypeIcon(source.type)}</span>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{source.source_id}</h3>
-                          <p className="text-sm text-gray-600">{source.type}</p>
-                          {source.context.host && (
-                            <p className="text-xs text-gray-500">{source.context.host}:{source.context.port}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor('connected')}`}>
-                          Connected
-                        </span>
-                        <button
-                          onClick={() => refreshSource(source.source_id)}
-                          className="text-blue-600 hover:text-blue-800 text-sm"
-                          title="Refresh"
-                        >
-                          🔄
-                        </button>
-                        <button
-                          onClick={() => disconnectSource(source.source_id)}
-                          className="text-red-600 hover:text-red-800 text-sm"
-                          title="Disconnect"
-                        >
-                          🔌
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Discovery History */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Discoveries</h3>
-            <div className="space-y-3">
-              {discoveryHistory.slice(0, 5).map((session) => (
-                <div key={session.id} className="p-3 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-gray-900">
-                      {session.sources_found} sources found
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(session.timestamp).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    <div>Mode: {session.scan_mode}</div>
-                    <div>Duration: {formatDuration(session.duration_ms)}</div>
-                    <div>Success: {Math.round(session.success_rate * 100)}%</div>
-                  </div>
-                </div>
-              ))}
-              {discoveryHistory.length === 0 && (
-                <div className="text-center py-4 text-gray-500 text-sm">
-                  No discovery history yet
+            <div className="flex items-center space-x-3">
+              {discoveredSources.length > 0 && (
+                <div className="text-sm text-gray-600">
+                  Found: <span className="font-semibold">{discoveredSources.length}</span> sources
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Quick Stats */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Discovery Stats</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Connected Sources:</span>
-                <span className="font-semibold text-green-600">{connectedSources.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Discovered Sources:</span>
-                <span className="font-semibold text-blue-600">{discoveredSources.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Scans:</span>
-                <span className="font-semibold text-gray-900">{discoveryHistory.length}</span>
-              </div>
-              {discoverySettings && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Auto Discovery:</span>
-                  <span className={`font-semibold ${discoverySettings.auto_discovery ? 'text-green-600' : 'text-gray-600'}`}>
-                    {discoverySettings.auto_discovery ? 'On' : 'Off'}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div className="space-y-2">
               <button
-                onClick={() => initializeComponent()}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+                onClick={performDiscovery}
+                disabled={isScanning || backendStatus !== 'connected'}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg transition-colors inline-flex items-center space-x-2 font-medium"
               >
-                🔄 Refresh All Sources
-              </button>
-              <button
-                onClick={() => setShowSettingsModal(true)}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
-              >
-                ⚙️ Discovery Settings
-              </button>
-              <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                📊 Source Health Check
-              </button>
-              <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                📈 Usage Analytics
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Connection Modal */}
-      {showConnectionModal && selectedSource && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Connect to {selectedSource.source_id}
-              </h3>
-              <button
-                onClick={() => {
-                  setShowConnectionModal(false);
-                  setSourceValidation(null);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Host</label>
-                <input
-                  type="text"
-                  value={connectionParams.host || ''}
-                  onChange={(e) => setConnectionParams({...connectionParams, host: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="localhost or IP address"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
-                <input
-                  type="number"
-                  value={connectionParams.port || ''}
-                  onChange={(e) => setConnectionParams({...connectionParams, port: parseInt(e.target.value) || ''})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="5432, 3306, etc."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input
-                  type="text"
-                  value={connectionParams.username || ''}
-                  onChange={(e) => setConnectionParams({...connectionParams, username: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Database username"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={connectionParams.password || ''}
-                  onChange={(e) => setConnectionParams({...connectionParams, password: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Database password"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Database</label>
-                <input
-                  type="text"
-                  value={connectionParams.database || ''}
-                  onChange={(e) => setConnectionParams({...connectionParams, database: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Database name"
-                />
-              </div>
-
-              {/* SSL Option for databases */}
-              {(selectedSource.type.toLowerCase().includes('postgres') || selectedSource.type.toLowerCase().includes('mysql')) && (
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="ssl_enabled"
-                    checked={connectionParams.ssl_enabled || false}
-                    onChange={(e) => setConnectionParams({...connectionParams, ssl_enabled: e.target.checked})}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="ssl_enabled" className="ml-2 text-sm text-gray-700">
-                    Enable SSL
-                  </label>
-                </div>
-              )}
-            </div>
-
-            {/* Validation Results */}
-            {sourceValidation && (
-              <div className="mt-4 p-3 border rounded-lg">
-                <h4 className="font-medium text-gray-900 mb-2">Connection Validation</h4>
-                <div className={`text-sm mb-2 ${
-                  sourceValidation.status === 'valid' ? 'text-green-600' :
-                  sourceValidation.status === 'warning' ? 'text-yellow-600' : 'text-red-600'
-                }`}>
-                  Status: {sourceValidation.status.toUpperCase()}
-                </div>
-                <div className="text-sm text-gray-600 mb-2">
-                  Health Score: {Math.round(sourceValidation.health_score * 100)}%
-                </div>
-                {sourceValidation.issues.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 mb-1">Issues:</div>
-                    <div className="space-y-1">
-                      {sourceValidation.issues.map((issue: any, index: number) => (
-                        <div key={index} className="text-xs text-gray-600">
-                          <span className={`font-medium ${
-                            issue.severity === 'high' ? 'text-red-600' :
-                            issue.severity === 'medium' ? 'text-yellow-600' : 'text-blue-600'
-                          }`}>
-                            {issue.severity.toUpperCase()}:
-                          </span> {issue.message}
-                          {issue.suggestion && (
-                            <div className="text-gray-500 mt-1">💡 {issue.suggestion}</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={testConnection}
-                disabled={testingConnection || !connectionParams.host || !connectionParams.username}
-                className={`flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors ${
-                  (testingConnection || !connectionParams.host || !connectionParams.username) ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {testingConnection ? (
+                {isScanning ? (
                   <>
-                    <svg className="animate-spin w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Testing...
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                    <span>Discovering...</span>
                   </>
                 ) : (
-                  'Test Connection'
+                  <>
+                    <Search className="w-4 h-4" />
+                    <span>Start Discovery</span>
+                  </>
                 )}
               </button>
-              <button
-                onClick={finalizeConnection}
-                disabled={!connectionParams.host || !connectionParams.username}
-                className={`flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ${
-                  (!connectionParams.host || !connectionParams.username) ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                Connect
-              </button>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Settings Modal */}
-      {showSettingsModal && discoverySettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Discovery Settings</h3>
-              <button
-                onClick={() => setShowSettingsModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+          {/* Quick Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Scan Mode</label>
+              <select
+                value={scanMode}
+                onChange={(e) => setScanMode(e.target.value as 'fast' | 'balanced' | 'thorough')}
+                disabled={isScanning}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                <option value="fast">Fast (30s)</option>
+                <option value="balanced">Balanced (60s)</option>
+                <option value="thorough">Thorough (2-3min)</option>
+              </select>
             </div>
 
-            <div className="space-y-6">
-              {/* Auto Discovery */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Auto Discovery</label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Max Sources</label>
+              <input
+                type="number"
+                value={maxRecommendations}
+                onChange={(e) => setMaxRecommendations(parseInt(e.target.value))}
+                disabled={isScanning}
+                min="1"
+                max="50"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Confidence</label>
+              <input
+                type="range"
+                value={confidenceThreshold}
+                onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
+                disabled={isScanning}
+                min="0.1"
+                max="1.0"
+                step="0.1"
+                className="w-full mt-3"
+              />
+              <div className="text-xs text-gray-500 mt-1">
+                Min: {Math.round(confidenceThreshold * 100)}%
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced Settings */}
+          {showAdvancedSettings && (
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Advanced Options</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    checked={discoverySettings.auto_discovery}
-                    onChange={(e) => setDiscoverySettings({
-                      ...discoverySettings,
-                      auto_discovery: e.target.checked
-                    })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    checked={includeEnvironmentScan}
+                    onChange={(e) => setIncludeEnvironmentScan(e.target.checked)}
+                    disabled={isScanning}
+                    className="rounded"
                   />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Automatically scan for new data sources periodically</p>
-              </div>
-
-              {/* Scan Frequency */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Scan Frequency</label>
-                <select
-                  value={discoverySettings.scan_frequency}
-                  onChange={(e) => setDiscoverySettings({
-                    ...discoverySettings,
-                    scan_frequency: e.target.value as 'hourly' | 'daily' | 'weekly'
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="hourly">Hourly</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                </select>
-              </div>
-
-              {/* Confidence Threshold */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confidence Threshold: {Math.round(discoverySettings.confidence_threshold * 100)}%
+                  <span className="text-sm text-gray-700">Include environment scanning</span>
                 </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={discoverySettings.confidence_threshold}
-                  onChange={(e) => setDiscoverySettings({
-                    ...discoverySettings,
-                    confidence_threshold: parseFloat(e.target.value)
-                  })}
-                  className="w-full"
+              </div>
+            </div>
+          )}
+
+          {/* Progress Bar */}
+          {isScanning && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Scanning for data sources...</span>
+                <span>{Math.round(scanProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${scanProgress}%` }}
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Low (0%)</span>
-                  <span>High (100%)</span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Only show sources above this confidence level</p>
               </div>
+            </div>
+          )}
+        </div>
 
-              {/* Include Cloud Sources */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Include Cloud Sources</label>
-                  <input
-                    type="checkbox"
-                    checked={discoverySettings.include_cloud_sources}
-                    onChange={(e) => setDiscoverySettings({
-                      ...discoverySettings,
-                      include_cloud_sources: e.target.checked
-                    })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Scan for cloud databases and services</p>
-              </div>
+        {/* Discovered Sources */}
+        {discoveredSources.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg border border-white/20 p-6 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <Eye className="w-5 h-5 text-green-500 mr-2" />
+                Discovered Sources ({discoveredSources.length})
+              </h2>
 
-              {/* Scan Locations */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Scan Locations</label>
-                <div className="space-y-2">
-                  {discoverySettings.scan_locations.map((location: string, index: number) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => {
-                          const newLocations = [...discoverySettings.scan_locations];
-                          newLocations[index] = e.target.value;
-                          setDiscoverySettings({
-                            ...discoverySettings,
-                            scan_locations: newLocations
-                          });
-                        }}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        placeholder="/path/to/data"
-                      />
-                      <button
-                        onClick={() => {
-                          const newLocations = discoverySettings.scan_locations.filter((_: string, i: number) => i !== index);
-                          setDiscoverySettings({
-                            ...discoverySettings,
-                            scan_locations: newLocations
-                          });
-                        }}
-                        className="p-2 text-red-600 hover:text-red-800"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
+              {selectedSources.size > 0 && (
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-600">
+                    {selectedSources.size} selected
+                  </span>
                   <button
-                    onClick={() => setDiscoverySettings({
-                      ...discoverySettings,
-                      scan_locations: [...discoverySettings.scan_locations, '']
-                    })}
-                    className="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors text-sm"
+                    onClick={connectSelectedSources}
+                    disabled={selectedSources.size === 0}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center space-x-2"
                   >
-                    + Add Location
+                    <Plus className="w-4 h-4" />
+                    <span>Connect Selected</span>
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">File system paths to scan for data files</p>
-              </div>
+              )}
             </div>
 
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={() => setShowSettingsModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => saveSettings(discoverySettings)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Save Settings
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {discoveredSources.map((source) => (
+                <div
+                  key={source.id}
+                  className={`border-2 rounded-xl p-4 transition-all hover:shadow-md ${
+                    selectedSources.has(source.id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-2xl">{getSourceIcon(source.type)}</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{source.source_id}</h3>
+                        <p className="text-sm text-gray-600">{source.type}</p>
+                      </div>
+                    </div>
+
+                    <input
+                      type="checkbox"
+                      checked={selectedSources.has(source.id)}
+                      onChange={(e) => {
+                        const newSet = new Set(selectedSources);
+                        if (e.target.checked) {
+                          newSet.add(source.id);
+                        } else {
+                          newSet.delete(source.id);
+                        }
+                        setSelectedSources(newSet);
+                      }}
+                      className="rounded"
+                    />
+                  </div>
+
+                  <p className="text-sm text-gray-700 mb-3">{source.reasoning}</p>
+
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getConfidenceColor(source.confidence)}`}>
+                      {Math.round(source.confidence * 100)}% confidence
+                    </span>
+
+                    {connectedSources.has(source.id) && (
+                      <span className="text-green-600 text-sm flex items-center">
+                        <Check className="w-4 h-4 mr-1" />
+                        Connected
+                      </span>
+                    )}
+
+                    {failedSources.has(source.id) && (
+                      <span className="text-red-600 text-sm flex items-center">
+                        <X className="w-4 h-4 mr-1" />
+                        Failed
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-xs text-gray-500 mb-3">
+                    {Object.entries(source.context).map(([key, value]) => (
+                      <div key={key}>
+                        <strong>{key}:</strong> {String(value)}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => testConnection(source)}
+                      disabled={testingConnections.has(source.id)}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors inline-flex items-center justify-center space-x-1 text-sm"
+                    >
+                      {testingConnections.has(source.id) ? (
+                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-gray-600 border-t-transparent" />
+                      ) : (
+                        <Play className="w-3 h-3" />
+                      )}
+                      <span>Test</span>
+                    </button>
+
+                    <button
+                      onClick={() => connectToSource(source)}
+                      disabled={connectedSources.has(source.id)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-green-600 text-white px-3 py-2 rounded-lg transition-colors inline-flex items-center justify-center space-x-1 text-sm"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>{connectedSources.has(source.id) ? 'Connected' : 'Connect'}</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Scan Metadata */}
+        {lastScanMetadata && (
+          <div className="bg-white rounded-xl shadow-lg border border-white/20 p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+              <Zap className="w-5 h-5 text-yellow-500 mr-2" />
+              Last Scan Results
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{lastScanMetadata.total_candidates || 0}</div>
+                <div className="text-sm text-gray-600">Total Candidates</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{discoveredSources.length}</div>
+                <div className="text-sm text-gray-600">Sources Found</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {lastScanMetadata.scan_duration_ms ? `${Math.round(lastScanMetadata.scan_duration_ms / 1000)}s` : 'N/A'}
+                </div>
+                <div className="text-sm text-gray-600">Scan Duration</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {lastScanMetadata.ml_enhanced ? 'Yes' : 'No'}
+                </div>
+                <div className="text-sm text-gray-600">ML Enhanced</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Discovery History */}
+        {discoveryHistory.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg border border-white/20 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+              <RefreshCw className="w-5 h-5 text-gray-500 mr-2" />
+              Recent Discovery Sessions
+            </h2>
+
+            <div className="space-y-3">
+              {discoveryHistory.map((session) => (
+                <div key={session.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-sm">
+                      <span className="font-medium">{session.sources_found} sources</span>
+                      <span className="text-gray-500 ml-2">•</span>
+                      <span className="text-gray-500 ml-2">{session.scan_mode} mode</span>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(session.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm text-gray-600">
+                      {Math.round(session.duration_ms / 1000)}s
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      session.success_rate >= 80 ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100'
+                    }`}>
+                      {session.success_rate}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isScanning && discoveredSources.length === 0 && backendStatus === 'connected' && (
+          <div className="bg-white rounded-xl shadow-lg border border-white/20 p-12 text-center">
+            <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Data Sources Found</h3>
+            <p className="text-gray-600 mb-6">
+              Click "Start Discovery" to automatically scan for available data sources in your environment.
+            </p>
+            <button
+              onClick={performDiscovery}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors inline-flex items-center space-x-2 font-medium"
+            >
+              <Search className="w-5 h-5" />
+              <span>Start Smart Discovery</span>
+            </button>
+          </div>
+        )}
+
+        {/* System Capabilities Info */}
+        {systemCapabilities && (
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <h3 className="font-semibold text-blue-900 mb-3 flex items-center">
+              <Brain className="w-5 h-5 mr-2" />
+              🚀 Smart Discovery Features Available
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              {systemCapabilities.smart_features?.auto_data_discovery && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Automated Discovery</span>
+                </div>
+              )}
+              {systemCapabilities.smart_features?.intelligent_recommendations && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Smart Recommendations</span>
+                </div>
+              )}
+              {systemCapabilities.smart_features?.environment_scanning && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Environment Scanning</span>
+                </div>
+              )}
+              {systemCapabilities.smart_features?.learning_from_usage && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Learning from Usage</span>
+                </div>
+              )}
+              {systemCapabilities.smart_features?.policy_compliance && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Policy Compliance</span>
+                </div>
+              )}
+              {systemCapabilities.smart_features?.personalized_suggestions && (
+                <div className="flex items-center space-x-2 text-blue-700">
+                  <span>✅</span>
+                  <span>Personalized Suggestions</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

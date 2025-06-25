@@ -1,3 +1,4 @@
+// services/api.ts - Complete Enhanced Analytics API Module
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
 // ====================
@@ -1147,7 +1148,18 @@ export const processAnalysisResponse = (response: AnalysisResponse): AnalysisRes
     },
     system_info: {
       version: response.system_info?.version || '5.1.0',
-      ...response.system_info
+      capabilities: response.system_info?.capabilities,
+      model_info: response.system_info?.model_info,
+      method: response.system_info?.method,
+      adaptive_processing_used: response.system_info?.adaptive_processing_used,
+      chart_intelligence_used: response.system_info?.chart_intelligence_used,
+      smart_defaults_enabled: response.system_info?.smart_defaults_enabled,
+      auto_discovery_used: response.system_info?.auto_discovery_used,
+      smart_engine_available: response.system_info?.smart_engine_available,
+      domain: response.system_info?.domain,
+      user_id: response.system_info?.user_id,
+      openai_used: response.system_info?.openai_used,
+      confidence_threshold: response.system_info?.confidence_threshold
     },
     timestamp: response.timestamp || new Date().toISOString()
   };
@@ -1289,7 +1301,8 @@ export class PerformanceMonitor {
 
   getAllStats(): Record<string, any> {
     const stats: Record<string, any> = {};
-    for (const [operation] of this.metrics) {
+    const operations = Array.from(this.metrics.keys());
+    for (const operation of operations) {
       stats[operation] = this.getStats(operation);
     }
     return stats;
