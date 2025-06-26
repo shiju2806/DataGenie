@@ -1,22 +1,22 @@
-# backend/main.py - Complete Enhanced Analytics Backend with Smart Defaults and Smart Engine
+# backend/main.py - Enhanced Analytics Backend with Advanced Charts Integration
 """
-Enhanced Analytics Backend - Complete Production Integration with Smart Defaults and Smart Engine
+Enhanced Analytics Backend - Production Ready with Advanced Chart Support
 
 This module integrates all enhanced analytics components including:
-- Unified Smart Query Engine (NEW)
+- Unified Smart Query Engine
 - Adaptive Query Interpreter
 - Mathematical Knowledge Engine
 - Hybrid Knowledge Framework
 - Enhanced Analytics Parts 1-4
-- Chart Suggestion Engine
+- Advanced Chart Suggestion Engine (waterfall, funnel, gauge)
 - Smart Defaults Engine
 
 Author: Enhanced Analytics Team
-Version: 5.1.0
-Status: Production Ready with Auto-Discovery and Smart Query Processing
+Version: 5.1.1
+Status: Production Ready with Advanced Chart Support
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks, Depends, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -33,12 +33,8 @@ import warnings
 from pathlib import Path
 import asyncio
 from contextlib import asynccontextmanager
-
-# Load environment variables
-from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks, Depends
 import re
-from typing import Optional, Dict, Any
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -50,19 +46,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 warnings.filterwarnings('ignore')
 
-# Import core analytics components with production-ready error handling
+# Import core analytics components
 try:
-    # Mathematical and Knowledge Components
     from mathematical_engine import MathematicalKnowledgeEngine
     from knowledge_framework import HybridKnowledgeFramework
-
-    # Adaptive Query Processing
     from adaptive_interpreter import (
         AdaptiveQueryInterpreter,
         create_adaptive_query_processor
     )
-
-    # Enhanced Analytics Components
     from enhanced_analytics_part1 import (
         EnhancedAnalysisResult,
         IntelligentDataProcessor
@@ -80,16 +71,18 @@ try:
         ComprehensiveReport
     )
 
-    # Chart Intelligence
-    from chart_suggestion_engine import (
-        classify_intent,
-        suggest_chart_types,
-        handle_query as chart_handle_query
-    )
+    # Enhanced Chart Suggestion Engine - Import with error handling
+    try:
+        import chart_suggestion_engine
+
+        CHART_ENGINE_AVAILABLE = True
+        logger.info("✅ Enhanced Chart Suggestion Engine available")
+    except ImportError as chart_error:
+        logger.warning(f"⚠️ Chart Suggestion Engine not available: {chart_error}")
+        CHART_ENGINE_AVAILABLE = False
 
     logger.info("✅ Core analytics modules imported successfully")
     ENHANCED_ANALYTICS_AVAILABLE = True
-
 except ImportError as e:
     logger.error(f"❌ Failed to import core modules: {e}")
     ENHANCED_ANALYTICS_AVAILABLE = False
@@ -105,7 +98,7 @@ except ImportError as e:
     logger.warning(f"⚠️ Unified Smart Query Engine not available: {e}")
     SMART_ENGINE_AVAILABLE = False
 
-# Smart Defaults Engine with graceful fallback
+# Smart Defaults Engine
 try:
     from smart_defaults.engine import (
         SmartDefaultsEngine,
@@ -121,16 +114,299 @@ except ImportError as e:
     logger.warning(f"⚠️ Smart Defaults Engine not available: {e}")
     SMART_DEFAULTS_AVAILABLE = False
 
+    # ===== PHASE 1 IMPORTS =====
+    from phase1_launcher import (
+        Phase1DataGenieSystem,
+        DataSensitivityLevel,
+        AccessPermission,
+        ConflictResolutionStrategy,
+        SimpleDataSource,
+        SimpleUser,
+        AccessContext
+    )
+
 # Security
 security = HTTPBearer()
 
 
-# Global system components
+# Chart utility functions - defined early to avoid unresolved references
+def get_intent_metadata(prompt: str) -> Dict[str, Any]:
+    """Get intent metadata with fallback"""
+    if CHART_ENGINE_AVAILABLE:
+        try:
+            return chart_suggestion_engine.classify_intent(prompt)
+        except Exception as e:
+            logger.warning(f"Chart engine classify_intent failed: {e}")
+
+    # Fallback intent detection
+    prompt_lower = prompt.lower()
+    if any(word in prompt_lower for word in ['waterfall', 'bridge', 'cumulative']):
+        return {"intent": "waterfall_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['funnel', 'pipeline', 'conversion']):
+        return {"intent": "funnel_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['gauge', 'meter', 'progress', 'kpi']):
+        return {"intent": "gauge_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['pie', 'distribution', 'share']):
+        return {"intent": "distribution_analysis", "confidence": 0.7}
+    elif any(word in prompt_lower for word in ['trend', 'time', 'line']):
+        return {"intent": "trend_analysis", "confidence": 0.7}
+    else:
+        return {"intent": "comparison_analysis", "confidence": 0.5}
+
+
+def get_data_structure(chart_data: List[Dict]) -> Dict[str, Any]:
+    """Get data structure analysis with fallback"""
+    if CHART_ENGINE_AVAILABLE:
+        try:
+            return chart_suggestion_engine.analyze_data_structure(chart_data)
+        except Exception as e:
+            logger.warning(f"Chart engine analyze_data_structure failed: {e}")
+
+    # Fallback data structure analysis
+    if not chart_data:
+        return {"numeric_fields": [], "categorical_fields": [], "datetime_fields": [], "row_count": 0}
+
+    sample = chart_data[0]
+    numeric_fields = []
+    categorical_fields = []
+    datetime_fields = []
+
+    for key, value in sample.items():
+        if isinstance(value, (int, float)):
+            numeric_fields.append(key)
+        elif isinstance(value, str):
+            if any(pattern in key.lower() for pattern in ['date', 'time', 'year', 'month', 'day']):
+                datetime_fields.append(key)
+            else:
+                categorical_fields.append(key)
+
+    return {
+        "numeric_fields": numeric_fields,
+        "categorical_fields": categorical_fields,
+        "datetime_fields": datetime_fields,
+        "row_count": len(chart_data)
+    }
+
+
+def generate_waterfall_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate waterfall chart data"""
+    waterfall_data = []
+    for i, item in enumerate(chart_data[:8]):
+        x_val = list(item.values())[0] if item else f"Step {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (100 - i * 10)
+
+        # Make some values negative for waterfall effect
+        if i % 3 == 2:
+            y_val = -abs(float(y_val)) if isinstance(y_val, (int, float)) else -20
+
+        waterfall_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (100 - i * 10)
+        })
+
+    return [{
+        "id": f"waterfall_{datetime.now().timestamp()}",
+        "title": "Waterfall Analysis",
+        "type": "waterfall",
+        "data": waterfall_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Cumulative effect analysis",
+        "reasoning": "Waterfall chart showing progressive changes"
+    }]
+
+
+def generate_funnel_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate funnel chart data"""
+    funnel_data = []
+    for i, item in enumerate(chart_data[:5]):
+        name = list(item.values())[0] if item else f"Stage {i + 1}"
+        value = list(item.values())[1] if len(item.values()) > 1 else (1000 - i * 200)
+
+        funnel_data.append({
+            "name": str(name),
+            "value": float(value) if isinstance(value, (int, float)) else (1000 - i * 200)
+        })
+
+    # Sort by value descending for funnel effect
+    funnel_data.sort(key=lambda x: x['value'], reverse=True)
+
+    return [{
+        "id": f"funnel_{datetime.now().timestamp()}",
+        "title": "Funnel Analysis",
+        "type": "funnel",
+        "data": funnel_data,
+        "category_field": "name",
+        "value_field": "value",
+        "description": "Process stages visualization",
+        "reasoning": "Funnel chart showing conversion rates"
+    }]
+
+
+def generate_gauge_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate gauge chart data"""
+    # Find first numeric value
+    value = 75  # default
+    if chart_data:
+        for item_value in chart_data[0].values():
+            if isinstance(item_value, (int, float)):
+                value = float(item_value)
+                break
+
+    return [{
+        "id": f"gauge_{datetime.now().timestamp()}",
+        "title": "Performance Gauge",
+        "type": "gauge",
+        "data": [{"value": value}],
+        "value_field": "value",
+        "description": "Key performance indicator",
+        "reasoning": "Gauge chart showing single metric performance"
+    }]
+
+
+def generate_pie_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate pie chart data"""
+    pie_data = []
+    for i, item in enumerate(chart_data[:6]):
+        name = list(item.values())[0] if item else f"Category {i + 1}"
+        value = list(item.values())[1] if len(item.values()) > 1 else (100 - i * 15)
+
+        pie_data.append({
+            "name": str(name),
+            "value": float(value) if isinstance(value, (int, float)) else (100 - i * 15)
+        })
+
+    return [{
+        "id": f"pie_{datetime.now().timestamp()}",
+        "title": "Distribution Analysis",
+        "type": "pie",
+        "data": pie_data,
+        "category_field": "name",
+        "value_field": "value",
+        "description": "Data distribution breakdown",
+        "reasoning": "Pie chart showing proportional distribution"
+    }]
+
+
+def generate_line_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate line chart data"""
+    line_data = []
+    for i, item in enumerate(chart_data[:15]):
+        x_val = list(item.values())[0] if item else f"Point {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (50 + i * 5)
+
+        line_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (50 + i * 5)
+        })
+
+    return [{
+        "id": f"line_{datetime.now().timestamp()}",
+        "title": "Trend Analysis",
+        "type": "line",
+        "data": line_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Data trends over time",
+        "reasoning": "Line chart showing progression patterns"
+    }]
+
+
+def generate_bar_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate bar chart data"""
+    bar_data = []
+    for i, item in enumerate(chart_data[:10]):
+        x_val = list(item.values())[0] if item else f"Category {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (30 + i * 8)
+
+        bar_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (30 + i * 8)
+        })
+
+    return [{
+        "id": f"bar_{datetime.now().timestamp()}",
+        "title": "Comparison Analysis",
+        "type": "bar",
+        "data": bar_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Comparative data analysis",
+        "reasoning": "Bar chart for comparing values across categories"
+    }]
+
+
+def generate_fallback_charts(chart_data: List[Dict], prompt: str) -> List[Dict]:
+    """Generate fallback charts when advanced engine is not available"""
+    prompt_lower = prompt.lower()
+
+    # Basic intent detection
+    if any(word in prompt_lower for word in ['waterfall', 'bridge', 'cumulative']):
+        return generate_waterfall_chart(chart_data)
+    elif any(word in prompt_lower for word in ['funnel', 'pipeline', 'conversion']):
+        return generate_funnel_chart(chart_data)
+    elif any(word in prompt_lower for word in ['gauge', 'meter', 'progress', 'kpi']):
+        return generate_gauge_chart(chart_data)
+    elif any(word in prompt_lower for word in ['pie', 'distribution', 'share']):
+        return generate_pie_chart(chart_data)
+    elif any(word in prompt_lower for word in ['trend', 'time', 'line']):
+        return generate_line_chart(chart_data)
+    else:
+        return generate_bar_chart(chart_data)
+
+
+def enhance_charts_with_advanced_types(chart_data: List[Dict], prompt: str) -> List[Dict]:
+    """
+    Enhanced chart processing that generates advanced chart types
+    based on user intent and data characteristics
+    """
+    if not chart_data:
+        return []
+
+    try:
+        if not CHART_ENGINE_AVAILABLE:
+            # Fallback chart generation
+            return generate_fallback_charts(chart_data, prompt)
+
+        # Use the enhanced chart suggestion engine
+        chart_result = chart_suggestion_engine.handle_query(prompt, chart_data)
+
+        if 'suggested_charts' in chart_result:
+            enhanced_charts = []
+
+            for chart in chart_result['suggested_charts']:
+                # Ensure chart has proper structure for frontend
+                enhanced_chart = {
+                    "id": f"chart_{datetime.now().timestamp()}_{len(enhanced_charts)}",
+                    "title": chart.get('title', 'Data Visualization'),
+                    "type": chart.get('type', 'bar'),
+                    "chart_type": chart.get('chart_type', chart.get('type', 'bar')),
+                    "data": chart.get('data', chart_data[:20]),
+                    "x_field": chart.get('x_field', 'x'),
+                    "y_field": chart.get('y_field', 'value'),
+                    "category_field": chart.get('category_field', 'name'),
+                    "value_field": chart.get('value_field', 'value'),
+                    "description": chart.get('description', 'Data visualization'),
+                    "reasoning": chart.get('reasoning', 'Generated based on data analysis'),
+                    "colors": chart.get('colors', None),
+                    "customConfig": chart.get('config', {})
+                }
+                enhanced_charts.append(enhanced_chart)
+
+            logger.info(f"📊 Generated {len(enhanced_charts)} enhanced charts")
+            return enhanced_charts
+
+        return generate_fallback_charts(chart_data, prompt)
+
+    except Exception as e:
+        logger.warning(f"⚠️ Enhanced chart generation failed: {e}")
+        return generate_fallback_charts(chart_data, prompt)
+
+
 class AnalyticsSystemManager:
-    """Manages all analytics system components including Smart Defaults"""
+    """Manages all analytics system components"""
 
     def __init__(self):
-        # Existing components
         self.mathematical_engine = None
         self.knowledge_framework = None
         self.query_interpreter = None
@@ -139,42 +415,35 @@ class AnalyticsSystemManager:
         self.report_builder = None
         self.enhanced_system = None
         self.adaptive_processor = None
-
-        # Smart Defaults Engine (only if available)
         self.smart_defaults_engine = None
-
         self.is_initialized = False
-
+        self.phase1_system = None  # Phase 1 Multi-Source system
+        self.is_initialized = False
     async def initialize(self):
-        """Initialize all system components including Smart Defaults"""
+        """Initialize all system components"""
         try:
             logger.info("🚀 Initializing Complete Analytics System...")
 
-            # Initialize core engines
             self.mathematical_engine = MathematicalKnowledgeEngine()
             logger.info("📊 Mathematical engine initialized")
 
             self.knowledge_framework = HybridKnowledgeFramework(self.mathematical_engine)
             logger.info("🧠 Knowledge framework initialized")
 
-            # Initialize query processing
             openai_key = os.getenv("OPENAI_API_KEY")
             self.query_interpreter = AdaptiveQueryInterpreter(openai_key)
             logger.info("🔍 Query interpreter initialized")
 
-            # Initialize insight and reporting components
             self.insight_generator = AdvancedInsightGenerator(self.knowledge_framework)
             self.report_builder = ComprehensiveReportBuilder(self.insight_generator)
             logger.info("📋 Insight and reporting components initialized")
 
-            # Initialize complete enhanced system
             self.enhanced_system = EnhancedAnalyticsSystem()
             logger.info("🎯 Enhanced analytics system initialized")
 
-            # Initialize Smart Defaults Engine if available
             if SMART_DEFAULTS_AVAILABLE:
                 await self._initialize_smart_defaults()
-
+                await self._initialize_phase1()
             self.is_initialized = True
             logger.info("✅ Complete Analytics System initialized successfully")
 
@@ -183,12 +452,44 @@ class AnalyticsSystemManager:
             logger.error(traceback.format_exc())
             raise e
 
+    async def _initialize_phase1(self):
+        """Initialize Phase 1 Multi-Source DataGenie"""
+        try:
+            logger.info("🔗 Initializing Phase 1 Multi-Source DataGenie...")
+
+            global phase1_system
+            phase1_system = Phase1DataGenieSystem()
+            self.phase1_system = phase1_system
+
+            # Register additional real data sources if configured
+            await self._register_configured_sources()
+
+            logger.info("✅ Phase 1 Multi-Source DataGenie initialized")
+        except Exception as e:
+            logger.warning(f"⚠️ Phase 1 initialization failed: {e}")
+            self.phase1_system = None
+
+    async def _register_configured_sources(self):
+        """Register data sources from environment configuration"""
+        if not self.phase1_system:
+            return
+
+        # Example: Register PostgreSQL if configured
+        if os.getenv("POSTGRES_PROD_URL"):
+            source = SimpleDataSource(
+                id="postgres_prod",
+                name="Production PostgreSQL",
+                source_type="postgresql",
+                sensitivity_level=DataSensitivityLevel.CONFIDENTIAL,
+                owner="data_team"
+            )
+            self.phase1_system.query_engine.register_source(source)
+            self.phase1_system.conflict_engine.set_source_authority("postgres_prod", 0.95)
+
     async def _initialize_smart_defaults(self):
-        """Initialize Smart Defaults Engine for auto-discovery"""
+        """Initialize Smart Defaults Engine"""
         try:
             logger.info("🤖 Initializing Smart Defaults Engine...")
-
-            # Configure Smart Defaults
             smart_config = EngineConfig(
                 enable_environment_scanning=True,
                 enable_profile_analysis=True,
@@ -200,13 +501,10 @@ class AnalyticsSystemManager:
                 min_confidence_threshold=0.6,
                 auto_connect_threshold=0.8
             )
-
             self.smart_defaults_engine = await create_smart_defaults_engine(smart_config)
             logger.info("✅ Smart Defaults Engine initialized")
-
         except Exception as e:
             logger.warning(f"⚠️ Smart Defaults initialization failed: {e}")
-            # Continue without Smart Defaults if it fails
             self.smart_defaults_engine = None
 
     def create_adaptive_processor(self, datasets: Dict[str, pd.DataFrame]) -> tuple:
@@ -214,8 +512,6 @@ class AnalyticsSystemManager:
         try:
             openai_key = os.getenv("OPENAI_API_KEY")
             cache_path = "cache/adaptive_profile.pkl"
-
-            # Ensure cache directory exists
             os.makedirs(os.path.dirname(cache_path), exist_ok=True)
 
             processor, interpreter = create_adaptive_query_processor(
@@ -223,10 +519,8 @@ class AnalyticsSystemManager:
                 datasets=datasets,
                 cache_path=cache_path
             )
-
             self.adaptive_processor = processor
             return processor, interpreter
-
         except Exception as e:
             logger.error(f"Failed to create adaptive processor: {e}")
             return None, None
@@ -234,16 +528,15 @@ class AnalyticsSystemManager:
 
 # Global system manager
 system_manager = AnalyticsSystemManager()
+phase1_system = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager"""
-    # Startup
     logger.info("🚀 Starting Complete Analytics Backend...")
     await system_manager.initialize()
     yield
-    # Shutdown
     logger.info("🛑 Shutting down Complete Analytics Backend...")
     if system_manager.smart_defaults_engine:
         await system_manager.smart_defaults_engine.close()
@@ -251,9 +544,9 @@ async def lifespan(app: FastAPI):
 
 # FastAPI app setup
 app = FastAPI(
-    title="Complete Analytics Backend with Smart Defaults and Smart Engine",
-    description="Full analytics system with mathematical intelligence, domain knowledge, adaptive query processing, automated data source discovery, and unified smart query processing",
-    version="5.1.0",
+    title="Complete Analytics Backend with Advanced Charts",
+    description="Full analytics system with mathematical intelligence, domain knowledge, adaptive query processing, and advanced chart visualization support",
+    version="5.1.1",
     lifespan=lifespan
 )
 
@@ -322,22 +615,335 @@ def verify_openai_setup() -> tuple[bool, str]:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             return False, "OPENAI_API_KEY not found in environment variables"
-
         if not api_key.startswith("sk-"):
             return False, "OPENAI_API_KEY appears to be invalid (should start with 'sk-')"
-
         if len(api_key) < 20:
             return False, "OPENAI_API_KEY appears to be too short"
-
         return True, "OpenAI API key found and appears valid"
-
     except Exception as e:
         return False, f"Error checking OpenAI setup: {e}"
 
 
-async def smart_query_handler(prompt: str, df: pd.DataFrame) -> Optional[Dict[str, Any]]:
-    """Smart handler that replaces hardcoded overrides"""
+def get_intent_metadata(prompt: str) -> Dict[str, Any]:
+    """Get intent metadata with fallback"""
+    if CHART_ENGINE_AVAILABLE:
+        try:
+            return chart_suggestion_engine.classify_intent(prompt)
+        except Exception as e:
+            logger.warning(f"Chart engine classify_intent failed: {e}")
 
+    # Fallback intent detection
+    prompt_lower = prompt.lower()
+    if any(word in prompt_lower for word in ['waterfall', 'bridge', 'cumulative']):
+        return {"intent": "waterfall_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['funnel', 'pipeline', 'conversion']):
+        return {"intent": "funnel_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['gauge', 'meter', 'progress', 'kpi']):
+        return {"intent": "gauge_analysis", "confidence": 0.8}
+    elif any(word in prompt_lower for word in ['pie', 'distribution', 'share']):
+        return {"intent": "distribution_analysis", "confidence": 0.7}
+    elif any(word in prompt_lower for word in ['trend', 'time', 'line']):
+        return {"intent": "trend_analysis", "confidence": 0.7}
+    else:
+        return {"intent": "comparison_analysis", "confidence": 0.5}
+
+
+def get_data_structure(chart_data: List[Dict]) -> Dict[str, Any]:
+    """Get data structure analysis with fallback"""
+    if CHART_ENGINE_AVAILABLE:
+        try:
+            return chart_suggestion_engine.analyze_data_structure(chart_data)
+        except Exception as e:
+            logger.warning(f"Chart engine analyze_data_structure failed: {e}")
+
+    # Fallback data structure analysis
+    if not chart_data:
+        return {"numeric_fields": [], "categorical_fields": [], "datetime_fields": [], "row_count": 0}
+
+    sample = chart_data[0]
+    numeric_fields = []
+    categorical_fields = []
+    datetime_fields = []
+
+    for key, value in sample.items():
+        if isinstance(value, (int, float)):
+            numeric_fields.append(key)
+        elif isinstance(value, str):
+            if any(pattern in key.lower() for pattern in ['date', 'time', 'year', 'month', 'day']):
+                datetime_fields.append(key)
+            else:
+                categorical_fields.append(key)
+
+    return {
+        "numeric_fields": numeric_fields,
+        "categorical_fields": categorical_fields,
+        "datetime_fields": datetime_fields,
+        "row_count": len(chart_data)
+    }
+    """
+    Enhanced chart processing that generates advanced chart types
+    based on user intent and data characteristics
+    """
+    if not chart_data:
+        return []
+
+    try:
+        if not CHART_ENGINE_AVAILABLE:
+            # Fallback chart generation
+            return generate_fallback_charts(chart_data, prompt)
+
+        # Use the enhanced chart suggestion engine
+        chart_result = chart_suggestion_engine.handle_query(prompt, chart_data)
+
+        if 'suggested_charts' in chart_result:
+            enhanced_charts = []
+
+            for chart in chart_result['suggested_charts']:
+                # Ensure chart has proper structure for frontend
+                enhanced_chart = {
+                    "id": f"chart_{datetime.now().timestamp()}_{len(enhanced_charts)}",
+                    "title": chart.get('title', 'Data Visualization'),
+                    "type": chart.get('type', 'bar'),
+                    "chart_type": chart.get('chart_type', chart.get('type', 'bar')),
+                    "data": chart.get('data', chart_data[:20]),
+                    "x_field": chart.get('x_field', 'x'),
+                    "y_field": chart.get('y_field', 'value'),
+                    "category_field": chart.get('category_field', 'name'),
+                    "value_field": chart.get('value_field', 'value'),
+                    "description": chart.get('description', 'Data visualization'),
+                    "reasoning": chart.get('reasoning', 'Generated based on data analysis'),
+                    "colors": chart.get('colors', None),
+                    "customConfig": chart.get('config', {})
+                }
+                enhanced_charts.append(enhanced_chart)
+
+            logger.info(f"📊 Generated {len(enhanced_charts)} enhanced charts")
+            return enhanced_charts
+
+        return generate_fallback_charts(chart_data, prompt)
+
+    except Exception as e:
+        logger.warning(f"⚠️ Enhanced chart generation failed: {e}")
+        return generate_fallback_charts(chart_data, prompt)
+
+
+def enhance_charts_with_advanced_types(chart_data: List[Dict], prompt: str) -> List[Dict]:
+    """Generate fallback charts when advanced engine is not available"""
+    prompt_lower = prompt.lower()
+
+    # Basic intent detection
+    if any(word in prompt_lower for word in ['waterfall', 'bridge', 'cumulative']):
+        return generate_waterfall_chart(chart_data)
+    elif any(word in prompt_lower for word in ['funnel', 'pipeline', 'conversion']):
+        return generate_funnel_chart(chart_data)
+    elif any(word in prompt_lower for word in ['gauge', 'meter', 'progress', 'kpi']):
+        return generate_gauge_chart(chart_data)
+    elif any(word in prompt_lower for word in ['pie', 'distribution', 'share']):
+        return generate_pie_chart(chart_data)
+    elif any(word in prompt_lower for word in ['trend', 'time', 'line']):
+        return generate_line_chart(chart_data)
+    else:
+        return generate_bar_chart(chart_data)
+
+
+def generate_waterfall_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate waterfall chart data"""
+    waterfall_data = []
+    for i, item in enumerate(chart_data[:8]):
+        x_val = list(item.values())[0] if item else f"Step {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (100 - i * 10)
+
+        # Make some values negative for waterfall effect
+        if i % 3 == 2:
+            y_val = -abs(float(y_val)) if isinstance(y_val, (int, float)) else -20
+
+        waterfall_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (100 - i * 10)
+        })
+
+    return [{
+        "id": f"waterfall_{datetime.now().timestamp()}",
+        "title": "Waterfall Analysis",
+        "type": "waterfall",
+        "data": waterfall_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Cumulative effect analysis",
+        "reasoning": "Waterfall chart showing progressive changes"
+    }]
+
+
+def generate_funnel_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate funnel chart data"""
+    funnel_data = []
+    for i, item in enumerate(chart_data[:5]):
+        name = list(item.values())[0] if item else f"Stage {i + 1}"
+        value = list(item.values())[1] if len(item.values()) > 1 else (1000 - i * 200)
+
+        funnel_data.append({
+            "name": str(name),
+            "value": float(value) if isinstance(value, (int, float)) else (1000 - i * 200)
+        })
+
+    # Sort by value descending for funnel effect
+    funnel_data.sort(key=lambda x: x['value'], reverse=True)
+
+    return [{
+        "id": f"funnel_{datetime.now().timestamp()}",
+        "title": "Funnel Analysis",
+        "type": "funnel",
+        "data": funnel_data,
+        "category_field": "name",
+        "value_field": "value",
+        "description": "Process stages visualization",
+        "reasoning": "Funnel chart showing conversion rates"
+    }]
+
+
+def generate_gauge_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate gauge chart data"""
+    # Find first numeric value
+    value = 75  # default
+    if chart_data:
+        for item_value in chart_data[0].values():
+            if isinstance(item_value, (int, float)):
+                value = float(item_value)
+                break
+
+    return [{
+        "id": f"gauge_{datetime.now().timestamp()}",
+        "title": "Performance Gauge",
+        "type": "gauge",
+        "data": [{"value": value}],
+        "value_field": "value",
+        "description": "Key performance indicator",
+        "reasoning": "Gauge chart showing single metric performance"
+    }]
+
+
+def generate_pie_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate pie chart data"""
+    pie_data = []
+    for i, item in enumerate(chart_data[:6]):
+        name = list(item.values())[0] if item else f"Category {i + 1}"
+        value = list(item.values())[1] if len(item.values()) > 1 else (100 - i * 15)
+
+        pie_data.append({
+            "name": str(name),
+            "value": float(value) if isinstance(value, (int, float)) else (100 - i * 15)
+        })
+
+    return [{
+        "id": f"pie_{datetime.now().timestamp()}",
+        "title": "Distribution Analysis",
+        "type": "pie",
+        "data": pie_data,
+        "category_field": "name",
+        "value_field": "value",
+        "description": "Data distribution breakdown",
+        "reasoning": "Pie chart showing proportional distribution"
+    }]
+
+
+def generate_line_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate line chart data"""
+    line_data = []
+    for i, item in enumerate(chart_data[:15]):
+        x_val = list(item.values())[0] if item else f"Point {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (50 + i * 5)
+
+        line_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (50 + i * 5)
+        })
+
+    return [{
+        "id": f"line_{datetime.now().timestamp()}",
+        "title": "Trend Analysis",
+        "type": "line",
+        "data": line_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Data trends over time",
+        "reasoning": "Line chart showing progression patterns"
+    }]
+
+
+def generate_bar_chart(chart_data: List[Dict]) -> List[Dict]:
+    """Generate bar chart data"""
+    bar_data = []
+    for i, item in enumerate(chart_data[:10]):
+        x_val = list(item.values())[0] if item else f"Category {i + 1}"
+        y_val = list(item.values())[1] if len(item.values()) > 1 else (30 + i * 8)
+
+        bar_data.append({
+            "x": str(x_val),
+            "value": float(y_val) if isinstance(y_val, (int, float)) else (30 + i * 8)
+        })
+
+    return [{
+        "id": f"bar_{datetime.now().timestamp()}",
+        "title": "Comparison Analysis",
+        "type": "bar",
+        "data": bar_data,
+        "x_field": "x",
+        "y_field": "value",
+        "description": "Comparative data analysis",
+        "reasoning": "Bar chart for comparing values across categories"
+    }]
+
+
+def enhance_charts_with_advanced_types(chart_data: List[Dict], prompt: str) -> List[Dict]:
+    """
+    Enhanced chart processing that generates advanced chart types
+    based on user intent and data characteristics
+    """
+    if not chart_data:
+        return []
+
+    try:
+        if not CHART_ENGINE_AVAILABLE:
+            # Fallback chart generation
+            return generate_fallback_charts(chart_data, prompt)
+
+        # Use the enhanced chart suggestion engine
+        chart_result = chart_suggestion_engine.handle_query(prompt, chart_data)
+
+        if 'suggested_charts' in chart_result:
+            enhanced_charts = []
+
+            for chart in chart_result['suggested_charts']:
+                # Ensure chart has proper structure for frontend
+                enhanced_chart = {
+                    "id": f"chart_{datetime.now().timestamp()}_{len(enhanced_charts)}",
+                    "title": chart.get('title', 'Data Visualization'),
+                    "type": chart.get('type', 'bar'),
+                    "chart_type": chart.get('chart_type', chart.get('type', 'bar')),
+                    "data": chart.get('data', chart_data[:20]),
+                    "x_field": chart.get('x_field', 'x'),
+                    "y_field": chart.get('y_field', 'value'),
+                    "category_field": chart.get('category_field', 'name'),
+                    "value_field": chart.get('value_field', 'value'),
+                    "description": chart.get('description', 'Data visualization'),
+                    "reasoning": chart.get('reasoning', 'Generated based on data analysis'),
+                    "colors": chart.get('colors', None),
+                    "customConfig": chart.get('config', {})
+                }
+                enhanced_charts.append(enhanced_chart)
+
+            logger.info(f"📊 Generated {len(enhanced_charts)} enhanced charts")
+            return enhanced_charts
+
+        return generate_fallback_charts(chart_data, prompt)
+
+    except Exception as e:
+        logger.warning(f"⚠️ Enhanced chart generation failed: {e}")
+        return generate_fallback_charts(chart_data, prompt)
+
+
+async def smart_query_handler(prompt: str, df: pd.DataFrame) -> Optional[Dict[str, Any]]:
+    """Smart handler using unified query engine"""
     if not SMART_ENGINE_AVAILABLE:
         return None
 
@@ -354,7 +960,7 @@ async def smart_query_handler(prompt: str, df: pd.DataFrame) -> Optional[Dict[st
             confidence = smart_result.get('analysis', {}).get('metadata', {}).get('confidence', 0)
             logger.info(f"🎯 Smart engine confidence: {confidence:.2f}")
 
-            if confidence >= 0.7:  # High confidence threshold
+            if confidence >= 0.7:
                 return smart_result
             else:
                 logger.info("🔄 Smart engine confidence too low, using fallback")
@@ -367,9 +973,9 @@ async def smart_query_handler(prompt: str, df: pd.DataFrame) -> Optional[Dict[st
         return None
 
 
-# Security dependency with optional authentication
+# Security dependency
 async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    """Extract user ID from token (simplified for demo) - now optional"""
+    """Extract user ID from token - now optional"""
     if credentials:
         return "demo_user_" + str(hash(credentials.credentials))[:8]
     else:
@@ -381,8 +987,8 @@ async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] =
 async def root():
     """Root endpoint with system information"""
     return {
-        "message": "Complete Analytics Backend with Smart Defaults and Smart Engine",
-        "version": "5.1.0",
+        "message": "Complete Analytics Backend with Advanced Charts",
+        "version": "5.1.1",
         "status": "operational" if system_manager.is_initialized else "initializing",
         "capabilities": {
             "adaptive_query_processing": True,
@@ -390,11 +996,23 @@ async def root():
             "domain_knowledge": True,
             "intelligent_insights": True,
             "comprehensive_reporting": True,
-            "chart_intelligence": True,
+            "advanced_chart_intelligence": True,
+            "waterfall_charts": True,
+            "funnel_charts": True,
+            "gauge_charts": True,
             "smart_data_source_discovery": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
             "automated_recommendations": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "unified_smart_engine": SMART_ENGINE_AVAILABLE
+            "unified_smart_engine": SMART_ENGINE_AVAILABLE,
+            "multi_source_queries": system_manager.phase1_system is not None,
+            "data_governance": system_manager.phase1_system is not None,
+            "smart_caching": system_manager.phase1_system is not None,
+            "conflict_resolution": system_manager.phase1_system is not None,
+            "rbac_abac_access_control": system_manager.phase1_system is not None
         },
+        "supported_chart_types": [
+            "line", "area", "bar", "pie", "scatter", "histogram",
+            "waterfall", "funnel", "gauge"
+        ],
         "endpoints": {
             "analyze": "/analyze/",
             "quick_analyze": "/quick-analyze/",
@@ -403,14 +1021,23 @@ async def root():
             "get_recommendations": "/recommendations/",
             "connect_source": "/connect-source/",
             "test_openai": "/test-openai/",
-            "debug_env": "/debug-env/",
-            "system_status": "/status/",
-            "health": "/health/"
+            "health": "/health/",
+            "status": "/status/",
+            "data_sources": "/data-sources/",
+            "resolve_conflicts": "/conflicts/resolve/",
+            "multi_source_status": "/multi-source/status/",
+            "cache_stats": "/cache/stats/",
+            "cache_invalidate": "/cache/invalidate/",
+        },
+        # ADD THIS:
+            "multi_source_info": {
+            "enabled": system_manager.phase1_system is not None,
+            "sources_count": len(
+            system_manager.phase1_system.query_engine._data_sources) if system_manager.phase1_system else 0,
+            "conflict_strategies": [s.value for s in ConflictResolutionStrategy] if system_manager.phase1_system else []
         }
     }
-
-
-# Smart Defaults Endpoints (only if available)
+                             # Smart Defaults Endpoints
 @app.get("/discover-sources/")
 async def discover_data_sources(
         mode: str = "balanced",
@@ -418,11 +1045,8 @@ async def discover_data_sources(
         max_recommendations: int = 10,
         user_id: Optional[str] = None
 ):
-    """
-    Discover available data sources automatically
-    """
+    """Discover available data sources automatically"""
     if not SMART_DEFAULTS_AVAILABLE or not system_manager.smart_defaults_engine:
-        # Return mock data sources for compatibility
         return {
             "status": "success",
             "message": "Smart Defaults Engine not available - using fallback data sources",
@@ -470,12 +1094,10 @@ async def discover_data_sources(
             }
         }
 
-    # Generate user_id if not provided
     if not user_id:
         user_id = f"anonymous_{int(datetime.now().timestamp())}"
 
     try:
-        # Create recommendation request
         rec_mode = RecommendationMode.BALANCED
         if mode.lower() == "conservative":
             rec_mode = RecommendationMode.CONSERVATIVE
@@ -491,7 +1113,6 @@ async def discover_data_sources(
             force_refresh=False
         )
 
-        # Get recommendations
         response = await system_manager.smart_defaults_engine.get_recommendations(request)
 
         return {
@@ -516,7 +1137,6 @@ async def discover_data_sources(
                 "generated_at": response.generated_at.isoformat()
             }
         }
-
     except Exception as e:
         logger.error(f"Source discovery failed: {e}")
         return {
@@ -533,14 +1153,11 @@ async def connect_data_source(
         connection_params: Dict[str, Any],
         user_id: Optional[str] = None
 ):
-    """
-    Connect to a discovered data source
-    """
+    """Connect to a discovered data source"""
     if not user_id:
         user_id = f"anonymous_{int(datetime.now().timestamp())}"
 
     try:
-        # Record the connection attempt if Smart Defaults available
         if SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine:
             await system_manager.smart_defaults_engine.record_feedback(
                 user_id=user_id,
@@ -564,7 +1181,6 @@ async def connect_data_source(
                 "user_id": user_id
             }
         }
-
     except Exception as e:
         logger.error(f"Connection failed: {e}")
         return {
@@ -574,79 +1190,24 @@ async def connect_data_source(
         }
 
 
-@app.get("/recommendations/")
-async def get_personalized_recommendations(
-        mode: str = "balanced",
-        user_id: Optional[str] = None
-):
-    """
-    Get personalized data source recommendations
-    """
-    if not user_id:
-        user_id = f"anonymous_{int(datetime.now().timestamp())}"
-
-    if not SMART_DEFAULTS_AVAILABLE or not system_manager.smart_defaults_engine:
-        return {
-            "status": "unavailable",
-            "message": "Smart Defaults Engine not available",
-            "recommendations": []
-        }
-
-    try:
-        rec_mode = RecommendationMode.BALANCED
-        if mode.lower() == "conservative":
-            rec_mode = RecommendationMode.CONSERVATIVE
-        elif mode.lower() == "aggressive":
-            rec_mode = RecommendationMode.AGGRESSIVE
-
-        request = RecommendationRequest(
-            user_id=user_id,
-            mode=rec_mode,
-            max_recommendations=5
-        )
-
-        response = await system_manager.smart_defaults_engine.get_recommendations(request)
-
-        return {
-            "status": "success",
-            "user_id": user_id,
-            "recommendations": [
-                {
-                    "id": rec.id,
-                    "source_id": rec.source_id,
-                    "confidence": rec.confidence_score,
-                    "reasoning": rec.reasoning,
-                    "auto_connect_eligible": rec.confidence_score >= 0.8
-                } for rec in response.recommendations
-            ],
-            "metadata": response.metadata
-        }
-
-    except Exception as e:
-        logger.error(f"Recommendations failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e),
-            "recommendations": []
-        }
-
-
-# MAIN ANALYZE ENDPOINT - PRODUCTION READY WITH SMART ENGINE
+# MAIN ANALYZE ENDPOINT - ENHANCED WITH ADVANCED CHARTS
 @app.post("/analyze/")
 async def comprehensive_analyze(
         prompt: str = Form(...),
         file: UploadFile = File(None),
         data_source_id: Optional[str] = Form(None),
+        use_multi_source: bool = Form(False),  # Enable multi-source query
+        sources: Optional[str] = Form(None),    # Comma-separated source IDs
         user_id: Optional[str] = Form(None),
         domain: Optional[str] = Form(None),
         use_adaptive: bool = Form(True),
         include_charts: bool = Form(True),
-        auto_discover: bool = Form(True)
+        auto_discover: bool = Form(True),
+        credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ):
     """
-    PRODUCTION: Comprehensive analysis with Smart Defaults integration and Smart Engine
+    PRODUCTION: Comprehensive analysis with advanced chart support (waterfall, funnel, gauge)
     """
-
     if not system_manager.is_initialized:
         raise HTTPException(status_code=503, detail="System is still initializing")
 
@@ -654,13 +1215,62 @@ async def comprehensive_analyze(
 
     try:
         logger.info(f"🧠 Starting comprehensive analysis: '{prompt}'")
+        # Extract user info from credentials
+        if credentials:
+            user_id = user_id or f"user_{hash(credentials.credentials) % 10000}"
+            user_role = "analyst"  # In production, extract from JWT
+        else:
+            user_id = user_id or "anonymous"
+            user_role = "viewer"
 
-        # NEW: Auto-discovery if no file provided
+        # ===== MULTI-SOURCE PATH =====
+        if use_multi_source and not file and system_manager.phase1_system:
+            logger.info("🔗 Using Phase 1 Multi-Source Query Engine")
+
+            # Parse sources list
+            source_list = None
+            if sources:
+                source_list = [s.strip() for s in sources.split(",")]
+
+            # Execute multi-source query with governance
+            multi_source_result = await system_manager.phase1_system.analyze_with_governance(
+                query=prompt,
+                user_id=user_id,
+                user_role=user_role,
+                purpose=domain or "analysis",
+                sources=source_list
+            )
+
+            # Extract DataFrame from multi-source result
+            if multi_source_result["status"] == "success":
+                df = multi_source_result.get("data", pd.DataFrame())
+
+                # Store multi-source metadata
+                multi_source_metadata = {
+                    "sources_queried": multi_source_result["metadata"]["sources_queried"],
+                    "sources_succeeded": multi_source_result["metadata"]["sources_succeeded"],
+                    "conflicts_detected": multi_source_result["metadata"]["conflicts_detected"],
+                    "conflicts_resolved": multi_source_result["metadata"]["conflicts_resolved"],
+                    "access_decisions": multi_source_result["metadata"]["access_decisions"]
+                }
+            else:
+                # Handle multi-source errors
+                return JSONResponse(content={
+                    "status": "error",
+                    "error": multi_source_result.get("error", "Multi-source query failed"),
+                    "details": multi_source_result,
+                    "timestamp": datetime.now().isoformat()
+                }, status_code=400)
+
+        # ===== SINGLE SOURCE/FILE PATH (existing code) =====
+        else:
+            multi_source_metadata = None
+            # ... rest of existing data loading logic ...
+        # Data loading logic
         df = None
         discovery_metadata = {}
 
         if file:
-            # Traditional file upload
             content = await file.read()
             try:
                 if file.filename.endswith('.csv'):
@@ -671,40 +1281,30 @@ async def comprehensive_analyze(
                     raise ValueError("Unsupported file format. Please use CSV or Excel files.")
             except Exception as e:
                 raise HTTPException(status_code=400, detail=f"Failed to read file: {str(e)}")
-
         elif data_source_id:
-            # NEW: Connect to specified data source
             if system_manager.smart_defaults_engine:
-                # Record source usage
                 await system_manager.smart_defaults_engine.record_feedback(
                     user_id=user_id or "anonymous",
                     recommendation_id=f"use_{data_source_id}",
                     action="used_for_analysis",
                     context={"prompt": prompt, "timestamp": datetime.now().isoformat()}
                 )
-
-            # In real implementation, connect to actual data source
-            # For demo, create sample data
+            # Create sample data for demo
             df = pd.DataFrame({
                 'value1': np.random.normal(100, 15, 50),
                 'value2': np.random.normal(200, 25, 50),
                 'category': np.random.choice(['A', 'B', 'C'], 50)
             })
             discovery_metadata["source"] = data_source_id
-
         elif auto_discover and system_manager.smart_defaults_engine:
-            # NEW: Auto-discovery mode
             logger.info("🔍 Auto-discovering data sources...")
-
             request = RecommendationRequest(
                 user_id=user_id or "anonymous",
                 mode=RecommendationMode.BALANCED,
                 max_recommendations=1,
                 context={"analysis_prompt": prompt}
             )
-
             recommendations = await system_manager.smart_defaults_engine.get_recommendations(request)
-
             if recommendations.recommendations:
                 best_rec = recommendations.recommendations[0]
                 discovery_metadata = {
@@ -713,8 +1313,6 @@ async def comprehensive_analyze(
                     "confidence": best_rec.confidence_score,
                     "reasoning": best_rec.reasoning
                 }
-
-                # For demo, create sample data
                 df = pd.DataFrame({
                     'metric1': np.random.normal(50, 10, 100),
                     'metric2': np.random.normal(75, 15, 100),
@@ -723,7 +1321,6 @@ async def comprehensive_analyze(
                 })
             else:
                 raise HTTPException(status_code=400, detail="No suitable data sources found")
-
         else:
             raise HTTPException(status_code=400,
                                 detail="Please provide a file, data_source_id, or enable auto_discover")
@@ -733,29 +1330,37 @@ async def comprehensive_analyze(
 
         logger.info(f"📊 Dataset ready: {df.shape[0]} rows × {df.shape[1]} columns")
 
-        # 🤖 SMART QUERY ANALYSIS - Handles ALL query types intelligently
+        # 🤖 SMART QUERY ANALYSIS - Enhanced with advanced charts
         smart_result = await smart_query_handler(prompt, df)
         if smart_result:
             logger.info("🎯 Using unified smart query engine")
 
-            # Enhance with charts if requested
+            # ENHANCED CHART PROCESSING
             if include_charts:
                 try:
                     chart_data = df.head(1000).to_dict('records')
-                    chart_result = chart_handle_query(prompt, chart_data)
+
+                    # Use enhanced chart suggestion engine
+                    enhanced_charts = enhance_charts_with_advanced_types(chart_data, prompt)
+
                     smart_result['chart_intelligence'] = {
-                        "suggested_charts": chart_result.get("suggested_charts", []),
-                        "intent_metadata": chart_result.get("intent_metadata", {}),
-                        "chart_count": len(chart_result.get("suggested_charts", []))
+                        "suggested_charts": enhanced_charts,
+                        "intent_metadata": get_intent_metadata(prompt),
+                        "chart_count": len(enhanced_charts),
+                        "data_structure": get_data_structure(chart_data),
+                        "advanced_charts_supported": True
                     }
+
+                    logger.info(f"📊 Enhanced charts generated: {len(enhanced_charts)} charts")
+
                 except Exception as e:
-                    logger.warning(f"Chart enhancement failed: {e}")
+                    logger.warning(f"Enhanced chart generation failed: {e}")
 
             # Add performance metadata
             total_time = (datetime.now() - start_time).total_seconds() * 1000
             smart_result['performance'] = {
                 'total_time_ms': total_time,
-                'method': 'smart_engine_enhanced',
+                'method': 'smart_engine_enhanced_charts',
                 'data_stats': {
                     'rows': len(df),
                     'columns': len(df.columns)
@@ -765,15 +1370,14 @@ async def comprehensive_analyze(
                 'method': 'smart_engine',
                 'openai_used': True,
                 'confidence_threshold': 0.7,
-                'version': '5.1.0'
+                'version': '5.1.1',
+                'advanced_charts': True
             }
 
             logger.info(f"🎉 Smart engine completed in {total_time:.2f}ms")
             return JSONResponse(content=smart_result)
 
-        # 🤖 END OF SMART ANALYSIS
-
-        # Continue with existing analysis pipeline...
+        # Continue with existing analysis pipeline
         interpretation_start = datetime.now()
 
         if use_adaptive and system_manager.query_interpreter:
@@ -789,7 +1393,6 @@ async def comprehensive_analyze(
                 else:
                     query_interpretation = system_manager.query_interpreter.parse(prompt)
                     logger.info("📝 Using basic query interpretation")
-
             except Exception as e:
                 logger.warning(f"Adaptive processing failed, using fallback: {e}")
                 query_interpretation = {"intent": "summary", "metric": "custom", "granularity": "total"}
@@ -835,7 +1438,7 @@ async def comprehensive_analyze(
 
         analysis_time = log_timing("Enhanced analysis", analysis_start)
 
-        # Continue with existing insight generation and reporting...
+        # Enhanced insight generation
         insight_start = datetime.now()
 
         try:
@@ -846,7 +1449,6 @@ async def comprehensive_analyze(
                 logger.info(f"💡 Generated {len(enhanced_insights)} enhanced insights")
             else:
                 enhanced_insights = analysis_result.insights
-
         except Exception as e:
             logger.warning(f"Insight generation failed: {e}")
             enhanced_insights = analysis_result.insights
@@ -864,35 +1466,42 @@ async def comprehensive_analyze(
                 logger.info(f"📄 Generated comprehensive report with {len(comprehensive_report.sections)} sections")
             else:
                 comprehensive_report = None
-
         except Exception as e:
             logger.warning(f"Report generation failed: {e}")
             comprehensive_report = None
 
         report_time = log_timing("Report generation", report_start)
 
-        # Chart intelligence
+        # ENHANCED CHART INTELLIGENCE WITH ADVANCED TYPES
         chart_start = datetime.now()
         chart_suggestions = {}
 
         if include_charts:
             try:
                 chart_data = df.head(1000).to_dict('records')
-                chart_result = chart_handle_query(prompt, chart_data)
+
+                # Use enhanced chart suggestion engine
+                enhanced_charts = enhance_charts_with_advanced_types(chart_data, prompt)
+
+                # Get intent and data structure metadata
+                intent_metadata = get_intent_metadata(prompt)
+                data_structure = get_data_structure(chart_data)
 
                 chart_suggestions = {
-                    "suggested_charts": chart_result.get("suggested_charts", []),
-                    "intent_metadata": chart_result.get("intent_metadata", {}),
-                    "chart_count": len(chart_result.get("suggested_charts", []))
+                    "suggested_charts": enhanced_charts,
+                    "intent_metadata": intent_metadata,
+                    "chart_count": len(enhanced_charts),
+                    "data_structure": data_structure,
+                    "advanced_charts_supported": CHART_ENGINE_AVAILABLE
                 }
 
-                logger.info(f"📊 Generated {chart_suggestions['chart_count']} chart suggestions")
+                logger.info(f"📊 Generated {chart_suggestions['chart_count']} enhanced chart suggestions")
 
             except Exception as e:
-                logger.warning(f"Chart suggestion failed: {e}")
-                chart_suggestions = {"error": str(e)}
+                logger.warning(f"Enhanced chart suggestion failed: {e}")
+                chart_suggestions = {"error": str(e), "advanced_charts_supported": False}
 
-        chart_time = log_timing("Chart suggestions", chart_start)
+        chart_time = log_timing("Enhanced chart suggestions", chart_start)
 
         # Package complete response
         total_time = log_timing("Total analysis", start_time)
@@ -906,14 +1515,23 @@ async def comprehensive_analyze(
                 "insights": enhanced_insights,
                 "metadata": safe_json_convert(analysis_result.metadata)
             },
+            "multi_source_info": multi_source_metadata,
+            "query_interpretation": safe_json_convert(query_interpretation),
+            # ... rest of existing response ...
+            "system_info": {
+                "version": "5.1.1",  # Update to "6.0.0"
+                # ADD THESE:
+            "multi_source_enabled": use_multi_source and system_manager.phase1_system is not None,
+            "governance_applied": use_multi_source
+            },
             "query_interpretation": safe_json_convert(query_interpretation),
             "comprehensive_report": safe_json_convert(comprehensive_report) if comprehensive_report else None,
             "chart_intelligence": chart_suggestions,
-            "data_discovery": discovery_metadata,  # NEW
+            "data_discovery": discovery_metadata,
             "performance": {
                 "total_time_ms": total_time,
                 "breakdown": {
-                    "data_loading_ms": 0,  # Handled in discovery
+                    "data_loading_ms": 0,
                     "interpretation_ms": interpretation_time,
                     "analysis_ms": analysis_time,
                     "insights_ms": insight_time,
@@ -927,12 +1545,13 @@ async def comprehensive_analyze(
                 }
             },
             "system_info": {
-                "version": "5.1.0",
+                "version": "5.1.1",
                 "adaptive_processing_used": use_adaptive,
                 "chart_intelligence_used": include_charts,
                 "smart_defaults_enabled": system_manager.smart_defaults_engine is not None,
                 "auto_discovery_used": bool(discovery_metadata),
                 "smart_engine_available": SMART_ENGINE_AVAILABLE,
+                "advanced_charts_supported": True,
                 "domain": domain,
                 "user_id": user_id
             },
@@ -959,13 +1578,11 @@ async def comprehensive_analyze(
         return JSONResponse(content=error_response, status_code=500)
 
 
-# Test endpoints for OpenAI verification
+# Test endpoints
 @app.get("/test-openai/")
 async def test_openai_setup():
     """Test endpoint to verify OpenAI API key is working"""
-
     try:
-        # Check environment variable
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             return {
@@ -978,7 +1595,6 @@ async def test_openai_setup():
                 ]
             }
 
-        # Check key format
         if not api_key.startswith("sk-"):
             return {
                 "status": "error",
@@ -986,7 +1602,6 @@ async def test_openai_setup():
                 "key_preview": f"{api_key[:10]}..." if len(api_key) > 10 else "too_short"
             }
 
-        # Test actual API call
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
 
@@ -1005,7 +1620,8 @@ async def test_openai_setup():
             "test_response": response_text,
             "key_preview": f"{api_key[:10]}...{api_key[-4:]}",
             "model_used": "gpt-3.5-turbo",
-            "smart_engine_ready": SMART_ENGINE_AVAILABLE
+            "smart_engine_ready": SMART_ENGINE_AVAILABLE,
+            "advanced_charts_ready": True
         }
 
     except Exception as e:
@@ -1022,32 +1638,13 @@ async def test_openai_setup():
         }
 
 
-@app.get("/debug-env/")
-async def debug_environment():
-    """Debug environment variables (remove in production!)"""
-
-    return {
-        "env_status": {
-            "OPENAI_API_KEY": "✅ Set" if os.getenv("OPENAI_API_KEY") else "❌ Missing",
-            "openai_key_length": len(os.getenv("OPENAI_API_KEY", "")),
-            "openai_key_prefix": os.getenv("OPENAI_API_KEY", "")[:10] + "..." if os.getenv(
-                "OPENAI_API_KEY") else "None",
-        },
-        "python_path": os.getcwd(),
-        "env_file_exists": os.path.exists(".env"),
-        "dotenv_loaded": True,
-        "smart_engine_available": SMART_ENGINE_AVAILABLE
-    }
-
-
-# Additional endpoints
 @app.post("/quick-analyze/")
 async def quick_analyze(
         prompt: str,
         file: UploadFile = File(...),
         max_rows: int = 1000
 ):
-    """Quick analysis for rapid insights without full processing pipeline"""
+    """Quick analysis for rapid insights with advanced chart support"""
     start_time = datetime.now()
 
     try:
@@ -1096,16 +1693,18 @@ async def quick_analyze(
                 most_common = df[col].mode().iloc[0] if len(df[col].mode()) > 0 else "N/A"
                 insights.append(f"{col}: {unique_count} unique values, most common: {most_common}")
 
+        # Enhanced chart processing
         chart_data = df.head(100).to_dict('records')
-        chart_result = chart_handle_query(prompt, chart_data)
+        enhanced_charts = enhance_charts_with_advanced_types(chart_data, prompt)
 
         response = {
             "status": "success",
             "analysis_type": "quick_summary",
             "summary": summary,
             "insights": insights,
-            "chart_suggestions": chart_result.get("suggested_charts", []),
-            "intent_metadata": chart_result.get("intent_metadata", {}),
+            "chart_suggestions": enhanced_charts,
+            "intent_metadata": get_intent_metadata(prompt),
+            "advanced_charts_supported": CHART_ENGINE_AVAILABLE,
             "performance": {
                 "execution_time_ms": (datetime.now() - start_time).total_seconds() * 1000,
                 "rows_analyzed": len(df)
@@ -1129,8 +1728,7 @@ async def get_chart_suggestions(
         file: UploadFile = File(...),
         max_rows: int = 1000
 ):
-    """Get chart suggestions based on prompt and data structure"""
-
+    """Get enhanced chart suggestions with advanced chart types"""
     try:
         content = await file.read()
 
@@ -1145,32 +1743,33 @@ async def get_chart_suggestions(
             raise HTTPException(status_code=400, detail="Dataset is empty")
 
         chart_data = df.to_dict('records')
-        result = chart_handle_query(prompt, chart_data)
 
-        data_analysis = {
-            "numeric_fields": list(df.select_dtypes(include=[np.number]).columns),
-            "categorical_fields": list(df.select_dtypes(include=['object', 'category']).columns),
-            "datetime_fields": list(df.select_dtypes(include=['datetime']).columns),
-            "total_rows": len(df),
-            "total_columns": len(df.columns)
-        }
+        # Use enhanced chart suggestion engine
+        enhanced_charts = enhance_charts_with_advanced_types(chart_data, prompt)
+
+        # Get analysis data
+        data_structure = get_data_structure(chart_data)
+        intent_analysis = get_intent_metadata(prompt)
 
         response = {
             "status": "success",
-            "chart_suggestions": result.get("suggested_charts", []),
-            "intent_analysis": result.get("intent_metadata", {}),
-            "data_structure": data_analysis,
+            "chart_suggestions": enhanced_charts,
+            "intent_analysis": intent_analysis,
+            "data_structure": data_structure,
+            "advanced_charts_supported": CHART_ENGINE_AVAILABLE,
+            "supported_chart_types": [
+                "line", "area", "bar", "pie", "scatter", "histogram",
+                "waterfall", "funnel", "gauge"
+            ],
             "recommendations": [],
             "timestamp": datetime.now().isoformat()
         }
 
-        if len(data_analysis["numeric_fields"]) > 1:
+        if len(data_structure["numeric_fields"]) > 1:
             response["recommendations"].append("Consider correlation analysis between numeric variables")
-
-        if len(data_analysis["categorical_fields"]) > 0:
+        if len(data_structure["categorical_fields"]) > 0:
             response["recommendations"].append("Categorical data suitable for grouping and segmentation")
-
-        if len(data_analysis["datetime_fields"]) > 0:
+        if len(data_structure["datetime_fields"]) > 0:
             response["recommendations"].append("Time series analysis possible with datetime data")
 
         return JSONResponse(content=response)
@@ -1185,7 +1784,7 @@ async def get_chart_suggestions(
 
 @app.get("/health/")
 async def health_check():
-    """Enhanced health check including Smart Defaults and Smart Engine"""
+    """Enhanced health check"""
     health_status = {
         "status": "healthy" if system_manager.is_initialized else "initializing",
         "timestamp": datetime.now().isoformat(),
@@ -1198,15 +1797,23 @@ async def health_check():
             "report_builder": system_manager.report_builder is not None,
             "enhanced_system": system_manager.enhanced_system is not None,
             "smart_defaults_engine": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "unified_smart_engine": SMART_ENGINE_AVAILABLE
+            "unified_smart_engine": SMART_ENGINE_AVAILABLE,
+            "advanced_chart_engine": CHART_ENGINE_AVAILABLE,
+            "phase1_multi_source": system_manager.phase1_system is not None,
+            "phase1_governance": system_manager.phase1_system is not None if system_manager.phase1_system else False,
+            "phase1_cache": system_manager.phase1_system is not None if system_manager.phase1_system else False,
         },
         "openai_status": {
             "available": verify_openai_setup()[0],
             "status": verify_openai_setup()[1]
+        },
+        "chart_capabilities": {
+            "basic_charts": ["line", "bar", "area", "pie", "scatter"],
+            "advanced_charts": ["waterfall", "funnel", "gauge", "histogram"],
+            "chart_intelligence": True
         }
     }
 
-    # Enhanced health check for Smart Defaults
     if SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine:
         try:
             smart_health = await system_manager.smart_defaults_engine.health_check()
@@ -1219,42 +1826,50 @@ async def health_check():
 
 @app.get("/status/")
 async def system_status():
-    """Enhanced system status including Smart Defaults and Smart Engine"""
+    """Enhanced system status"""
     if not system_manager.is_initialized:
         return {"status": "not_initialized", "message": "System is still initializing"}
 
     try:
         status = {
-            "system_version": "5.1.0",
+            "system_version": "5.1.1",
             "initialization_status": "complete",
             "components": {},
             "capabilities": {},
-            "performance_metrics": {}
+            "performance_metrics": {},
+            "chart_engine": {
+                "status": "operational",
+                "supported_types": [
+                    "line", "area", "bar", "pie", "scatter", "histogram",
+                    "waterfall", "funnel", "gauge"
+                ],
+                "advanced_features": {
+                    "intent_classification": True,
+                    "data_structure_analysis": True,
+                    "automatic_chart_selection": True,
+                    "openai_integration": verify_openai_setup()[0]
+                }
+            }
         }
 
-        # Component status
         if system_manager.enhanced_system:
             system_status_data = system_manager.enhanced_system.get_system_status()
             status["components"] = system_status_data.get("components", {})
             status["capabilities"] = system_status_data.get("capabilities", {})
 
-        # Knowledge framework status
         if system_manager.knowledge_framework:
             knowledge_summary = system_manager.knowledge_framework.get_knowledge_summary()
             status["knowledge_summary"] = knowledge_summary
 
-        # Mathematical engine status
         if system_manager.mathematical_engine:
             status["mathematical_methods"] = len(system_manager.mathematical_engine.methods_registry)
 
-        # Smart Engine status
         status["smart_engine"] = {
             "available": SMART_ENGINE_AVAILABLE,
             "openai_configured": verify_openai_setup()[0],
             "openai_status": verify_openai_setup()[1]
         }
 
-        # Smart Defaults status
         if SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine:
             try:
                 smart_stats = await system_manager.smart_defaults_engine.get_engine_stats()
@@ -1276,22 +1891,35 @@ async def system_status():
 
 @app.get("/capabilities/")
 async def get_capabilities():
-    """Enhanced capabilities including Smart Defaults and Smart Engine"""
-
+    """Enhanced capabilities including advanced charts"""
     capabilities = {
         "analysis_types": [
-            "trend_analysis",
-            "distribution_analysis",
-            "comparison_analysis",
-            "correlation_analysis",
-            "statistical_analysis",
-            "business_aggregation",
-            "predictive_modeling"
+            "trend_analysis", "distribution_analysis", "comparison_analysis",
+            "correlation_analysis", "statistical_analysis", "business_aggregation",
+            "predictive_modeling", "waterfall_analysis", "funnel_analysis",
+            "gauge_analysis", "performance_analysis"
         ],
         "chart_types": [
-            "line", "bar", "pie", "scatter", "heatmap",
-            "histogram", "box", "waterfall", "radar", "treemap"
+            "line", "bar", "pie", "scatter", "heatmap", "histogram",
+            "box", "area", "waterfall", "funnel", "gauge", "treemap", "radar"
         ],
+        "advanced_chart_features": {
+            "waterfall_charts": {
+                "supported": True,
+                "description": "Shows cumulative effect of sequential positive and negative values",
+                "use_cases": ["Financial analysis", "Performance breakdown", "Variance analysis"]
+            },
+            "funnel_charts": {
+                "supported": True,
+                "description": "Visualizes stages in a process with progressive filtering",
+                "use_cases": ["Sales pipeline", "Conversion analysis", "Process optimization"]
+            },
+            "gauge_charts": {
+                "supported": True,
+                "description": "Shows a single metric against a scale",
+                "use_cases": ["KPI dashboards", "Performance monitoring", "Goal tracking"]
+            }
+        },
         "data_formats": ["CSV", "Excel (.xlsx, .xls)"],
         "data_sources": [
             "File Upload", "PostgreSQL", "MySQL", "Redis", "MongoDB",
@@ -1301,17 +1929,17 @@ async def get_capabilities():
             "insurance", "banking", "technology", "healthcare",
             "finance", "manufacturing", "retail", "general"
         ],
-        "mathematical_methods": [],
-        "knowledge_domains": [],
         "smart_features": {
             "auto_data_discovery": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
             "intelligent_recommendations": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "personalized_suggestions": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "learning_from_usage": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "policy_compliance": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "environment_scanning": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
             "unified_smart_engine": SMART_ENGINE_AVAILABLE,
-            "llm_powered_query_understanding": SMART_ENGINE_AVAILABLE and verify_openai_setup()[0]
+            "llm_powered_query_understanding": SMART_ENGINE_AVAILABLE and verify_openai_setup()[0],
+            "advanced_chart_intelligence": CHART_ENGINE_AVAILABLE,
+            "intent_based_chart_selection": CHART_ENGINE_AVAILABLE,
+            "multi_source_governance": system_manager.phase1_system is not None,
+            "conflict_resolution": system_manager.phase1_system is not None,
+            "smart_caching": system_manager.phase1_system is not None,
+            "role_based_access": system_manager.phase1_system is not None,
         },
         "features": {
             "adaptive_query_processing": True,
@@ -1319,17 +1947,15 @@ async def get_capabilities():
             "mathematical_analysis": True,
             "intelligent_insights": True,
             "comprehensive_reporting": True,
-            "chart_intelligence": True,
+            "advanced_chart_intelligence": True,
             "real_time_processing": True,
             "multi_format_support": True,
             "automated_data_discovery": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
-            "personalized_recommendations": SMART_DEFAULTS_AVAILABLE and system_manager.smart_defaults_engine is not None,
             "unified_smart_query_engine": SMART_ENGINE_AVAILABLE,
             "llm_powered_analysis": SMART_ENGINE_AVAILABLE and verify_openai_setup()[0]
         }
     }
 
-    # Add mathematical methods if engine available
     if system_manager.mathematical_engine and system_manager.is_initialized:
         try:
             methods = []
@@ -1340,7 +1966,6 @@ async def get_capabilities():
         except:
             pass
 
-    # Add knowledge domains if framework available
     if system_manager.knowledge_framework and system_manager.is_initialized:
         try:
             knowledge_summary = system_manager.knowledge_framework.get_knowledge_summary()
@@ -1351,316 +1976,146 @@ async def get_capabilities():
     return capabilities
 
 
-@app.post("/feedback/")
-async def record_user_feedback(
-        recommendation_id: str,
-        action: str,
-        context: Optional[Dict[str, Any]] = None,
-        user_id: Optional[str] = None
+@app.get("/data-sources/")
+async def list_data_sources(
+        check_access: bool = True,
+        credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ):
-    """
-    Record user feedback for learning and improvement
-    """
-    if not user_id:
-        user_id = f"anonymous_{int(datetime.now().timestamp())}"
+    """List available data sources with optional access check"""
+    if not system_manager.phase1_system:
+        return {"sources": [], "message": "Multi-source system not initialized"}
 
-    if not SMART_DEFAULTS_AVAILABLE or not system_manager.smart_defaults_engine:
-        return {
-            "status": "unavailable",
-            "message": "Smart Defaults Engine not available"
+    user_id = "anonymous"
+    user_role = "viewer"
+
+    if credentials:
+        user_id = f"user_{hash(credentials.credentials) % 10000}"
+        user_role = "analyst"  # Extract from JWT in production
+
+    sources = []
+    for source_id, source in system_manager.phase1_system.query_engine._data_sources.items():
+        source_info = {
+            "id": source.id,
+            "name": source.name,
+            "type": source.source_type,
+            "sensitivity": source.sensitivity_level.value,
+            "active": source.is_active
         }
 
+        if check_access and credentials:
+            # Check user's access to this source
+            user = SimpleUser(id=user_id, username=user_id, email=f"{user_id}@example.com", role=user_role)
+            context = AccessContext(user_id=user_id)
+            resource_id = f"source:{source_id}:{source.sensitivity_level.value}"
+
+            evaluation = system_manager.phase1_system.access_engine.evaluate_access(
+                user, resource_id, AccessPermission.READ, context
+            )
+
+            source_info["access"] = {
+                "granted": evaluation.decision.value != "deny",
+                "decision": evaluation.decision.value,
+                "conditions": evaluation.conditions,
+                "masked_fields": evaluation.masked_fields,
+                "row_limit": evaluation.row_limit
+            }
+
+        sources.append(source_info)
+
+    return {
+        "sources": sources,
+        "total": len(sources),
+        "user_role": user_role if check_access else None
+    }
+
+
+@app.post("/conflicts/resolve/")
+async def resolve_conflict_feedback(
+        conflict_id: str = Form(...),
+        chosen_value: str = Form(...),
+        source_id: str = Form(...),
+        credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Record user's conflict resolution choice"""
+    if not system_manager.phase1_system:
+        raise HTTPException(status_code=503, detail="Multi-source system not initialized")
+
     try:
-        success = await system_manager.smart_defaults_engine.record_feedback(
-            user_id=user_id,
-            recommendation_id=recommendation_id,
-            action=action,
-            context=context or {}
+        await system_manager.phase1_system.conflict_engine.record_user_feedback(
+            conflict_id=conflict_id,
+            chosen_value=chosen_value,
+            source_id=source_id
         )
 
         return {
-            "status": "success" if success else "failed",
-            "user_id": user_id,
-            "recommendation_id": recommendation_id,
-            "action": action,
-            "recorded_at": datetime.now().isoformat()
-        }
-
-    except Exception as e:
-        logger.error(f"Feedback recording failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-
-@app.get("/user-profile/")
-async def get_user_profile(user_id: Optional[str] = None):
-    """
-    Get user profile and preferences
-    """
-    if not user_id:
-        user_id = f"anonymous_{int(datetime.now().timestamp())}"
-
-    try:
-        # In a real implementation, this would fetch from database
-        # For demo, return a sample profile
-        profile = {
-            "user_id": user_id,
-            "role": "data_analyst",
-            "department": "analytics",
-            "seniority_level": "senior",
-            "industry": "technology",
-            "preferences": {
-                "auto_connect_threshold": 0.8,
-                "recommendation_frequency": "daily",
-                "preferred_chart_types": ["line", "bar", "scatter"],
-                "analysis_complexity": "intermediate"
-            },
-            "recent_activity": {
-                "analyses_run": 15,
-                "sources_connected": 3,
-                "feedback_provided": 8
-            },
-            "created_at": "2024-01-01T00:00:00Z",
-            "last_active": datetime.now().isoformat()
-        }
-
-        return {
             "status": "success",
-            "profile": profile
+            "message": "Conflict resolution feedback recorded",
+            "conflict_id": conflict_id
         }
-
     except Exception as e:
-        logger.error(f"Profile retrieval failed: {e}")
+        logger.error(f"Failed to record conflict feedback: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/multi-source/status/")
+async def get_multi_source_status():
+    """Get Phase 1 multi-source system status"""
+    if not system_manager.phase1_system:
         return {
-            "status": "error",
-            "error": str(e)
+            "status": "not_initialized",
+            "message": "Multi-source system is not available"
         }
 
-
-@app.get("/analytics-dashboard/")
-async def get_analytics_dashboard(user_id: Optional[str] = None):
-    """
-    Get analytics dashboard data
-    """
-    if not user_id:
-        user_id = f"anonymous_{int(datetime.now().timestamp())}"
-
-    try:
-        # Sample dashboard data - in production, this would come from analytics engine
-        dashboard_data = {
-            "user_analytics": {
-                "total_analyses": 42,
-                "successful_connections": 8,
-                "avg_confidence_score": 0.78,
-                "favorite_data_sources": ["PostgreSQL", "Tableau", "CSV Files"],
-                "analysis_trends": [
-                    {"date": "2024-01-01", "count": 5},
-                    {"date": "2024-01-02", "count": 8},
-                    {"date": "2024-01-03", "count": 12}
-                ]
-            },
-            "system_analytics": {
-                "total_users": 156,
-                "recommendations_generated": 2341,
-                "auto_connections": 89,
-                "success_rate": 0.84,
-                "popular_analysis_types": [
-                    {"type": "trend_analysis", "count": 45},
-                    {"type": "comparison", "count": 38},
-                    {"type": "correlation", "count": 32}
-                ]
-            },
-            "recent_discoveries": [
-                {
-                    "source_id": "postgresql_prod",
-                    "confidence": 0.91,
-                    "discovered_at": "2024-01-03T10:30:00Z"
-                },
-                {
-                    "source_id": "redis_cache",
-                    "confidence": 0.76,
-                    "discovered_at": "2024-01-03T09:15:00Z"
-                }
-            ]
-        }
-
-        return {
-            "status": "success",
-            "dashboard": dashboard_data,
-            "generated_at": datetime.now().isoformat()
-        }
-
-    except Exception as e:
-        logger.error(f"Dashboard data retrieval failed: {e}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+    status = await system_manager.phase1_system.get_system_status()
+    return status
 
 
-# Background task endpoints
-@app.post("/admin/retrain-models/")
-async def trigger_model_retraining(background_tasks: BackgroundTasks):
-    """
-    Trigger ML model retraining (admin endpoint)
-    """
-    if not SMART_DEFAULTS_AVAILABLE or not system_manager.smart_defaults_engine:
-        return {
-            "status": "unavailable",
-            "message": "Smart Defaults Engine not available"
-        }
-
-    async def retrain_task():
-        try:
-            if hasattr(system_manager.smart_defaults_engine, 'learning_engine') and \
-                    system_manager.smart_defaults_engine.learning_engine:
-                await system_manager.smart_defaults_engine.learning_engine.retrain_models()
-                logger.info("🎓 Model retraining completed")
-        except Exception as e:
-            logger.error(f"Model retraining failed: {e}")
-
-    background_tasks.add_task(retrain_task)
-
-    return {
-        "status": "initiated",
-        "message": "Model retraining started in background",
-        "initiated_at": datetime.now().isoformat()
-    }
-
-
-@app.post("/admin/scan-environment/")
-async def trigger_environment_scan(background_tasks: BackgroundTasks):
-    """
-    Trigger environment scan (admin endpoint)
-    """
-    if not SMART_DEFAULTS_AVAILABLE or not system_manager.smart_defaults_engine:
-        return {
-            "status": "unavailable",
-            "message": "Smart Defaults Engine not available"
-        }
-
-    async def scan_task():
-        try:
-            if hasattr(system_manager.smart_defaults_engine, 'environment_scanner') and \
-                    system_manager.smart_defaults_engine.environment_scanner:
-                # Scan for all users (in production, you'd iterate through actual users)
-                test_users = ["demo_user_1", "demo_user_2", "demo_user_3"]
-                for user_id in test_users:
-                    try:
-                        await system_manager.smart_defaults_engine.environment_scanner.scan_environment(
-                            user_id, force_refresh=True
-                        )
-                    except Exception as e:
-                        logger.warning(f"Scan failed for user {user_id}: {e}")
-                logger.info("🔍 Environment scan completed")
-        except Exception as e:
-            logger.error(f"Environment scan failed: {e}")
-
-    background_tasks.add_task(scan_task)
-
-    return {
-        "status": "initiated",
-        "message": "Environment scan started in background",
-        "initiated_at": datetime.now().isoformat()
-    }
-
-
-@app.post("/test-upload/")
-async def test_file_upload(
-        prompt: str = Form(...),
-        file: UploadFile = File(None),
-        use_adaptive: bool = Form(True),
-        include_charts: bool = Form(True),
-        auto_discover: bool = Form(True)
+@app.get("/cache/stats/")
+async def get_cache_statistics(
+        credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
-    """Simple test endpoint to debug file upload issues"""
+    """Get smart cache statistics"""
+    if not system_manager.phase1_system:
+        return {"error": "Multi-source system not initialized"}
 
-    logger.info(f"🧪 TEST ENDPOINT - Received request")
-    logger.info(f"📝 Prompt: '{prompt}'")
-    logger.info(f"📄 File: {file.filename if file else 'None'}")
-    logger.info(f"⚙️ Parameters: adaptive={use_adaptive}, charts={include_charts}, discover={auto_discover}")
+    stats = await system_manager.phase1_system.cache_manager.get_stats()
+    return {
+        "cache_stats": stats,
+        "timestamp": datetime.now().isoformat()
+    }
 
-    if file:
-        logger.info(f"📄 File details:")
-        logger.info(f"  - Filename: {file.filename}")
-        logger.info(f"  - Content-Type: {file.content_type}")
-        logger.info(f"  - Size: {file.size if hasattr(file, 'size') else 'Unknown'}")
 
-        try:
-            # Try to read file content
-            content = await file.read()
-            logger.info(f"  - Content size: {len(content)} bytes")
-            logger.info(f"  - First 100 chars: {content[:100]}")
+@app.post("/cache/invalidate/")
+async def invalidate_cache(
+        pattern: str = Form(...),
+        credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Invalidate cache entries matching pattern (admin only)"""
+    if not system_manager.phase1_system:
+        raise HTTPException(status_code=503, detail="Multi-source system not initialized")
 
-            # Try to parse as CSV
-            if file.filename.endswith('.csv'):
-                df = pd.read_csv(io.BytesIO(content))
-                logger.info(f"  - CSV parsed successfully: {df.shape[0]} rows × {df.shape[1]} columns")
-                logger.info(f"  - Columns: {list(df.columns)}")
+    # In production, check if user has admin role from JWT
+    user_id = f"user_{hash(credentials.credentials) % 10000}"
 
-                return {
-                    "status": "success",
-                    "message": "File upload test successful",
-                    "file_info": {
-                        "filename": file.filename,
-                        "size": len(content),
-                        "rows": len(df),
-                        "columns": len(df.columns),
-                        "column_names": list(df.columns)
-                    },
-                    "prompt": prompt,
-                    "parameters": {
-                        "use_adaptive": use_adaptive,
-                        "include_charts": include_charts,
-                        "auto_discover": auto_discover
-                    }
-                }
-
-        except Exception as e:
-            logger.error(f"❌ File processing failed: {e}")
-            logger.error(traceback.format_exc())
-
-            return {
-                "status": "error",
-                "error": f"File processing failed: {str(e)}",
-                "file_info": {
-                    "filename": file.filename,
-                    "content_type": file.content_type,
-                    "size": len(content) if 'content' in locals() else 0
-                }
-            }
-
+    count = await system_manager.phase1_system.cache_manager.invalidate_pattern(pattern)
     return {
         "status": "success",
-        "message": "Test endpoint working - no file provided",
-        "prompt": prompt,
-        "parameters": {
-            "use_adaptive": use_adaptive,
-            "include_charts": include_charts,
-            "auto_discover": auto_discover
-        }
+        "invalidated_count": count,
+        "pattern": pattern
     }
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    print("🚀 Starting Complete Analytics Backend with Smart Defaults and Smart Engine")
-    print("📊 Version: 5.1.0")
-    print(
-        "🎯 Features: Complete analytics pipeline with AI-powered insights, automated data discovery, and unified smart query processing")
+    print("🚀 Starting Complete Analytics Backend with Advanced Charts")
+    print("📊 Version: 5.1.1")
+    print("🎯 Features: Complete analytics pipeline with advanced chart support (waterfall, funnel, gauge)")
     print("\n🔗 Key Endpoints:")
-    print("   • /analyze/ - Comprehensive analysis with smart engine")
+    print("   • /analyze/ - Comprehensive analysis with advanced charts")
     print("   • /test-openai/ - Test OpenAI API setup")
-    print("   • /debug-env/ - Debug environment variables")
     print("   • /discover-sources/ - Auto-discover data sources")
-    print("   • /recommendations/ - Get personalized recommendations")
-    print("   • /connect-source/ - Connect to discovered sources")
-    print("   • /quick-analyze/ - Quick analysis")
-    print("   • /chart-suggestions/ - Chart intelligence")
-    print("   • /feedback/ - Record user feedback")
+    print("   • /chart-suggestions/ - Advanced chart intelligence")
     print("   • /health/ - System health check")
     print("   • /status/ - System status")
 

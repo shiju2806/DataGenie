@@ -8,8 +8,6 @@ import {
   Bar,
   PieChart,
   Pie,
-  ScatterChart,
-  Scatter,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -18,7 +16,16 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
-import {TrendingUp, BarChart3, PieChart as PieChartIcon, Scatter as ScatterIcon, Download, Maximize2, RefreshCw, Eye, EyeOff} from 'lucide-react';
+import {
+  TrendingUp,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Download,
+  Maximize2,
+  RefreshCw,
+  Eye,
+  EyeOff
+} from 'lucide-react';
 
 interface ChartData {
   [key: string]: any;
@@ -27,7 +34,7 @@ interface ChartData {
 interface ChartConfig {
   id: string;
   title: string;
-  type: 'line' | 'area' | 'bar' | 'pie' | 'scatter' | 'histogram';
+  type: 'line' | 'area' | 'bar' | 'pie' | 'scatter' | 'histogram' | 'waterfall' | 'funnel' | 'gauge';
   data: ChartData[];
   xField?: string;
   yField?: string;
@@ -37,6 +44,7 @@ interface ChartConfig {
   reasoning?: string;
   color?: string;
   colors?: string[];
+  customConfig?: any;
 }
 
 interface ChartsProps {
@@ -55,14 +63,17 @@ const COLOR_PALETTES = {
   rainbow: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6']
 };
 
-// Chart type icons
+// Chart type icons - using only available lucide-react icons
 const CHART_ICONS = {
   line: TrendingUp,
   area: TrendingUp,
   bar: BarChart3,
   pie: PieChartIcon,
-  scatter: ScatterIcon,
-  histogram: BarChart3
+  scatter: BarChart3,
+  histogram: BarChart3,
+  waterfall: BarChart3,
+  funnel: TrendingUp,
+  gauge: PieChartIcon
 };
 
 const ChartComponent: React.FC<{
@@ -80,7 +91,7 @@ const ChartComponent: React.FC<{
 
   const handleRefresh = () => {
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000); // Simulate refresh
+    setTimeout(() => setIsLoading(false), 1000);
   };
 
   const renderChart = () => {
@@ -157,6 +168,29 @@ const ChartComponent: React.FC<{
           </BarChart>
         );
 
+      case 'scatter':
+        // Implement scatter as dots without connecting lines
+        return (
+          <LineChart {...commonProps}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={config.xField || 'x'} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey={config.yField || 'value'}
+              stroke="transparent"
+              strokeWidth={0}
+              dot={{ r: 6, fill: colors[0] }}
+              connectNulls={false}
+            />
+          </LineChart>
+        );
+
+      case 'waterfall':
+        return renderWaterfallChart(commonProps);
+
       case 'pie':
         return (
           <PieChart {...commonProps}>
@@ -178,27 +212,137 @@ const ChartComponent: React.FC<{
           </PieChart>
         );
 
-      case 'scatter':
-        return (
-          <ScatterChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={config.xField || 'x'} type="number" />
-            <YAxis dataKey={config.yField || 'y'} type="number" />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-            <Scatter data={config.data} fill={colors[0]} />
-          </ScatterChart>
-        );
+      case 'funnel':
+        return renderFunnelChart();
+
+      case 'gauge':
+        return renderGaugeChart();
 
       default:
         return (
           <div className="flex items-center justify-center h-64 text-gray-500">
             <div className="text-center">
-              <div className="text-4xl mb-2">❓</div>
-              <p>Unsupported chart type: {config.type}</p>
+              <div className="text-4xl mb-2">🔧</div>
+              <p>Chart type "{config.type}" is being developed</p>
+              <p className="text-sm mt-2">Available: Line, Bar, Area, Pie, Scatter, Waterfall</p>
             </div>
           </div>
         );
     }
+  };
+
+  // Custom chart renderers
+  const renderWaterfallChart = (commonProps: any) => {
+    let runningTotal = 0;
+    const waterfallData = config.data.map((item, index) => {
+      const value = item[config.yField || 'value'] || 0;
+      const start = runningTotal;
+      runningTotal += value;
+      return {
+        ...item,
+        start,
+        end: runningTotal,
+        value: Math.abs(value),
+        isPositive: value >= 0
+      };
+    });
+
+    return (
+      <BarChart {...commonProps} data={waterfallData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey={config.xField || 'x'} />
+        <YAxis />
+        <Tooltip
+          formatter={(value, name, props) => [
+            `${props.payload.isPositive ? '+' : '-'}${value}`,
+            name
+          ]}
+        />
+        <Legend />
+        <Bar dataKey="value" stackId="waterfall">
+          {waterfallData.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.isPositive ? colors[1] || '#22c55e' : colors[0] || '#ef4444'}
+            />
+          ))}
+        </Bar>
+      </BarChart>
+    );
+  };
+
+  const renderFunnelChart = () => {
+    const maxValue = Math.max(...config.data.map(d => d[config.valueField || 'value'] || 0));
+
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-2">
+        {config.data.map((item, index) => {
+          const value = item[config.valueField || 'value'] || 0;
+          const percentage = (value / maxValue) * 100;
+          const width = Math.max(percentage, 20);
+
+          return (
+            <div key={index} className="flex items-center w-full">
+              <div className="w-1/3 text-right pr-4 text-sm">
+                {item[config.categoryField || 'name']}
+              </div>
+              <div
+                className="h-8 flex items-center justify-center text-white text-sm font-medium rounded"
+                style={{
+                  width: `${width}%`,
+                  backgroundColor: colors[index % colors.length],
+                  minWidth: '80px'
+                }}
+              >
+                {value}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderGaugeChart = () => {
+    const value = config.data[0]?.[config.valueField || 'value'] || 0;
+    const max = config.customConfig?.max || 100;
+    const percentage = (value / max) * 100;
+    const angle = (percentage / 100) * 180 - 90;
+
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="relative w-32 h-16 mb-4">
+          <svg viewBox="0 0 200 100" className="w-full h-full">
+            <path
+              d="M 20 80 A 80 80 0 0 1 180 80"
+              fill="none"
+              stroke="#e5e7eb"
+              strokeWidth="20"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 20 80 A 80 80 0 0 1 180 80"
+              fill="none"
+              stroke={colors[0]}
+              strokeWidth="20"
+              strokeLinecap="round"
+              strokeDasharray={`${percentage * 2.51} 251`}
+            />
+            <line
+              x1="100"
+              y1="80"
+              x2={100 + Math.cos(angle * Math.PI / 180) * 60}
+              y2={80 + Math.sin(angle * Math.PI / 180) * 60}
+              stroke="#374151"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div className="text-2xl font-bold text-gray-900">{value}</div>
+        <div className="text-sm text-gray-600">of {max}</div>
+      </div>
+    );
   };
 
   if (!isVisible) {
@@ -350,10 +494,27 @@ const Charts: React.FC<ChartsProps> = ({
         ];
       case 'scatter':
         return Array.from({ length: 20 }, (_, i) => ({
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          value: Math.random() * 50
+          x: `Point ${i + 1}`,
+          value: Math.random() * 100
         }));
+      case 'waterfall':
+        return [
+          { x: 'Starting Value', value: 100 },
+          { x: 'Q1 Sales', value: 50 },
+          { x: 'Q2 Sales', value: 30 },
+          { x: 'Q3 Sales', value: -20 },
+          { x: 'Q4 Sales', value: 40 }
+        ];
+      case 'funnel':
+        return [
+          { name: 'Website Visits', value: 10000 },
+          { name: 'Leads', value: 2000 },
+          { name: 'Qualified Leads', value: 800 },
+          { name: 'Proposals', value: 200 },
+          { name: 'Customers', value: 50 }
+        ];
+      case 'gauge':
+        return [{ value: 75 }];
       default:
         return Array.from({ length: 10 }, (_, i) => ({
           x: `Point ${i + 1}`,
@@ -394,6 +555,25 @@ const Charts: React.FC<ChartsProps> = ({
               );
             })}
           </div>
+
+          <div className="mt-6">
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Advanced Charts</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {(['waterfall', 'funnel', 'gauge'] as const).map((type) => {
+                const IconComponent = CHART_ICONS[type];
+                return (
+                  <button
+                    key={type}
+                    onClick={() => generateSampleChart(type)}
+                    className="p-3 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
+                  >
+                    <IconComponent className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+                    <div className="text-xs font-medium text-gray-900 capitalize">{type}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -429,7 +609,6 @@ const Charts: React.FC<ChartsProps> = ({
         ))}
       </div>
 
-      {/* Quick Chart Generation */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <h3 className="text-sm font-medium text-gray-900 mb-3">Quick Chart Generation</h3>
         <div className="flex flex-wrap gap-2">
@@ -438,6 +617,15 @@ const Charts: React.FC<ChartsProps> = ({
               key={type}
               onClick={() => generateSampleChart(type)}
               className="text-xs bg-white border border-gray-200 rounded px-3 py-1 hover:border-blue-300 hover:bg-blue-50 transition-colors capitalize"
+            >
+              + {type}
+            </button>
+          ))}
+          {(['waterfall', 'funnel', 'gauge'] as const).map((type) => (
+            <button
+              key={type}
+              onClick={() => generateSampleChart(type)}
+              className="text-xs bg-white border border-purple-200 rounded px-3 py-1 hover:border-purple-300 hover:bg-purple-50 transition-colors capitalize"
             >
               + {type}
             </button>
